@@ -1,0 +1,14 @@
+*.o
+*.val
+*.sh
+epos
+*.aux
+*.log
+*.ps
+*.dvi
+*.ps
+*.tex
+*.bbl
+*.blg
+randomSeed.dat
+seedms
