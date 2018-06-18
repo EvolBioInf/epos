@@ -15,7 +15,7 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvVc:u:s:l:";
+  char *optString = "hvVUc:u:s:l:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
@@ -56,6 +56,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'V':                           /* verbose */
       args->V = 1;
+      break;
+    case 'U':                           /* unfolded */
+      args->U = 1;
       break;
     case 'n':                           /* negative population sizes? */
       args->n = 1;
@@ -104,6 +107,7 @@ void printUsage(char *version){
   printf("\t[-l NUM lambda; default: %.3g]\n",DEFAULT_L);
   printf("\t[-c NUM number of categories for cross-validation; default: %d]\n", DEFAULT_C);
   printf("\t[-s NUM seed for random number generator; default: time, file]\n");
+  printf("\t[-U unfolded site frequency spectrum as input]\n");
   printf("\t[-V verbose output for debugging]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");
