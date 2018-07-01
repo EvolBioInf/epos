@@ -33,6 +33,7 @@ double testError(Sfs *trainSfs, Sfs **sfsArr, Args *args, double testLambda){
     summarizeSfs(trainSfs, sfsArr, args->c, i);
     ps = getPopSizes(trainSfs, args);
     e += psi(ps, testSfs);
+    
     freePopSizes(ps);
   }
 

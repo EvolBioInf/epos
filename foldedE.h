@@ -13,6 +13,7 @@
 
 int foldedEcompPopSizes(Sfs *sfs, PopSizes *ps, Args *args);
 double foldedEpsi(PopSizes *ps, Sfs *sfs);
+double foldedEchiSquared(PopSizes *ps, Sfs *sfs);
 gsl_vector *foldedEgetResVect(Sfs *sfs, PopSizes *ps);
 gsl_matrix *foldedEgetCoeffMat(Sfs *sfs, PopSizes *ps, Args *args);
 

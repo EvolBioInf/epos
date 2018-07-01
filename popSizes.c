@@ -82,6 +82,15 @@ void restoreK(PopSizes *ps){
   ps->m--;
 }
 
+double chiSquared(PopSizes *ps, Sfs *sfs){
+  if(sfs->type == FOLDED_EVEN)
+    return foldedEchiSquared(ps, sfs);
+  else{
+    fprintf(stderr,"chiSquared only implemented for folded site frequency spectra with even sample size.\n");
+    exit(-1);
+  }
+}
+
 double psi(PopSizes *ps, Sfs *sfs){
   if(sfs->type == UNFOLDED){
     return unfoldedPsi(ps, sfs);

@@ -112,3 +112,30 @@ double foldedEpsi(PopSizes *ps, Sfs *sfs){
 
   return psi;
 }
+
+double foldedEchiSquared(PopSizes *ps, Sfs *sfs){
+  int i, n, m, r;
+  double a, w, sw, xs, s1, s2, *N, varF;
+  double u;
+
+  m = ps->m;
+  N = ps->N;
+  n = sfs->n;
+  u = sfs->u;
+
+  s1 = 0.;
+  sw = 0.;
+  for(r=1; r<=n/2-1; r++){
+    s2 = 0.;
+    for(i=1; i<=m; i++)
+      s2 += N[i-1] * gi(i, n, r, ps->k);
+    a = sfs->f[r-1] - 4.*u/r * 1./binomial(n-1,r) * s2;
+    varF = sfs->f[r-1] * (1 - sfs->f[r-1]) / n;
+    w = (double) (r*(n-r)/n);
+    s1 += w * a * a / varF;
+    sw += w;
+  }
+  xs = s1 / sw;
+
+  return xs;
+}
