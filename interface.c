@@ -94,6 +94,8 @@ Args *getArgs(int argc, char *argv[]){
   }
   args->inputFiles = argv + optind;
   args->numInputFiles = argc - optind;
+  if(args->c == 1)   /* No cross-validation */
+    args->d = CHI_THRESHOLD;
   return args;
 }
 

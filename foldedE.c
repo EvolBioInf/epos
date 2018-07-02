@@ -116,7 +116,7 @@ double foldedEpsi(PopSizes *ps, Sfs *sfs){
 double foldedEchiSquared(PopSizes *ps, Sfs *sfs){
   int i, n, m, r;
   double a, w, sw, xs, s1, s2, *N, varF;
-  double u;
+  double u, s;
 
   m = ps->m;
   N = ps->N;
@@ -125,15 +125,17 @@ double foldedEchiSquared(PopSizes *ps, Sfs *sfs){
 
   s1 = 0.;
   sw = 0.;
+  s = sfs->numPol;
   for(r=1; r<=n/2-1; r++){
     s2 = 0.;
     for(i=1; i<=m; i++)
       s2 += N[i-1] * gi(i, n, r, ps->k);
     a = sfs->f[r-1] - 4.*u/r * 1./binomial(n-1,r) * s2;
-    varF = sfs->f[r-1] * (1 - sfs->f[r-1]) / n;
+    /* varF = sfs->f[r-1] / s * (1. - sfs->f[r-1] / s) / (double)n * s * s; */
+    varF = sfs->f[r-1] / s * (1. - sfs->f[r-1] / s) * s;
     w = (double) (r*(n-r)/n);
     s1 += w * a * a / varF;
-    sw += w;
+    sw += w;            
   }
   xs = s1 / sw;
 

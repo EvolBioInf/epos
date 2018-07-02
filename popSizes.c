@@ -62,7 +62,6 @@ void addTestK(PopSizes *ps, int k){
   ps->k[ps->prevM+1] = k;
   ps->m = ps->prevM + 1;
   qsort(ps->k,ps->m+1,sizeof(int),cmpInt);
-
 }
 
 void addK(PopSizes *ps, int k){
@@ -189,15 +188,20 @@ int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args){
 }
 
 double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
+  int status;
+
   addTestK(ps, k);
-  if(compPopSizes(sfs, ps, args))
+  if((status = compPopSizes(sfs, ps, args)) > 0)
     return DBL_MAX;
   if(negPopSizes(ps) && !args->n){
     if(args->V)
       fprintf(stderr,"#Negative population size\n");
     return DBL_MAX;
   }
-  return psi(ps, sfs);
+  if(args->c == 1)
+    return chiSquared(ps, sfs);
+  else
+    return psi(ps, sfs);
 }
 
 PopSizes *copyPopSizes(PopSizes *ps){
@@ -259,7 +263,10 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
   testK(sfs, ps, args, minK);
   addK(ps, minK);
   compPopSizes(sfs, ps, args);
-  ps->psi = psi(ps, sfs);
+  if(args->c == 1)
+    ps->psi = chiSquared(ps, sfs);
+  else
+    ps->psi = psi(ps, sfs);
   prevMinPsi = ps->psi;
   if(args->V){
     printf("#Watterson: %.2e\n", watterson(sfs));
@@ -285,18 +292,27 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     change = prevMinPsi - currMinPsi;
     if(change <= args->d){
       if(args->V){
-	ps->psi = psi(ps, sfs);
+	if(args->c == 1)
+	  ps->psi = chiSquared(ps, sfs);
+	else
+	  ps->psi = psi(ps, sfs);
 	printTimes(ps, sfs);
 	printf("#Reverting to previous configuration\n");
       }
       restoreK(ps);
       compPopSizes(sfs, ps, args);
-      ps->psi = psi(ps, sfs);
+      if(args->c == 1)
+	ps->psi = chiSquared(ps, sfs);
+      else
+	ps->psi = psi(ps, sfs);
       break;
     }else{
       addK(ps, l);
       compPopSizes(sfs, ps, args);
-      currMinPsi = psi(ps, sfs);
+      if(args->c == 1)
+	currMinPsi = chiSquared(ps, sfs);
+      else
+	currMinPsi = psi(ps, sfs);
     }
     prevMinPsi = currMinPsi;
   }

@@ -23,7 +23,8 @@ void scanFile(FILE *fp, Args *args, char *fileName){
   sfs = getSfs(fp, args);
   printSfsStats(sfs);
   rand =  ini_gsl_rng(args);
-  xvalM(sfs, args, rand);
+  if(args->c > 1)
+    xvalM(sfs, args, rand);
   ps = getPopSizes(sfs, args);
   if(negPopSizes(ps)){
     args->L = 1;
