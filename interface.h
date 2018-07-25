@@ -18,6 +18,7 @@ typedef struct args{
   char V;      /* verbose output? */
   char U;      /* unfolded? */
   char n;      /* allow negative population sizes */
+  char N;      /* Newton procedure? */
   char L;      /* search lambda through cross-validation */
   int b;       /* bootstrap */
   int s;       /* seed for random number generator */

@@ -89,7 +89,7 @@ double unfoldedPsi(PopSizes *ps, Sfs *sfs){
     a *= a;
     s2 += a;
   }
-  a = exp(log(a) + log(lambda));
+  a *= lambda;
   s1 += a;
 
   if(s1 < 0){

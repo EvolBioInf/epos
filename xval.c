@@ -23,7 +23,7 @@ void summarizeSfs(Sfs *recipient, Sfs **sfsArr, int n, int excluded){
 double testError(Sfs *trainSfs, Sfs **sfsArr, Args *args, double testLambda){
   int i;
   PopSizes *ps;
-  double e;
+  double e, testPsi;
   Sfs *testSfs;
 
   e = 0;
@@ -32,7 +32,8 @@ double testError(Sfs *trainSfs, Sfs **sfsArr, Args *args, double testLambda){
     testSfs->l = testLambda;
     summarizeSfs(trainSfs, sfsArr, args->c, i);
     ps = getPopSizes(trainSfs, args);
-    e += psi(ps, testSfs);
+    testPsi = psi(ps, testSfs);
+    e += testPsi;
     
     freePopSizes(ps);
   }

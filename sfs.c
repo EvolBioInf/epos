@@ -139,7 +139,7 @@ Sfs *getSfs(FILE *fp, Args *args){
     sfs->n++;
     sfs->type = UNFOLDED;
   }else{        /* folded/even */
-    sfs->n = 2*sfs->n;
+    sfs->n *= 2;
     sfs->type = FOLDED_EVEN;
   }
   /* compute lambda as function of mutation rate? */

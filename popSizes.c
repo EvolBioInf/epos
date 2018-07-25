@@ -11,6 +11,7 @@
 #include "foldedE.h"
 #include "printMatrix.h"
 #include "util.h"
+#include "newton.h"
 
 int negPopSizes(PopSizes *ps){
   int i;
@@ -142,7 +143,7 @@ void freeGsl(gsl_matrix *A, gsl_matrix *LU, gsl_vector *b, gsl_permutation *p, g
   gsl_vector_free(residual);
 }
 
-int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args){
+int linAlg(Sfs *sfs, PopSizes *ps, Args *args){
   int i, s, status;
   gsl_matrix *LU, *A;
   gsl_vector *b;
@@ -185,6 +186,14 @@ int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args){
   /* gsl_set_error_handler(NULL); */
   freeGsl(A, LU, b, p, x, residual);
   return 0;
+}
+
+int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args) {
+  if(args->N) {
+    return newton(sfs, ps, args);
+  } else {
+    return linAlg(sfs, ps, args);
+  }
 }
 
 double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
@@ -258,8 +267,9 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
   ps->n = sfs->n;
   /* add first entry, single pop size for entire coalescent */
   minK = 2;
-  if(!args->m)
+  if(!args->m) {
     args->m = n-1;
+  }
   testK(sfs, ps, args, minK);
   addK(ps, minK);
   compPopSizes(sfs, ps, args);
@@ -267,6 +277,9 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     ps->psi = chiSquared(ps, sfs);
   else
     ps->psi = psi(ps, sfs);
+  if(args->m == 1) {
+    return ps;
+  }
   prevMinPsi = ps->psi;
   if(args->V){
     printf("#Watterson: %.2e\n", watterson(sfs));
