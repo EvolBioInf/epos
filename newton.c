@@ -39,10 +39,10 @@ double expG(double *N, double u, int m, int n, int *k, int r) {
   s = 0.;
   for(i = 0; i < m; i++) {
     a = binomial(n - k[i] + 1, r);
-    b = binomial(n - k[i+1] - 1, r);
+    b = binomial(n - k[i+1] + 1, r);
     s += N[i] * (a - b);
   }
-  s *= 4. / u / (double)r * 1. / binomial(n - 1, r);
+  s *= 4. * u / (double)r * 1. / binomial(n - 1, r);
   
   return s;
 }
