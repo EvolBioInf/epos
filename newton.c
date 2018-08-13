@@ -34,12 +34,18 @@ Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
 /* expG implements equation (2) */
 double expG(double *N, double u, int m, int n, int *k, int r) {
   int i;
-  double a, b, s;
+  double a, b, s, x;
 
   s = 0.;
   for(i = 0; i < m; i++) {
-    a = binomial(n - k[i] + 1, r);
-    b = binomial(n - k[i+1] + 1, r);
+    x = n - k[i] + 1;
+    if(x < 0)
+      x = 0;
+    a = binomial(x, r);
+    x = n - k[i+1] + 1;
+    if(x < 0)
+      x = 0;
+    b = binomial(x, r);
     s += N[i] * (a - b);
   }
   s *= 4. * u / (double)r * 1. / binomial(n - 1, r);
