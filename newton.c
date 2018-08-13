@@ -48,14 +48,14 @@ double expG(double *N, double u, int m, int n, int *k, int r) {
     b = binomial(x, r);
     s += N[i] * (a - b);
   }
-  s *= 4. * u / (double)r * 1. / binomial(n - 1, r);
+  s *= 4. * u / (double)r / binomial(n - 1, r);
   
   return s;
 }
 
 int func(const gsl_vector *x, void *params, gsl_vector *f) {
   int i, r;
-  double eg;
+  double eg, xx, yy;
   int n     = ((Rparams *) params)->n;
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
@@ -74,7 +74,14 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
     for(r = 1; r < n; r++) {
       /* equation (3) */
       eg = expG(N, u, m, n, k, r);
-      y[i] += 1. / r * (g[r-1] / eg - 1) * (binomial(n - k[i] + 1, r) - binomial(n - k[i+1] - 1, r)) / binomial(n - 1, r);
+      /* y[i] = sum((gr. / eg - 1)/r * (choose(max(n.-k.[i]+1,0), r) - choose(max(n.-k.[i+1]-1,0), r)) / choose(n.-1,r)) */
+      xx = n - k[i] + 1;
+      if(xx < 0)
+	xx = 0;
+      yy = n - k[i+1] - 1;
+      if(yy < 0)
+	yy = 0;
+      y[i] += 1. / r * (g[r-1] / eg - 1) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
     }
   }
   for(i = 0; i < m; i++) {
