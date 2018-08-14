@@ -74,7 +74,6 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
     for(r = 1; r < n; r++) {
       /* equation (3) */
       eg = expG(N, u, m, n, k, r);
-      /* y[i] = sum((gr. / eg - 1)/r * (choose(max(n.-k.[i]+1,0), r) - choose(max(n.-k.[i+1]-1,0), r)) / choose(n.-1,r)) */
       xx = n - k[i] + 1;
       if(xx < 0)
 	xx = 0;
