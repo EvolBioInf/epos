@@ -103,6 +103,18 @@ void printState(int iter, gsl_multiroot_fsolver *s, int n) {
   printf("\n");
 }
 
+double logLik(PopSizes *ps, Sfs *sfs) {
+  double e, l;
+
+  l = 0.;
+  for(int r = 1; r < ps->n; r++) {
+    e = expG(ps->N, sfs->u, ps->m, ps->n, ps->k, r);
+    l += sfs->f[r-1] * log(e) - e;
+  }
+
+  return l;
+}
+
 int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;

@@ -93,7 +93,8 @@ double chiSquared(PopSizes *ps, Sfs *sfs){
 
 double psi(PopSizes *ps, Sfs *sfs){
   if(sfs->type == UNFOLDED){
-    return unfoldedPsi(ps, sfs);
+    /* return unfoldedPsi(ps, sfs); */
+    return logLik(ps, sfs);
   }
   else if(sfs->type == FOLDED_EVEN)
     return foldedEpsi(ps, sfs);
@@ -273,10 +274,7 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
   testK(sfs, ps, args, minK);
   addK(ps, minK);
   compPopSizes(sfs, ps, args);
-  if(args->c == 1)
-    ps->psi = chiSquared(ps, sfs);
-  else
-    ps->psi = psi(ps, sfs);
+  ps->psi = psi(ps, sfs);
   if(args->m == 1) {
     return ps;
   }
@@ -305,27 +303,18 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     change = prevMinPsi - currMinPsi;
     if(change <= args->d){
       if(args->V){
-	if(args->c == 1)
-	  ps->psi = chiSquared(ps, sfs);
-	else
-	  ps->psi = psi(ps, sfs);
+	ps->psi = psi(ps, sfs);
 	printTimes(ps, sfs);
 	printf("#Reverting to previous configuration\n");
       }
       restoreK(ps);
       compPopSizes(sfs, ps, args);
-      if(args->c == 1)
-	ps->psi = chiSquared(ps, sfs);
-      else
-	ps->psi = psi(ps, sfs);
+      ps->psi = psi(ps, sfs);
       break;
     }else{
       addK(ps, l);
       compPopSizes(sfs, ps, args);
-      if(args->c == 1)
-	currMinPsi = chiSquared(ps, sfs);
-      else
-	currMinPsi = psi(ps, sfs);
+      currMinPsi = psi(ps, sfs);
     }
     prevMinPsi = currMinPsi;
   }
