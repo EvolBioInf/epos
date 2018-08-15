@@ -208,10 +208,7 @@ double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
       fprintf(stderr,"#Negative population size\n");
     return DBL_MAX;
   }
-  if(args->c == 1)
-    return chiSquared(ps, sfs);
-  else
-    return psi(ps, sfs);
+  return logLik(ps, sfs);
 }
 
 PopSizes *copyPopSizes(PopSizes *ps){
@@ -240,14 +237,14 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
   double p, currMinPsi;
   int i, minK;
 
-  currMinPsi = DBL_MAX;
+  currMinPsi = DBL_MIN;
   minK = 0;
   for(i=3; i<=sfs->n; i++){
     if(avail[i]){
       p = testK(sfs, ps, args, i);
       if(args->V)
 	printTimes(ps, sfs);
-      if(p < currMinPsi){
+      if(p > currMinPsi){
 	minK = i;
 	currMinPsi = p;
       }
@@ -300,8 +297,8 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
       currMinPsi = testK(sfs, ps, args, l);
     else
       currMinPsi = DBL_MAX;
-    change = prevMinPsi - currMinPsi;
-    if(change <= args->d){
+    change = currMinPsi - prevMinPsi;
+    if(change < 2){
       if(args->V){
 	ps->psi = psi(ps, sfs);
 	printTimes(ps, sfs);
