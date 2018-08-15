@@ -92,7 +92,7 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
 void printState(int iter, gsl_multiroot_fsolver *s, int n) {
   int i;
 
-  fprintf(stderr, "iter: %d; x:", iter);
+  fprintf(stderr, "# iter: %d; x:", iter);
   for(i = 0; i < n; i++) {
     fprintf(stderr, " %e", gsl_vector_get(s->x, i));
   }
@@ -136,7 +136,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
     iter++;
     status = gsl_multiroot_fsolver_iterate(s);
     if(status) {
-      fprintf(stderr, "WARNING: The solver is stuck at iteration %ld.\nStatus of solver: ", iter);
+      fprintf(stderr, "# WARNING: The solver is stuck at iteration %ld.\n# Status of solver: ", iter);
       printState(iter, s, ps->m);
       return status;
     }
@@ -161,12 +161,12 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
 
   while(status && iniP > origP / 10e4) {
     iniP /= 2.;
-    fprintf(stderr, "Trying again with %f as initial population size.\n", iniP);
+    fprintf(stderr, "# Trying again with %f as initial population size.\n", iniP);
     status = newtonComp(sfs, ps, args, iniP);
   }
 
   if(status) {
-    fprintf(stderr, "ERROR: Solver failed, aborting computation.\n");
+    fprintf(stderr, "# ERROR: Solver failed, aborting computation.\n");
     exit(-1);
   }
 
