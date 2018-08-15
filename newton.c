@@ -92,15 +92,15 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
 void printState(int iter, gsl_multiroot_fsolver *s, int n) {
   int i;
 
-  printf("iter: %d; x:", iter);
+  fprintf(stderr, "iter: %d; x:", iter);
   for(i = 0; i < n; i++) {
-    printf(" %e", gsl_vector_get(s->x, i));
+    fprintf(stderr, " %e", gsl_vector_get(s->x, i));
   }
-  printf("; y:");
+  fprintf(stderr, "; y:");
   for(i = 0; i < n; i++) {
-    printf(" %e", gsl_vector_get(s->f, i));
+    fprintf(stderr, " %e", gsl_vector_get(s->f, i));
   }
-  printf("\n");
+  fprintf(stderr, "\n");
 }
 
 double logLik(PopSizes *ps, Sfs *sfs) {
@@ -115,17 +115,15 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   return l;
 }
 
-int newton(Sfs *sfs, PopSizes *ps, Args *args) {
+int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
   int status;
   size_t i, iter = 0;
-  double iniP;
   Rparams *p = newRparams(sfs, ps);
   gsl_multiroot_function f = {&func, ps->m, p};
   gsl_vector *x = gsl_vector_alloc(ps->m);
 
-  iniP = watterson(sfs);
   for(i = 0; i < ps->m; i++) {
     gsl_vector_set(x, i, iniP);
   }
@@ -136,14 +134,11 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   status = 0;
   do {
     iter++;
-    if(args->V) {
-      printState(iter, s, ps->m);
-    }
     status = gsl_multiroot_fsolver_iterate(s);
     if(status) {
-      printf("ERROR: The solver is stuck at iteration %ld.\nStatus of solver: ", iter);
+      fprintf(stderr, "WARNING: The solver is stuck at iteration %ld.\nStatus of solver: ", iter);
       printState(iter, s, ps->m);
-      exit(-1);
+      return status;
     }
     status = gsl_multiroot_test_residual(s->f, 1e-7);
   } while (status == GSL_CONTINUE && iter < 1000);
@@ -152,6 +147,28 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   }
   gsl_multiroot_fsolver_free(s);
   gsl_vector_free(x);
+
+  return status;
+}
+
+int newton(Sfs *sfs, PopSizes *ps, Args *args) {
+  int status;
+  double iniP, origP;
+
+  iniP = watterson(sfs);
+  origP = iniP;
+  status = newtonComp(sfs, ps, args, iniP);
+
+  while(status && iniP > origP / 10e4) {
+    iniP /= 2.;
+    fprintf(stderr, "Trying again with %f as initial population size.\n", iniP);
+    status = newtonComp(sfs, ps, args, iniP);
+  }
+
+  if(status) {
+    fprintf(stderr, "ERROR: Solver failed, aborting computation.\n");
+    exit(-1);
+  }
 
   return status;
 }

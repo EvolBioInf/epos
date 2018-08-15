@@ -81,6 +81,8 @@ void printTimes(PopSizes *ps, Sfs *sfs){
     for(;k>=ps->k[i];k--)
       t += 4. / (double)k / (double)(k-1) * ps->N[i];
     printf("%d\t%.2e\t%.2e\n", k+1, t, ps->N[i]);
+    if(k + 1 == 2)
+      break;
   }
 }
 

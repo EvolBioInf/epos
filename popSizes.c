@@ -244,7 +244,7 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
       p = testK(sfs, ps, args, i);
       if(args->V)
 	printTimes(ps, sfs);
-      if(p > currMinPsi){
+      if(p > currMinPsi + 2.){
 	minK = i;
 	currMinPsi = p;
       }
@@ -296,7 +296,7 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     if(l)
       currMinPsi = testK(sfs, ps, args, l);
     else
-      currMinPsi = DBL_MAX;
+      currMinPsi = DBL_MIN;
     change = currMinPsi - prevMinPsi;
     if(change < 2){
       if(args->V){
