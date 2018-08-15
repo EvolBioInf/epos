@@ -202,11 +202,11 @@ double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
 
   addTestK(ps, k);
   if((status = compPopSizes(sfs, ps, args)) > 0)
-    return DBL_MAX;
+    return DBL_MIN;
   if(negPopSizes(ps) && !args->n){
     if(args->V)
       fprintf(stderr,"#Negative population size\n");
-    return DBL_MAX;
+    return DBL_MIN;
   }
   return logLik(ps, sfs);
 }

@@ -26,7 +26,7 @@ Args *getArgs(int argc, char *argv[]){
   args->U = 0;
   args->s = 0;
   args->m = 0;
-  args->n = 1; /* always allow negative population sizes */
+  args->n = 0; /* always prevent negative population sizes */
   args->N = 0;
   args->c = DEFAULT_C;
   args->L = 0;
