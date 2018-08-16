@@ -15,7 +15,7 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvVUNc:u:s:l:";
+  char *optString = "nhvVUNc:u:s:l:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
@@ -52,6 +52,9 @@ Args *getArgs(int argc, char *argv[]){
     case 'p':                           /* print matrix */
       args->p = 1;
       break;
+    case 'n':                           /* allow negative population sizes */
+      args->n = 1;
+      break;
     case 'N':                           /* Newton procedure */
       args->N = 1;
       break;
@@ -63,9 +66,6 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
-      break;
-    case 'n':                           /* negative population sizes? */
-      args->n = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
@@ -113,6 +113,7 @@ void printUsage(char *version){
   printf("\t[-l NUM lambda; default: %.3g]\n",DEFAULT_L);
   printf("\t[-c NUM number of categories for cross-validation; default: %d]\n", DEFAULT_C);
   printf("\t[-s NUM seed for random number generator; default: time, file]\n");
+  printf("\t[-n allow negative population sizes]\n");
   printf("\t[-N Newton procedure; default: linear algebra]\n");
   printf("\t[-U unfolded site frequency spectrum as input]\n");
   printf("\t[-V verbose output for debugging]\n");
