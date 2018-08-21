@@ -28,7 +28,7 @@ Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
   r->g = sfs->f;
   r->u = sfs->u;
   r->l = sfs->nullCount + sfs->numPol;
-
+  r->o = sfs->nullCount;
   return r;
 }
 
@@ -78,6 +78,7 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
   double *g = ((Rparams *) params)->g;
   double u  = ((Rparams *) params)->u;
   int l     = ((Rparams *) params)->l;
+  int o     = ((Rparams *) params)->o;
   double *N = (double *)emalloc(m * sizeof(double));
   double *y = (double *)emalloc(n * sizeof(double));
   
@@ -97,7 +98,7 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
       if(yy < 0)
 	yy = 0;
       double e = expG(N, u, m, n, l, k, 0);
-      y[i] += 1. / r * (g[r-1] / eg - g[0] / e) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
+      y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
     }
   }
   for(i = 0; i < m; i++) {
@@ -125,11 +126,13 @@ double logLik(PopSizes *ps, Sfs *sfs) {
 
   l = 0.;
   x = sfs->numPol + sfs->nullCount;
-  for(int r = 0; r < ps->n; r++) {
+  for(int r = 1; r < ps->n; r++) {
     e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
     l += sfs->f[r-1] * log(e) - e;
   }
-
+  e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
+  l += sfs->nullCount * log(e) - e;
+  
   return l;
 }
 
