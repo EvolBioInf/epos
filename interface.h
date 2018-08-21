@@ -14,6 +14,7 @@ typedef struct args{
   char h;      /* help message? */
   char v;      /* version message? */
   char e;      /* error message? */
+  int E;       /* sequence length */
   char p;      /* print matrix? */
   char V;      /* verbose output? */
   char U;      /* unfolded? */

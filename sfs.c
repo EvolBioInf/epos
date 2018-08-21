@@ -133,8 +133,11 @@ Sfs *getSfs(FILE *fp, Args *args){
   /* if monomorphic sites are included in the data, compute sample-wide mutation rate */
   if(sfs->nullCount > 0)
     sfs->u *= (sfs->nullCount + sfs->numPol);
-  else
+  else{
     sfs->u = args->u;
+    sfs->nullCount = args->E - sfs->numPol;
+    sfs->f[0] = sfs->nullCount;
+  }
   if(args->U){ /* unfolded */
     sfs->n++;
     sfs->type = UNFOLDED;

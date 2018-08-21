@@ -27,12 +27,13 @@ Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
   r->k = ps->k;
   r->g = sfs->f;
   r->u = sfs->u;
+  r->l = sfs->nullCount + sfs->numPol;
 
   return r;
 }
 
-/* expG implements equation (2) */
-double expG(double *N, double u, int m, int n, int *k, int r) {
+/* expGr implements equation (2) */
+double expGr(double *N, double u, int m, int n, int l, int *k, int r) {
   int i;
   double a, b, s, x;
 
@@ -48,9 +49,24 @@ double expG(double *N, double u, int m, int n, int *k, int r) {
     b = binomial(x, r);
     s += N[i] * (a - b);
   }
-  s *= 4. * u / (double)r / binomial(n - 1, r);
+  s *= 4. * u * l / (double)r / binomial(n - 1, r);
   
   return s;
+}
+
+/* expG implements equation (1) */
+double expG(double *N, double u, int m, int n, int l, int *k, int r){
+  double s;
+  
+  if(r == 0){
+    s = 0.;
+    for(int i=1; i<n; i++){
+      s += expGr(N, u, m, n, l, k, i);
+    }
+    return (double)l - s;
+  }else{
+    return expGr(N, u, m, n, l, k, r);
+  }
 }
 
 int func(const gsl_vector *x, void *params, gsl_vector *f) {
@@ -61,7 +77,7 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
   int *k    = ((Rparams *) params)->k;
   double *g = ((Rparams *) params)->g;
   double u  = ((Rparams *) params)->u;
-
+  int l     = ((Rparams *) params)->l;
   double *N = (double *)emalloc(m * sizeof(double));
   double *y = (double *)emalloc(n * sizeof(double));
   
@@ -73,14 +89,15 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
     y[i] = 0.;
     for(r = 1; r < n; r++) {
       /* equation (3) */
-      eg = expG(N, u, m, n, k, r);
+      eg = expG(N, u, m, n, l, k, r);
       xx = n - k[i] + 1;
       if(xx < 0)
 	xx = 0;
       yy = n - k[i+1] - 1;
       if(yy < 0)
 	yy = 0;
-      y[i] += 1. / r * (g[r-1] / eg - 1) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
+      double e = expG(N, u, m, n, l, k, 0);
+      y[i] += 1. / r * (g[r-1] / eg - g[0] / e) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
     }
   }
   for(i = 0; i < m; i++) {
@@ -104,11 +121,12 @@ void printState(int iter, gsl_multiroot_fsolver *s, int n) {
 }
 
 double logLik(PopSizes *ps, Sfs *sfs) {
-  double e, l;
+  double e, l, x;
 
   l = 0.;
-  for(int r = 1; r < ps->n; r++) {
-    e = expG(ps->N, sfs->u, ps->m, ps->n, ps->k, r);
+  x = sfs->numPol + sfs->nullCount;
+  for(int r = 0; r < ps->n; r++) {
+    e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
     l += sfs->f[r-1] * log(e) - e;
   }
 
@@ -153,13 +171,12 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
 
 int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
-  double iniP, origP;
+  double iniP;
 
   iniP = watterson(sfs);
-  origP = iniP;
   status = newtonComp(sfs, ps, args, iniP);
 
-  while(status && iniP > origP / 10e4) {
+  while(status && iniP > 2) {
     iniP /= 2.;
     fprintf(stderr, "# Trying again with %f as initial population size.\n", iniP);
     status = newtonComp(sfs, ps, args, iniP);

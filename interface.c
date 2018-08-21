@@ -15,13 +15,14 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "nhvVUNc:u:s:l:";
+  char *optString = "nhvVUNc:u:s:l:E:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
   args->v = 0;
   args->V = 0;
   args->e = 0;
+  args->E = 0;
   args->b = 0;
   args->U = 0;
   args->s = 0;
@@ -48,6 +49,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'c':                           /* number of categories for cross-validation */
       args->c = atoi(optarg);
+      break;
+    case 'E':                           /* sequence length */
+      args->E = atoi(optarg);
       break;
     case 'p':                           /* print matrix */
       args->p = 1;
@@ -100,6 +104,10 @@ Args *getArgs(int argc, char *argv[]){
   args->numInputFiles = argc - optind;
   if(args->c == 1)   /* No cross-validation */
     args->d = CHI_THRESHOLD;
+  if(args->E == 0){
+    printf("ERROR[epos]: Please enter sequence length using the -E option\n");
+    args->e = 1;
+  }
   return args;
 }
 
@@ -107,12 +115,13 @@ Args *getArgs(int argc, char *argv[]){
 void printUsage(char *version){
   printf("Usage: %s [options] [inputFiles]\n",progname());
   printf("Estimate population size from site frequency data\n");
-  printf("Example: epos sfs.txt\n");
+  printf("Example: epos -E len [options] sfs.txt\n");
   printf("Options:\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g; estimated from SFS if zero-class present]\n", DEFAULT_U);
   printf("\t[-l NUM lambda; default: %.3g]\n",DEFAULT_L);
   printf("\t[-c NUM number of categories for cross-validation; default: %d]\n", DEFAULT_C);
   printf("\t[-s NUM seed for random number generator; default: time, file]\n");
+  printf("\t[-E NUM sequence length]\n");
   printf("\t[-n allow negative population sizes]\n");
   printf("\t[-N Newton procedure; default: linear algebra]\n");
   printf("\t[-U unfolded site frequency spectrum as input]\n");
