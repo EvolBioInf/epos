@@ -56,14 +56,17 @@ double expGr(double *N, double u, int m, int n, int l, int *k, int r) {
 
 /* expG implements equation (1) */
 double expG(double *N, double u, int m, int n, int l, int *k, int r){
-  double s;
+  double x, s;
   
   if(r == 0){
     s = 0.;
     for(int i=1; i<n; i++){
-      s += expGr(N, u, m, n, l, k, i);
+      x = expGr(N, u, m, n, l, k, i);
+      s += x;
     }
-    return (double)l - s;
+    x = (double)l - s;
+    printf("exp. of 0-class: %e\n", x);
+    return x;
   }else{
     return expGr(N, u, m, n, l, k, r);
   }
@@ -131,6 +134,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
     l += sfs->f[r-1] * log(e) - e;
   }
   e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
+  printf("g0: %e; e0: %e\n", sfs->nullCount, e);
   l += sfs->nullCount * log(e) - e;
   
   return l;
