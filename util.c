@@ -89,11 +89,12 @@ void printTimes(PopSizes *ps, Sfs *sfs){
 /* watterson: Using Watterson's estimator of N */
 double watterson(Sfs *sfs){
   int i;
-  double s;
+  double s, l;
 
   s = 0.;
   for(i=1; i<sfs->n; i++)
     s += 1./i;
+  l = sfs->nullCount + sfs->numPol;
 
-  return sfs->numPol / s / 4. / sfs->u;
+  return sfs->numPol / s / 4. / sfs->u / l;
 }
