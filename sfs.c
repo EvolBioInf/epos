@@ -136,7 +136,6 @@ Sfs *getSfs(FILE *fp, Args *args){
   else{
     sfs->u = args->u;
     sfs->nullCount = args->E - sfs->numPol;
-    sfs->f[0] = sfs->nullCount;
   }
   if(args->U){ /* unfolded */
     sfs->n++;
