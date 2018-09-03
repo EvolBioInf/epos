@@ -28,6 +28,7 @@ Sfs *newSfs(int n, int type){
   sfs->numPol = 0.;
   sfs->u = 0.;
   sfs->l = 0.;
+  sfs->iniP = 0;
 
   return sfs;
 }
@@ -101,10 +102,12 @@ Sfs *getSfs(FILE *fp, Args *args){
   int i, type;
   double j;
 
-  if(args->U)
+  if(args->U){
     type = UNFOLDED;
-  else
+    printf("sfs.getSfs - UNFOLDED\n");
+  }else{
     type = FOLDED_EVEN;
+  }
   sfs = newSfs(0, type);
   while((line = tabGetLine(fp)) != NULL){
     if(tabNfield() >= 2){

@@ -50,6 +50,7 @@ double expGr(double *N, double u, int m, int n, int l, int *k, int r) {
     s += N[i] * (a - b);
   }
   s *= 4. * u * l / (double)r / binomial(n - 1, r);
+  /* s *= 4. * u / (double)r / binomial(n - 1, r); */
   
   return s;
 }
@@ -65,7 +66,6 @@ double expG(double *N, double u, int m, int n, int l, int *k, int r){
       s += x;
     }
     x = (double)l - s;
-    printf("exp. of 0-class: %e\n", x);
     return x;
   }else{
     return expGr(N, u, m, n, l, k, r);
@@ -134,13 +134,12 @@ double logLik(PopSizes *ps, Sfs *sfs) {
     l += sfs->f[r-1] * log(e) - e;
   }
   e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
-  printf("g0: %e; e0: %e\n", sfs->nullCount, e);
   l += sfs->nullCount * log(e) - e;
   
   return l;
 }
 
-int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
+int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
   int status;
@@ -148,6 +147,11 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
   Rparams *p = newRparams(sfs, ps);
   gsl_multiroot_function f = {&func, ps->m, p};
   gsl_vector *x = gsl_vector_alloc(ps->m);
+  double iniP;
+
+  iniP = sfs->iniP;
+
+  printf("iniP: %e\n", iniP);
 
   for(i = 0; i < ps->m; i++) {
     gsl_vector_set(x, i, iniP);
@@ -178,15 +182,15 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args, double iniP) {
 
 int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
-  double iniP;
 
-  iniP = watterson(sfs);
-  status = newtonComp(sfs, ps, args, iniP);
+  if(sfs->iniP == 0)
+    sfs->iniP = watterson(sfs);
+  status = newtonComp(sfs, ps, args);
 
-  while(status && iniP > 2) {
-    iniP /= 2.;
-    fprintf(stderr, "# Trying again with %f as initial population size.\n", iniP);
-    status = newtonComp(sfs, ps, args, iniP);
+  while(status && sfs->iniP > 2) {
+    sfs->iniP /= 2.;
+    fprintf(stdout, "# Trying again with %f as initial population size.\n", sfs->iniP);
+    status = newtonComp(sfs, ps, args);
   }
 
   if(status) {

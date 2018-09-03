@@ -21,6 +21,7 @@ typedef struct sfs{
   double nullCount; /* number of unmutated sites */
   double u;         /* mutation rate */
   double l;         /* lambda */
+  double iniP;      /* initial population size */
   short type;       /* type of site frequency spectrum */
   char isFolded;
 } Sfs;
