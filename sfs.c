@@ -104,7 +104,6 @@ Sfs *getSfs(FILE *fp, Args *args){
 
   if(args->U){
     type = UNFOLDED;
-    printf("sfs.getSfs - UNFOLDED\n");
   }else{
     type = FOLDED_EVEN;
   }
