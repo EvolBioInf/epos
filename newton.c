@@ -151,8 +151,6 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
 
   iniP = sfs->iniP;
 
-  printf("iniP: %e\n", iniP);
-
   for(i = 0; i < ps->m; i++) {
     gsl_vector_set(x, i, iniP);
   }
