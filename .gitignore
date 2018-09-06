@@ -1,6 +1,5 @@
 *.o
 *.val
-*.sh
 epos
 *.aux
 *.log
