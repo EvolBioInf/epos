@@ -72,9 +72,61 @@ double expG(double *N, double u, int m, int n, int l, int *k, int r){
   }
 }
 
-int func(const gsl_vector *x, void *params, gsl_vector *f) {
+double expF(double *N, double u, int m, int n, int l, int *k, int r) {
+  double f;
+
+  if(r == 0)
+    f = expG(N, u, m, n, l, k, r);
+  else
+    f = expG(N, u, m, n, l, k, r) + expG(N, u, m, n, l, k, n-r);
+  
+  return f;
+}
+
+int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   int i, r;
-  double eg, xx, yy;
+  double eg, xx, yy, bb;
+  int n     = ((Rparams *) params)->n;
+  int m     = ((Rparams *) params)->m;
+  int *k    = ((Rparams *) params)->k;
+  double *g = ((Rparams *) params)->g;
+  double u  = ((Rparams *) params)->u;
+  int l     = ((Rparams *) params)->l;
+  int o     = ((Rparams *) params)->o;
+  double *N = (double *)emalloc(m * sizeof(double));
+  double *y = (double *)emalloc(n * sizeof(double));
+  
+  for(i = 0; i < m; i++) {
+    N[i] = gsl_vector_get(x, i);
+  }
+  double e = expF(N, u, m, n, l, k, 0);
+  for(i = 0; i < m; i++) {
+    y[i] = 0.;
+    xx = n - k[i] + 1;
+    if(xx < 0)
+      xx = 0;
+    yy = n - k[i+1] - 1;
+    if(yy < 0)
+      yy = 0;
+    for(r = 1; r < n/2; r++) {
+      eg = expF(N, u, m, n, l, k, r);
+      bb = binomial(xx, r) - binomial(yy, r) + binomial(xx, n-r) - binomial(yy, n-r);
+      y[i] += (g[r-1] / eg - (double)o / e) / (double)r * bb / binomial(n - 1, r);
+    }
+    eg = expF(N, u, m, n, l, k, n/2);
+    bb = binomial(xx, n/2) - 2. * binomial(yy, n/2);
+    y[i] += 2./n * (g[n/2] / eg - (double)o / e) * bb / binomial(n-1, n/2);
+  }
+  for(i = 0; i < m; i++) {
+    gsl_vector_set(f, i, y[i]);
+  }
+
+  return GSL_SUCCESS;
+}
+
+int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
+  int i, r;
+  double eg, xx, yy, bb;
   int n     = ((Rparams *) params)->n;
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
@@ -91,17 +143,18 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
 
   for(i = 0; i < m; i++) {
     y[i] = 0.;
+    double e = expG(N, u, m, n, l, k, 0);
+    xx = n - k[i] + 1;
+    if(xx < 0)
+      xx = 0;
+    yy = n - k[i+1] - 1;
+    if(yy < 0)
+      yy = 0;
     for(r = 1; r < n; r++) {
       /* equation (3) */
       eg = expG(N, u, m, n, l, k, r);
-      xx = n - k[i] + 1;
-      if(xx < 0)
-	xx = 0;
-      yy = n - k[i+1] - 1;
-      if(yy < 0)
-	yy = 0;
-      double e = expG(N, u, m, n, l, k, 0);
-      y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * (binomial(xx, r) - binomial(yy, r)) / binomial(n - 1, r);
+      bb = binomial(xx, r) - binomial(yy, r);
+      y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * bb / binomial(n - 1, r);
     }
   }
   for(i = 0; i < m; i++) {
@@ -110,6 +163,7 @@ int func(const gsl_vector *x, void *params, gsl_vector *f) {
 
   return GSL_SUCCESS;
 }
+
 void printState(int iter, gsl_multiroot_fsolver *s, int n) {
   int i;
 
@@ -126,14 +180,29 @@ void printState(int iter, gsl_multiroot_fsolver *s, int n) {
 
 double logLik(PopSizes *ps, Sfs *sfs) {
   double e, l, x;
+  int max;
 
+  if(sfs->type == UNFOLDED)
+    max = ps->n;
+  else if(sfs->type == FOLDED_EVEN)
+    max = ps->n / 2;
+  else {
+    fprintf(stderr, "ERROR[epos]: Can only deal with unfolded or folded-even site frequency spectra.\n");
+    exit(-1);
+  }
   l = 0.;
   x = sfs->numPol + sfs->nullCount;
-  for(int r = 1; r < ps->n; r++) {
-    e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
+  for(int r = 1; r < max; r++) {
+    if(sfs->type == UNFOLDED)
+      e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
+    else
+      e = expF(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
     l += sfs->f[r-1] * log(e) - e;
   }
-  e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
+  if(sfs->type == UNFOLDED)
+    e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
+  else
+    e = expF(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
   l += sfs->nullCount * log(e) - e;
   
   return l;
@@ -145,9 +214,20 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
   size_t i, iter = 0;
   Rparams *p = newRparams(sfs, ps);
-  gsl_multiroot_function f = {&func, ps->m, p};
+  gsl_multiroot_function f; 
   gsl_vector *x = gsl_vector_alloc(ps->m);
   double iniP;
+
+  if(sfs->type == UNFOLDED)
+    f.f = &unfolded;
+  else if(sfs->type == FOLDED_EVEN)
+    f.f = &folded;
+  else {
+    fprintf(stderr, "ERROR[epos]: Can only deal with unfolded and folded-even site frequency spectra.\n");
+    exit(-1);
+  }
+  f.n = ps->m;
+  f.params = p;
 
   iniP = sfs->iniP;
 
