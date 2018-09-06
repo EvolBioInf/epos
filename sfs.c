@@ -7,7 +7,6 @@
 #include "sfs.h"
 #include "eprintf.h"
 #include "tab.h"
-#include "gsl_rng.h"
 #include "sfs.h"
 
 Sfs *newSfs(int n, int type){
@@ -20,73 +19,12 @@ Sfs *newSfs(int n, int type){
   for(i=0; i<n; i++)
     sfs->f[i] = 0;
   sfs->type = type;
-  if(type == UNFOLDED)
-    sfs->isFolded = 0;
-  else
-    sfs->isFolded = 1;
   sfs->nullCount = 0.;
   sfs->numPol = 0.;
   sfs->u = 0.;
-  sfs->l = 0.;
   sfs->iniP = 0;
 
   return sfs;
-}
-
-Sfs *bootstrapSfs(Sfs *sfs, gsl_rng *rand, Args *args){
-  int *arr;
-  int i, j, n, nc, x, y, type;
-  Sfs *bootSfs;
-  
-  if(args->U)
-    type = UNFOLDED;
-  else
-    type = FOLDED_EVEN;
-  bootSfs = newSfs(sfs->n, type);
-  bootSfs->u = args->u * (sfs->numPol + sfs->nullCount);
-  arr = (int *)emalloc((sfs->numPol + sfs->nullCount)*sizeof(int));
-  n = sfs->n;
-  if(sfs->isFolded)
-    n /= 2;
-  x = 0;
-  for(i=0;i<n;i++)
-    for(j=0;j<sfs->f[i];j++)
-      x++;
-  nc = sfs->nullCount;
-  for(i=0;i<nc;i++)
-    arr[i] = 0;
-  x = nc;
-  for(i=0;i<n;i++)
-    for(j=0;j<sfs->f[i];j++)
-      arr[x++] = i+1;
-  if(x != sfs->numPol + sfs->nullCount){
-    printf("ERROR in bootstrapping; sfs->numPol: %d; sfs->nullCount: %d; x: %d; expected(x): %d\n", (int)sfs->numPol, (int)sfs->nullCount, x, (int)(sfs->numPol+sfs->nullCount));
-    exit(-1);
-  }
-  for(i=0; i<x; i++){
-    y = gsl_rng_uniform(rand) * x;
-    j = arr[y];
-    if(j){
-      bootSfs->f[j-1]++;
-      bootSfs->numPol++;
-    }else
-      bootSfs->nullCount++;
-  }
-  free(arr);
-
-  return bootSfs;
-}
-
-/* shuffleArr: Shuffle the entries in array arr. */
-void shuffleArr(int *arr, int n, gsl_rng *rand){
-  int r, tmp, i;
-    
-  for(i=n-1; i>0; i--){
-    r = (int)(gsl_rng_uniform(rand) * (i+1));
-    tmp = arr[r];
-    arr[r] = arr[i];
-    arr[i] = tmp;
-  }
 }
 
 void freeSfs(Sfs *sfs){
@@ -133,11 +71,12 @@ Sfs *getSfs(FILE *fp, Args *args){
   tabFree();
   sfs->u = args->u;
   /* if monomorphic sites are included in the data, compute sample-wide mutation rate */
-  if(sfs->nullCount > 0)
-    sfs->u *= (sfs->nullCount + sfs->numPol);
-  else{
-    sfs->u = args->u;
-    sfs->nullCount = args->E - sfs->numPol;
+  if(sfs->nullCount == 0){
+    if(args->l == 0) {
+      fprintf(stderr, "ERROR[epos]: Please include either the zero-class in the SFS or enter the sequence length via the -l option.\n");
+      exit(-1);
+    }
+    sfs->nullCount = args->l - sfs->numPol;
   }
   if(args->U){ /* unfolded */
     sfs->n++;
@@ -146,134 +85,6 @@ Sfs *getSfs(FILE *fp, Args *args){
     sfs->n *= 2;
     sfs->type = FOLDED_EVEN;
   }
-  /* compute lambda as function of mutation rate? */
-  if(args->l < 0)
-    sfs->l = args->f*sfs->u;
-  else
-    sfs->l = args->l;
 
   return sfs;
-}
-
-void printSfs(Sfs *sfs){
-  int i, n;
-
-  printf("****** SFS ******\n");
-  n = sfs->n;
-  if(sfs->isFolded)
-    n /= 2;
-  printf("Polymorphic sites: %d\n", (int)sfs->numPol);
-  printf("Monomorphic sites: %d\n", (int)sfs->nullCount);
-  printf("n: %d\n", sfs->n);
-  printf("u: %.3f\n", sfs->u);
-  printf("l: %.3f\n", sfs->l);
-    if(sfs->isFolded)
-    printf("isFolded: TRUE\n");
-  else
-    printf("isFolded: FALSE\n");
-  if(sfs->type == UNFOLDED)
-    printf("type: UNFOLDED\n");
-  else if(sfs->type == FOLDED_EVEN)
-    printf("type: FOLDED_EVEN\n");
-  else if(sfs->type == FOLDED_ODD)
-    printf("type: FOLDED_ODD\n");
-  else
-    printf("type: UNKNOWN\n");
-  for(i=0; i<n; i++)
-    printf("%d\t%.1f\n", i+1, sfs->f[i]);
-  printf("*****************\n");
-}
-
-/* splitSfs: Split on site frequency spectrum into args->c site frequency spectra. */
-Sfs **splitSfs(Sfs *sfs, gsl_rng *rand, Args *args){
-  int *arr;
-  int i, j, nc, x, l, c, n;
-  Sfs **sfsArr;
-
-  arr = (int *)emalloc((sfs->numPol + sfs->nullCount)*sizeof(int));
-  n = sfs->n;
-  if(sfs->isFolded)
-    n /= 2;
-  else
-    n--;
-  nc = sfs->nullCount;
-  for(i=0;i<nc;i++)
-    arr[i] = 0;
-  x = nc;
-  for(i=0;i<n;i++)
-    for(j=0;j<sfs->f[i];j++)
-      arr[x++] = i+1;
-  if(x != sfs->numPol + sfs->nullCount){
-    printf("ERROR in splitSfs; sfs->numPol: %d; sfs->nullCount: %d; x: %d; expected(x): %d\n", (int)sfs->numPol, (int)sfs->nullCount, x, (int)(sfs->numPol+sfs->nullCount));
-    exit(-1);
-  }
-  shuffleArr(arr, x, rand);
-  l = x / args->c;
-  c = 0;
-  sfsArr = (Sfs **)emalloc(args->c*sizeof(Sfs *));
-  for(i=0;i<args->c;i++){
-    sfsArr[i] = newSfs(sfs->n, sfs->type);
-    sfsArr[i]->u = sfs->u;
-    sfsArr[i]->l = sfs->l;
-    for(j=0; j<l; j++){
-      if(arr[c]){
-	sfsArr[i]->numPol++;
-	sfsArr[i]->f[arr[c]-1]++;
-      }else
-	sfsArr[i]->nullCount++;
-      c++;
-    }
-  }
-  free(arr);
-  return sfsArr;
-}
-
-/* resetSfs: Set the frequencies in sfs to zero. */
-void resetSfs(Sfs *sfs){
-  int i, n;
-  n = sfs->n;
-  if(sfs->type == FOLDED_EVEN)
-    n /= 2;
-  for(i=0; i<n; i++)
-    sfs->f[i] = 0;
-  sfs->numPol = 0;
-  sfs->nullCount = 0;
-}
-
-/* addSfs: Add contents of sfs2 to sfs1. */
-void addSfs(Sfs *sfs1, Sfs *sfs2){
-  int i, n;
-
-  n = sfs1->n;
-  if(sfs1->type == FOLDED_EVEN)
-    n /= 2;
-  sfs1->numPol += sfs2->numPol;
-  sfs1->nullCount += sfs2->nullCount;
-
-  for(i=0; i<n; i++)
-    sfs1->f[i] += sfs2->f[i];
-}
-
-/* normalizeSfs: Normalize SFS such that entries sum to 1. */
-void normalizeSfs(Sfs *sfs){
-  int i, n;
-
-  n = sfs->n;
-  if(sfs->type == FOLDED_EVEN)
-    n /= 2;
-
-  for(i=0; i<n; i++)
-    sfs->f[i] /= sfs->numPol;
-}
-
-/* denormalizeSfs: Reverse normalization. */
-void denormalizeSfs(Sfs *sfs){
-  int i, n;
-
-  n = sfs->n;
-  if(sfs->type == FOLDED_EVEN)
-    n /= 2;
-
-  for(i=0; i<n; i++)
-    sfs->f[i] *= sfs->numPol;
 }

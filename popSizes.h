@@ -19,7 +19,7 @@ typedef struct popSizes{
   int n;
 }PopSizes;
 
-PopSizes *getPopSizes(Sfs *sfs, Args *args);
+PopSizes *getPopSizes(Sfs *sfs);
 PopSizes *newPopSizes(Sfs *sfs);
 void addTestK(PopSizes *ps, int k);
 void addK(PopSizes *ps, int k);

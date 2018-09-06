@@ -1,4 +1,4 @@
-./epos -E 10000000 -u 1.2e-8 -U -N data/testNewtonU.dat > tmp.out
+./epos -l 10000000 -u 1.2e-8 -U data/testNewtonU.dat > tmp.out
 DIFF=$(diff tmp.out data/testNewtonU.out)
 if [ "$DIFF" == "" ] 
 then
@@ -8,7 +8,7 @@ else
 fi
 rm tmp.out
 
-./epos -E 10000000 -u 1.2e-8 -N data/testNewtonF.dat > tmp.out
+./epos -l 10000000 -u 1.2e-8 data/testNewtonF.dat > tmp.out
 DIFF=$(diff tmp.out data/testNewtonF.out)
 if [ "$DIFF" == "" ] 
 then

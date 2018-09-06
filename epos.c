@@ -11,35 +11,18 @@
 #include "sfs.h"
 #include "popSizes.h"
 #include "util.h"
-#include "xval.h"
 
 void scanFile(FILE *fp, Args *args, char *fileName){
-  Sfs *sfs, *bSfs;
+  Sfs *sfs;
   PopSizes *ps;
-  int i;
-  gsl_rng *rand;
 
   ps = NULL;
   sfs = getSfs(fp, args);
   printSfsStats(sfs);
-  rand =  ini_gsl_rng(args);
-  ps = getPopSizes(sfs, args);
+  ps = getPopSizes(sfs);
   printTimes(ps, sfs);
-  bSfs = NULL;
-  for(i=0; i<args->b; i++){
-    printf("Entered bootstrap\n");
-    freePopSizes(ps);
-    freeSfs(bSfs);
-    bSfs = bootstrapSfs(sfs, rand, args);
-    printSfsStats(bSfs);
-    ps = getPopSizes(bSfs, args);
-    printf("#InputFile:\tbootstrapped_%s\n", fileName);
-    printTimes(ps, bSfs);
-  }
   freeSfs(sfs);
-  freeSfs(bSfs);
   freePopSizes(ps);
-  free_gsl_rng(rand, args);
 }
 
 int main(int argc, char *argv[]){
@@ -48,7 +31,7 @@ int main(int argc, char *argv[]){
   Args *args;
   FILE *fp;
 
-  version = "0.56";
+  version = "1.0";
   setprogname2("epos");
   args = getArgs(argc, argv);
   if(args->v)

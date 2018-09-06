@@ -15,76 +15,28 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "nhvVUNc:u:s:l:E:";
+  char *optString = "hvUu:l:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
   args->v = 0;
-  args->V = 0;
   args->e = 0;
-  args->E = 0;
-  args->b = 0;
   args->U = 0;
-  args->s = 0;
-  args->m = 0;
-  args->n = 0; /* always allow negative population sizes */
-  args->N = 0;
-  args->c = DEFAULT_C;
-  args->L = 0;
-  args->f = DEFAULT_F;
-  args->d = DEFAULT_D;
   args->u = DEFAULT_U;
-  args->p = 0;
-  args->l = DEFAULT_L;
+  args->l = 0;
 
   c = getopt(argc, argv, optString);
   while(c != -1){
     switch(c){
       break;
-    case 's':
-      args->s = atoi(optarg);           /* seed for random number generator */
-      break;
-    case 'f':                           /* factor for scaling lambda */
-      args->f = atof(optarg);
-      break;
-    case 'c':                           /* number of categories for cross-validation */
-      args->c = atoi(optarg);
-      break;
-    case 'E':                           /* sequence length */
-      args->E = atoi(optarg);
-      break;
-    case 'p':                           /* print matrix */
-      args->p = 1;
-      break;
-    case 'n':                           /* allow negative population sizes */
-      args->n = 1;
-      break;
-    case 'N':                           /* Newton procedure */
-      args->N = 1;
-      break;
-    case 'L':                           /* search for optimal lambda */
-      args->L = 1;
-      break;
-    case 'V':                           /* verbose */
-      args->V = 1;
+    case 'l':                           /* sequence length */
+      args->l = atoi(optarg);
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
-      break;
-    case 'l':
-      args->l = atof(optarg);           /* lambda */
-      break;
-    case 'b':
-      args->b = atoi(optarg);           /* number of bootstrap replicates */
-      break;
-    case 'm':                           /* maximum number of population sizes */
-      args->m = atoi(optarg); 
-      break;
-    case 'd':
-      args->d = atof(optarg);           /* minimal decrease in objective function */
       break;
     case '?':                           /* fall-through is intentional */
     case 'h':                           /* print help */
@@ -102,12 +54,6 @@ Args *getArgs(int argc, char *argv[]){
   }
   args->inputFiles = argv + optind;
   args->numInputFiles = argc - optind;
-  if(args->c == 1)   /* No cross-validation */
-    args->d = CHI_THRESHOLD;
-  if(args->E == 0){
-    printf("ERROR[epos]: Please enter sequence length using the -E option\n");
-    args->e = 1;
-  }
   return args;
 }
 
@@ -115,17 +61,12 @@ Args *getArgs(int argc, char *argv[]){
 void printUsage(char *version){
   printf("Usage: %s [options] [inputFiles]\n",progname());
   printf("Estimate population size from site frequency data\n");
-  printf("Example: epos -E len [options] sfs.txt\n");
+  printf("Usage: ./epos [options] sfs.txt\n");
+  printf("Example: ./epos -l 10000000 -u 1.2e-8 data/testNewtonF.dat\n");
   printf("Options:\n");
+  printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g; estimated from SFS if zero-class present]\n", DEFAULT_U);
-  printf("\t[-l NUM lambda; default: %.3g]\n",DEFAULT_L);
-  printf("\t[-c NUM number of categories for cross-validation; default: %d]\n", DEFAULT_C);
-  printf("\t[-s NUM seed for random number generator; default: time, file]\n");
-  printf("\t[-E NUM sequence length]\n");
-  printf("\t[-n allow negative population sizes]\n");
-  printf("\t[-N Newton procedure; default: linear algebra]\n");
-  printf("\t[-U unfolded site frequency spectrum as input]\n");
-  printf("\t[-V verbose output for debugging]\n");
+  printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");
   exit(0);

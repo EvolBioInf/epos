@@ -100,6 +100,7 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
     N[i] = gsl_vector_get(x, i);
   }
   double e = expF(N, u, m, n, l, k, 0);
+  /* equation (4b) */
   for(i = 0; i < m; i++) {
     y[i] = 0.;
     xx = n - k[i] + 1;
@@ -140,7 +141,7 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   for(i = 0; i < m; i++) {
     N[i] = gsl_vector_get(x, i);
   }
-
+  /* equation (3) */
   for(i = 0; i < m; i++) {
     y[i] = 0.;
     double e = expG(N, u, m, n, l, k, 0);
@@ -151,7 +152,6 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
     if(yy < 0)
       yy = 0;
     for(r = 1; r < n; r++) {
-      /* equation (3) */
       eg = expG(N, u, m, n, l, k, r);
       bb = binomial(xx, r) - binomial(yy, r);
       y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * bb / binomial(n - 1, r);
@@ -183,7 +183,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   int max;
 
   if(sfs->type == UNFOLDED)
-    max = ps->n;
+    max = ps->n - 1;
   else if(sfs->type == FOLDED_EVEN)
     max = ps->n / 2;
   else {
@@ -208,7 +208,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   return l;
 }
 
-int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
+int newtonComp(Sfs *sfs, PopSizes *ps) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
   int status;
@@ -258,17 +258,17 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   return status;
 }
 
-int newton(Sfs *sfs, PopSizes *ps, Args *args) {
+int newton(Sfs *sfs, PopSizes *ps) {
   int status;
 
   if(sfs->iniP == 0)
     sfs->iniP = watterson(sfs);
-  status = newtonComp(sfs, ps, args);
+  status = newtonComp(sfs, ps);
 
   while(status && sfs->iniP > 2) {
     sfs->iniP /= 2.;
     fprintf(stdout, "# Trying again with %f as initial population size.\n", sfs->iniP);
-    status = newtonComp(sfs, ps, args);
+    status = newtonComp(sfs, ps);
   }
 
   if(status) {

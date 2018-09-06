@@ -7,8 +7,6 @@
 #include <omp.h>
 #include "eprintf.h"
 #include "popSizes.h"
-#include "unfolded.h"
-#include "foldedE.h"
 #include "printMatrix.h"
 #include "util.h"
 #include "newton.h"
@@ -82,132 +80,23 @@ void restoreK(PopSizes *ps){
   ps->m--;
 }
 
-double chiSquared(PopSizes *ps, Sfs *sfs){
-  if(sfs->type == FOLDED_EVEN)
-    return foldedEchiSquared(ps, sfs);
-  else{
-    fprintf(stderr,"chiSquared only implemented for folded site frequency spectra with even sample size.\n");
-    exit(-1);
-  }
-}
-
 double psi(PopSizes *ps, Sfs *sfs){
-  if(sfs->type == UNFOLDED){
-    /* return unfoldedPsi(ps, sfs); */
-    return logLik(ps, sfs);
-  }
-  else if(sfs->type == FOLDED_EVEN)
-    return foldedEpsi(ps, sfs);
-  else if(sfs->type == FOLDED_ODD){
-    fprintf(stderr, "ERROR[psi]: FoldedOdd not implemented yet.\n");
-    exit(-1);
-  }else{
-    fprintf(stderr, "ERROR[psi]: Requesting SFS-type other than unfolded|foldedOdd|foldedEven.\n");
-    exit(-1);
-  }
+  return logLik(ps, sfs);
 }
 
-gsl_vector *getResVect(Sfs *sfs, PopSizes *ps){
-  if(sfs->type == UNFOLDED)
-    return unfoldedGetResVect(sfs, ps);
-  else if(sfs->type == FOLDED_EVEN)
-    return foldedEgetResVect(sfs, ps);
-  else if(sfs->type == FOLDED_ODD){
-    fprintf(stderr, "ERROR[getResVect]: FoldedOdd not implemented yet.\n");
-    exit(-1);
-  }else{
-    fprintf(stderr, "ERROR[getResVect]: Requesting SFS-type other than unfolded|foldedOdd|foldedEven.\n");
-    exit(-1);
-  }
+int compPopSizes(Sfs *sfs, PopSizes *ps) {
+  return newton(sfs, ps);
 }
 
-gsl_matrix *getCoeffMat(Sfs *sfs, PopSizes *ps, Args *args){
-  if(sfs->type == UNFOLDED)
-    return unfoldedGetCoeffMat(sfs, ps, args);
-  else if(sfs->type == FOLDED_EVEN)
-    return foldedEgetCoeffMat(sfs, ps, args);
-  else if(sfs->type == FOLDED_ODD){
-    fprintf(stderr, "ERROR[getCoeffMat]: FoldedOdd not implemented yet.\n");
-    exit(-1);
-  }else{
-    fprintf(stderr, "ERROR[getCoeffMat]: Requesting SFS-type other than unfolded|foldedOdd|foldedEven.\n");
-    exit(-1);
-  }
-}
-
-void freeGsl(gsl_matrix *A, gsl_matrix *LU, gsl_vector *b, gsl_permutation *p, gsl_vector *x, gsl_vector *residual){
-  gsl_matrix_free(A);
-  gsl_matrix_free(LU);
-  gsl_vector_free(b);
-  gsl_permutation_free(p);
-  gsl_vector_free(x);
-  gsl_vector_free(residual);
-}
-
-int linAlg(Sfs *sfs, PopSizes *ps, Args *args){
-  int i, s, status;
-  gsl_matrix *LU, *A;
-  gsl_vector *b;
-
-
-  gsl_vector *residual = gsl_vector_alloc(ps->m);
-  gsl_vector *x = gsl_vector_alloc(ps->m);
-  gsl_permutation *p = gsl_permutation_alloc(ps->m);
-
-  A = gsl_matrix_alloc(ps->m, ps->m);
-  b = getResVect(sfs, ps);
-  LU = getCoeffMat(sfs, ps, args);
-  if(args->p)
-    printMatrix(LU, b);
-  gsl_matrix_memcpy(A, LU);
-  gsl_set_error_handler_off();
-  status = gsl_linalg_LU_decomp(LU, p, &s);
-  if(status){
-    if(args->V)
-      printf("#Error1 in linear algebra; returning maximal value for Psi\n");
-    freeGsl(A, LU, b, p, x, residual);
-    return status;
-  }
-  status = gsl_linalg_LU_solve(LU, p, b, x);
-  if(status){
-    if(args->V)
-      printf("#Error2 in linear algebra; returning maximal value for Psi.\n");
-    freeGsl(A, LU, b, p, x, residual);
-    return status;
-  }
-  status = gsl_linalg_LU_refine(A, LU, p, b, x, residual);
-  if(status){
-    if(args->V)
-      printf("#Error3 in linear algebra; returning maximal value for Psi\n");
-    freeGsl(A, LU, b, p, x, residual);
-    return status;
-  }
-  for(i=0; i<ps->m; i++)
-    ps->N[i] = x->data[i];
-  /* gsl_set_error_handler(NULL); */
-  freeGsl(A, LU, b, p, x, residual);
-  return 0;
-}
-
-int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args) {
-  if(args->N) {
-    return newton(sfs, ps, args);
-  } else {
-    return linAlg(sfs, ps, args);
-  }
-}
-
-double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
+double testK(Sfs *sfs, PopSizes *ps, int k){
   int status;
 
   addTestK(ps, k);
-  if((status = compPopSizes(sfs, ps, args)) > 0)
+  if((status = compPopSizes(sfs, ps)) > 0)
     return DBL_MIN;
-  if(negPopSizes(ps) && !args->n){
-    if(args->V)
-      fprintf(stderr,"#Negative population size\n");
+  if(negPopSizes(ps))
     return DBL_MIN;
-  }
+
   return logLik(ps, sfs);
 }
 
@@ -233,7 +122,7 @@ PopSizes *copyPopSizes(PopSizes *ps){
   return cps;
 }
 
-int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
+int getNextLevel(Sfs *sfs, PopSizes *ps, int *avail){
   double p, currMinPsi;
   int i, minK;
 
@@ -241,10 +130,8 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
   minK = 0;
   for(i=3; i<=sfs->n; i++){
     if(avail[i]){
-      p = testK(sfs, ps, args, i);
-      if(args->V)
-	printTimes(ps, sfs);
-      if(p > currMinPsi + 2.){
+      p = testK(sfs, ps, i);
+      if(p > currMinPsi){
 	minK = i;
 	currMinPsi = p;
       }
@@ -255,7 +142,7 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
   return minK;
 }
 
-PopSizes *getPopSizes(Sfs *sfs, Args *args){
+PopSizes *getPopSizes(Sfs *sfs){
   int i, l, n, minK, *avail;
   double prevMinPsi, currMinPsi, change;
   PopSizes *ps;
@@ -265,21 +152,11 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
   ps->n = sfs->n;
   /* add first entry, single pop size for entire coalescent */
   minK = 2;
-  if(!args->m) {
-    args->m = n-1;
-  }
-  testK(sfs, ps, args, minK);
+  testK(sfs, ps, minK);
   addK(ps, minK);
-  compPopSizes(sfs, ps, args);
+  compPopSizes(sfs, ps);
   ps->psi = psi(ps, sfs);
-  if(args->m == 1) {
-    return ps;
-  }
   prevMinPsi = ps->psi;
-  if(args->V){
-    printf("#Watterson: %.2e\n", watterson(sfs));
-    printTimes(ps, sfs);
-  }
   /* find remaining entries */
   /* keep track of which entries are still available */
   avail = (int *)emalloc((n+2)*sizeof(int));
@@ -287,30 +164,20 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     avail[i] = 1;
   /* iterate over the remaining number of possible population sizes */
   for(i=3; i<=n; i++){
-    if(ps->m >= args->m){
-      ps->psi = prevMinPsi;
-      free(avail);
-      return ps;
-    }
-    l = getNextLevel(sfs, ps, args, avail);
+    l = getNextLevel(sfs, ps, avail);
     if(l)
-      currMinPsi = testK(sfs, ps, args, l);
+      currMinPsi = testK(sfs, ps, l);
     else
       currMinPsi = DBL_MIN;
     change = currMinPsi - prevMinPsi;
     if(change < 2){
-      if(args->V){
-	ps->psi = psi(ps, sfs);
-	printTimes(ps, sfs);
-	printf("#Reverting to previous configuration\n");
-      }
       restoreK(ps);
-      compPopSizes(sfs, ps, args);
+      compPopSizes(sfs, ps);
       ps->psi = psi(ps, sfs);
       break;
     }else{
       addK(ps, l);
-      compPopSizes(sfs, ps, args);
+      compPopSizes(sfs, ps);
       currMinPsi = psi(ps, sfs);
     }
     prevMinPsi = currMinPsi;
