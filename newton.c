@@ -259,10 +259,6 @@ int newton(Sfs *sfs, PopSizes *ps) {
   int status;
 
   status = newtonComp(sfs, ps);
-  if(status) {
-    fprintf(stderr, "# ERROR: Solver failed, aborting computation.\n");
-    exit(-1);
-  }
 
   return status;
 }
