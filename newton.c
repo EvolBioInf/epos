@@ -265,16 +265,5 @@ int newton(Sfs *sfs, PopSizes *ps) {
     sfs->iniP = watterson(sfs);
   status = newtonComp(sfs, ps);
 
-  while(status && sfs->iniP > 2) {
-    sfs->iniP /= 2.;
-    fprintf(stdout, "# Trying again with %f as initial population size.\n", sfs->iniP);
-    status = newtonComp(sfs, ps);
-  }
-
-  if(status) {
-    fprintf(stderr, "# ERROR: Solver failed, aborting computation.\n");
-    exit(-1);
-  }
-
   return status;
 }
