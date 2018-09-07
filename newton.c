@@ -216,7 +216,6 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   Rparams *p = newRparams(sfs, ps);
   gsl_multiroot_function f; 
   gsl_vector *x = gsl_vector_alloc(ps->m);
-  double iniP;
 
   if(sfs->type == UNFOLDED)
     f.f = &unfolded;
@@ -228,11 +227,9 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   }
   f.n = ps->m;
   f.params = p;
-
-  iniP = sfs->iniP;
-
+  findIniN(ps, sfs);
   for(i = 0; i < ps->m; i++) {
-    gsl_vector_set(x, i, iniP);
+    gsl_vector_set(x, i, ps->iniN[i]);
   }
   T = gsl_multiroot_fsolver_hybrids;
   s = gsl_multiroot_fsolver_alloc(T, ps->m);
@@ -261,16 +258,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
 int newton(Sfs *sfs, PopSizes *ps) {
   int status;
 
-  if(sfs->iniP == 0)
-    sfs->iniP = watterson(sfs);
   status = newtonComp(sfs, ps);
-
-  while(status && sfs->iniP > 2) {
-    sfs->iniP /= 2.;
-    fprintf(stdout, "# Trying again with %f as initial population size.\n", sfs->iniP);
-    status = newtonComp(sfs, ps);
-  }
-
   if(status) {
     fprintf(stderr, "# ERROR: Solver failed, aborting computation.\n");
     exit(-1);
