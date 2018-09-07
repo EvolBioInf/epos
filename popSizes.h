@@ -15,6 +15,7 @@ typedef struct popSizes{
   int m;
   int *k;
   int *prevK;
+  double *iniN; /* initial population sizes */
   int prevM;
   int n;
 }PopSizes;
@@ -27,5 +28,6 @@ void restoreK(PopSizes *ps);
 void freePopSizes(PopSizes *ps);
 int negPopSizes(PopSizes *ps);
 double psi(PopSizes *ps, Sfs *sfs);
+void findIniN(PopSizes *ps, Sfs *sfs);
 
 #endif

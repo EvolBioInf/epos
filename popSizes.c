@@ -11,6 +11,32 @@
 #include "util.h"
 #include "newton.h"
 
+void findIniN(PopSizes *ps, Sfs *sfs) {
+  int id;
+  char found;
+
+  id = -1;
+  if(ps->m == 1) {
+    ps->iniN[0] = watterson(sfs);
+    return;
+  }
+  found = 0;
+  for(int i = 1; i < ps->m; i++) {
+    for(int j = 1; j < ps->m - 1; j++) {
+      if(ps->k[i] == ps->prevK[j])
+	found = 1;
+    }
+    if(!found) {
+      id = i;
+      break;
+    }
+  }
+  for(int i = 0; i < id; i++)
+    ps->iniN[i] = ps->N[i];
+  for(int i = id; i < ps->m; i++)
+    ps->iniN[i] = ps->N[i - 1];
+}
+
 int negPopSizes(PopSizes *ps){
   int i;
 
@@ -25,6 +51,7 @@ void freePopSizes(PopSizes *ps){
   free(ps->k);
   free(ps->N);
   free(ps->prevK);
+  free(ps->iniN);
   free(ps);
 }
 
@@ -34,12 +61,14 @@ PopSizes *newPopSizes(Sfs *sfs){
 
   ps = (PopSizes *)emalloc(sizeof(PopSizes));
   ps->N = (double *)emalloc(sfs->n * sizeof(double));
+  ps->iniN = (double *)emalloc(sfs->n * sizeof(double));
   ps->k = (int *)emalloc((sfs->n+1) * sizeof(int));
   ps->prevK = (int *)emalloc((sfs->n+1) * sizeof(int));
   n = sfs->n;
   for(i=0; i<n; i++){
-    ps->N[i] = 0.;
-    ps->k[i] = 0;
+    ps->N[i]    = 0;
+    ps->k[i]    = 0;
+    ps->iniN[i] = 0;
   }
   ps->k[0] = n+1;
   ps->prevK[0] = n+1;
