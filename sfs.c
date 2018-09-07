@@ -17,12 +17,11 @@ Sfs *newSfs(int n, int type){
   sfs->n = n;
   sfs->f = (double *)emalloc(n*sizeof(double));
   for(i=0; i<n; i++)
-    sfs->f[i] = 0;
+    sfs->f[i] = 0.;
   sfs->type = type;
   sfs->nullCount = 0.;
   sfs->numPol = 0.;
   sfs->u = 0.;
-  sfs->iniP = 0;
 
   return sfs;
 }
