@@ -17,12 +17,13 @@ void scanFile(FILE *fp, Args *args, char *fileName){
   PopSizes *ps;
 
   ps = NULL;
-  sfs = getSfs(fp, args);
-  printSfsStats(sfs);
-  ps = getPopSizes(sfs, args);
-  printTimes(ps, sfs);
-  freeSfs(sfs);
-  freePopSizes(ps);
+  while((sfs = getSfs(fp, args)) != NULL) {
+    printSfsStats(sfs);
+    ps = getPopSizes(sfs, args);
+    printTimes(ps, sfs);
+    freeSfs(sfs);
+    freePopSizes(ps);
+  }
 }
 
 int main(int argc, char *argv[]){

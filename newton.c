@@ -259,9 +259,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
 int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
 
-  if(sfs->iniP == 0)
-    sfs->iniP = watterson(sfs);
-  status = newtonComp(sfs, ps);
+  status = newtonComp(sfs, ps, args);
 
   return status;
 }

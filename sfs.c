@@ -33,10 +33,12 @@ void freeSfs(Sfs *sfs){
   free(sfs);
 }
 
+/* getSfs obtains the next SFS from an open file */
 Sfs *getSfs(FILE *fp, Args *args){
   char *line;
   Sfs *sfs;
   int i, type;
+  char body;
   double j;
 
   if(args->U){
@@ -45,6 +47,7 @@ Sfs *getSfs(FILE *fp, Args *args){
     type = FOLDED_EVEN;
   }
   sfs = newSfs(0, type);
+  body = 0;
   while((line = tabGetLine(fp)) != NULL){
     if(tabNfield() >= 2){
       i = atoi(tabField(0));
@@ -53,21 +56,31 @@ Sfs *getSfs(FILE *fp, Args *args){
       i = 0;
       j = 0;
     }
-    if(line[0] == '#'){
-      continue;
+    /* look for comment and blank lines */
+    if(line[0] == '#' || !tabNfield()){
+      if(body)
+	break;
+      else
+	continue;
     }else if(i == 0 && j > 0){
+      body = 1;
       sfs->nullCount = j;
     }else{
+      body = 1;
       sfs->f = (double *)erealloc(sfs->f, (sfs->n+1)*sizeof(double));
       sfs->f[sfs->n] = (double)atof(tabField(1));
       sfs->numPol += sfs->f[sfs->n];
       sfs->n++;
     }
   }
+  tabFree();
+  if(!body) {
+    freeSfs(sfs);
+    return NULL;
+  }
   j = 0;
   for(i=0; i<sfs->n; i++)
     j += sfs->f[i];
-  tabFree();
   sfs->u = args->u;
   /* if monomorphic sites are included in the data, compute sample-wide mutation rate */
   if(sfs->nullCount == 0){
