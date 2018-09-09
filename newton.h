@@ -20,7 +20,7 @@ typedef struct rparams {
   double u;    /* mutation rate                        */
 } Rparams;
 
-int newton(Sfs *sfs, PopSizes *ps);
+int newton(Sfs *sfs, PopSizes *ps, Args *args);
 double logLik(PopSizes *ps, Sfs *sfs);
 
 #endif

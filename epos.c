@@ -19,7 +19,7 @@ void scanFile(FILE *fp, Args *args, char *fileName){
   ps = NULL;
   sfs = getSfs(fp, args);
   printSfsStats(sfs);
-  ps = getPopSizes(sfs);
+  ps = getPopSizes(sfs, args);
   printTimes(ps, sfs);
   freeSfs(sfs);
   freePopSizes(ps);

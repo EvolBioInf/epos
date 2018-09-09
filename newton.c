@@ -208,7 +208,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   return l;
 }
 
-int newtonComp(Sfs *sfs, PopSizes *ps) {
+int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
   int status;
@@ -227,7 +227,8 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   }
   f.n = ps->m;
   f.params = p;
-  findIniN(ps, sfs);
+  if(!args->w)
+    findIniN(ps, sfs);
   for(i = 0; i < ps->m; i++) {
     gsl_vector_set(x, i, ps->iniN[i]);
   }
@@ -255,10 +256,10 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   return status;
 }
 
-int newton(Sfs *sfs, PopSizes *ps) {
+int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
 
-  status = newtonComp(sfs, ps);
+  status = newtonComp(sfs, ps, args);
 
   return status;
 }

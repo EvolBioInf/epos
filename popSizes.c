@@ -66,10 +66,11 @@ PopSizes *newPopSizes(Sfs *sfs){
   ps->k = (int *)emalloc((sfs->n+1) * sizeof(int));
   ps->prevK = (int *)emalloc((sfs->n+1) * sizeof(int));
   n = sfs->n;
+  ps->watterson = watterson(sfs);
   for(i=0; i<n; i++){
     ps->N[i]    = 0;
     ps->k[i]    = 0;
-    ps->iniN[i] = 0;
+    ps->iniN[i] = ps->watterson;
   }
   ps->k[0] = n+1;
   ps->prevK[0] = n+1;
@@ -114,15 +115,15 @@ double psi(PopSizes *ps, Sfs *sfs){
   return logLik(ps, sfs);
 }
 
-int compPopSizes(Sfs *sfs, PopSizes *ps) {
-  return newton(sfs, ps);
+int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args) {
+  return newton(sfs, ps, args);
 }
 
-double testK(Sfs *sfs, PopSizes *ps, int k){
+double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
   int status;
 
   addTestK(ps, k);
-  if((status = compPopSizes(sfs, ps)) > 0)
+  if((status = compPopSizes(sfs, ps, args)) > 0)
     return DBL_MIN;
   if(negPopSizes(ps))
     return DBL_MIN;
@@ -152,7 +153,7 @@ PopSizes *copyPopSizes(PopSizes *ps){
   return cps;
 }
 
-int getNextLevel(Sfs *sfs, PopSizes *ps, int *avail){
+int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
   double p, currMinPsi;
   int i, minK;
 
@@ -160,7 +161,7 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, int *avail){
   minK = 0;
   for(i=3; i<=sfs->n; i++){
     if(avail[i]){
-      p = testK(sfs, ps, i);
+      p = testK(sfs, ps, args, i);
       if(p > currMinPsi){
 	minK = i;
 	currMinPsi = p;
@@ -172,7 +173,7 @@ int getNextLevel(Sfs *sfs, PopSizes *ps, int *avail){
   return minK;
 }
 
-PopSizes *getPopSizes(Sfs *sfs){
+PopSizes *getPopSizes(Sfs *sfs, Args *args){
   int i, l, n, minK, *avail;
   double prevMinPsi, currMinPsi, change;
   PopSizes *ps;
@@ -182,9 +183,9 @@ PopSizes *getPopSizes(Sfs *sfs){
   ps->n = sfs->n;
   /* add first entry, single pop size for entire coalescent */
   minK = 2;
-  testK(sfs, ps, minK);
+  testK(sfs, ps, args, minK);
   addK(ps, minK);
-  compPopSizes(sfs, ps);
+  compPopSizes(sfs, ps, args);
   ps->psi = psi(ps, sfs);
   prevMinPsi = ps->psi;
   /* find remaining entries */
@@ -194,20 +195,20 @@ PopSizes *getPopSizes(Sfs *sfs){
     avail[i] = 1;
   /* iterate over the remaining number of possible population sizes */
   for(i=3; i<=n; i++){
-    l = getNextLevel(sfs, ps, avail);
+    l = getNextLevel(sfs, ps, args, avail);
     if(l)
-      currMinPsi = testK(sfs, ps, l);
+      currMinPsi = testK(sfs, ps, args, l);
     else
       currMinPsi = DBL_MIN;
     change = currMinPsi - prevMinPsi;
     if(change < 2){
       restoreK(ps);
-      compPopSizes(sfs, ps);
+      compPopSizes(sfs, ps, args);
       ps->psi = psi(ps, sfs);
       break;
     }else{
       addK(ps, l);
-      compPopSizes(sfs, ps);
+      compPopSizes(sfs, ps, args);
       currMinPsi = psi(ps, sfs);
     }
     prevMinPsi = currMinPsi;
