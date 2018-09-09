@@ -1,7 +1,7 @@
 #InputFile:	data/testNewtonU.dat
 #Polymorphic sites surveyed:	16390
 #Monomorphic sites surveyed:	9.98361e+06
-#LogLik:		151014559.330255
+#LogLik:		1.51015e+08
 #Level	T[Level]	N[T]
 30	3.62e+02	7.88e+04
 2	3.13e+04	8.00e+03

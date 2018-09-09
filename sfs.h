@@ -19,7 +19,6 @@ typedef struct sfs{
   int n;            /* sample size */
   double nullCount; /* number of unmutated sites */
   double u;         /* mutation rate */
-  double iniP;      /* initial population size */
   short type;       /* type of site frequency spectrum */
 } Sfs;
 

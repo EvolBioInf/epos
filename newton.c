@@ -208,7 +208,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   return l;
 }
 
-int newtonComp(Sfs *sfs, PopSizes *ps) {
+int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
   int status;
@@ -216,7 +216,6 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   Rparams *p = newRparams(sfs, ps);
   gsl_multiroot_function f; 
   gsl_vector *x = gsl_vector_alloc(ps->m);
-  double iniP;
 
   if(sfs->type == UNFOLDED)
     f.f = &unfolded;
@@ -228,11 +227,10 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   }
   f.n = ps->m;
   f.params = p;
-
-  iniP = sfs->iniP;
-
+  if(!args->w)
+    findIniN(ps, sfs);
   for(i = 0; i < ps->m; i++) {
-    gsl_vector_set(x, i, iniP);
+    gsl_vector_set(x, i, ps->iniN[i]);
   }
   T = gsl_multiroot_fsolver_hybrids;
   s = gsl_multiroot_fsolver_alloc(T, ps->m);
@@ -258,7 +256,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps) {
   return status;
 }
 
-int newton(Sfs *sfs, PopSizes *ps) {
+int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   int status;
 
   if(sfs->iniP == 0)

@@ -9,17 +9,19 @@
 #include "sfs.h"
 #include "interface.h"
 
-typedef struct popSizes{
+typedef struct popSizes {
   double *N;
   double psi;
+  double watterson;
   int m;
   int *k;
   int *prevK;
+  double *iniN; /* initial population sizes */
   int prevM;
   int n;
-}PopSizes;
+} PopSizes;
 
-PopSizes *getPopSizes(Sfs *sfs);
+PopSizes *getPopSizes(Sfs *sfs, Args *args);
 PopSizes *newPopSizes(Sfs *sfs);
 void addTestK(PopSizes *ps, int k);
 void addK(PopSizes *ps, int k);
@@ -27,5 +29,6 @@ void restoreK(PopSizes *ps);
 void freePopSizes(PopSizes *ps);
 int negPopSizes(PopSizes *ps);
 double psi(PopSizes *ps, Sfs *sfs);
+void findIniN(PopSizes *ps, Sfs *sfs);
 
 #endif

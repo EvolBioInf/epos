@@ -15,13 +15,14 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvUu:l:";
+  char *optString = "hvUwu:l:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
   args->v = 0;
   args->e = 0;
   args->U = 0;
+  args->w = 0;
   args->u = DEFAULT_U;
   args->l = 0;
 
@@ -34,6 +35,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
+      break;
+    case 'w':                           /* always start from watterson's estimator */
+      args->w = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
@@ -66,6 +70,7 @@ void printUsage(char *version){
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g; estimated from SFS if zero-class present]\n", DEFAULT_U);
+  printf("\t[-w start search for pop. sizes from Watterson's estimator; default: previous pop. sizes]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");

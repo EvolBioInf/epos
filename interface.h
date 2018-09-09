@@ -10,6 +10,7 @@ typedef struct args{
   char v;      /* version message? */
   char e;      /* error message? */
   char U;      /* unfolded? */
+  char w;      /* watterson's estimator is initial population size */
   int l;       /* sequence length */
   char **inputFiles;
   double u;    /* mutation rate */
