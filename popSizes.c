@@ -20,11 +20,12 @@ void findIniN(PopSizes *ps, Sfs *sfs) {
     ps->iniN[0] = watterson(sfs);
     return;
   }
-  found = 0;
   for(int i = 1; i < ps->m; i++) {
+    found = 0;
     for(int j = 1; j < ps->m - 1; j++) {
-      if(ps->k[i] == ps->prevK[j])
+      if(ps->k[i] == ps->prevK[j]) {
 	found = 1;
+      }
     }
     if(!found) {
       id = i;
