@@ -3,7 +3,8 @@
 
 #include <float.h>
 
-#define DEFAULT_U 5.e-9         /* default mutation rate */
+#define DEFAULT_U 5.e-9 /* default mutation rate */
+#define DEFAULT_C 2.    /* default minimum change in log-likelihood for acceptance of new level */ 
 /* define argument container */
 typedef struct args{
   char h;      /* help message? */
@@ -14,6 +15,7 @@ typedef struct args{
   int l;       /* sequence length */
   char **inputFiles;
   double u;    /* mutation rate */
+  double c;    /* minimum change */
   int numInputFiles;
 } Args;
 

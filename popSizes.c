@@ -7,7 +7,6 @@
 #include <omp.h>
 #include "eprintf.h"
 #include "popSizes.h"
-#include "printMatrix.h"
 #include "util.h"
 #include "newton.h"
 
@@ -201,7 +200,7 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     else
       currMinPsi = DBL_MIN;
     change = currMinPsi - prevMinPsi;
-    if(change < 2){
+    if(change < args->c){
       restoreK(ps);
       compPopSizes(sfs, ps, args);
       ps->psi = psi(ps, sfs);

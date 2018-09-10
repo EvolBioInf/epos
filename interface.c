@@ -15,7 +15,7 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvUwu:l:";
+  char *optString = "hvUwu:l:c:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
@@ -24,6 +24,7 @@ Args *getArgs(int argc, char *argv[]){
   args->U = 0;
   args->w = 0;
   args->u = DEFAULT_U;
+  args->c = DEFAULT_C;
   args->l = 0;
 
   c = getopt(argc, argv, optString);
@@ -41,6 +42,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
+      break;
+    case 'c':
+      args->c = atof(optarg);           /* minimum logLik change for acceptance of new level */
       break;
     case '?':                           /* fall-through is intentional */
     case 'h':                           /* print help */
@@ -69,7 +73,8 @@ void printUsage(char *version){
   printf("Example: ./epos -l 10000000 -u 1.2e-8 data/testNewtonF.dat\n");
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
-  printf("\t[-u NUM per nucleotide mutation rate; default: %g; estimated from SFS if zero-class present]\n", DEFAULT_U);
+  printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
+  printf("\t[-c NUM minimum change in log-likelihood for accepatnce of new level; default: %g]\n", DEFAULT_C);
   printf("\t[-w start search for pop. sizes from Watterson's estimator; default: previous pop. sizes]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-h print this help message and exit]\n");
