@@ -11,18 +11,37 @@
 #include "sfs.h"
 #include "popSizes.h"
 #include "util.h"
+#include "gsl_rng.h"
 
-void scanFile(FILE *fp, Args *args){
-  Sfs *sfs;
+
+void singleAnalysis(Sfs *sfs, Args *args, char *fileName) {
   PopSizes *ps;
 
-  ps = NULL;
+  printf("#InputFile:\t");
+  if(args->b)
+    printf("bootstrapped_");
+  printf("%s\n", fileName);
+  printSfsStats(sfs);
+  ps = getPopSizes(sfs, args);
+  printTimes(ps, sfs);
+  freePopSizes(ps);
+}
+
+void scanFile(FILE *fp, Args *args, char *fileName, gsl_rng *rand){
+  Sfs *sfs, *bSfs;
+
   while((sfs = getSfs(fp, args)) != NULL) {
-    printSfsStats(sfs);
-    ps = getPopSizes(sfs, args);
-    printTimes(ps, sfs);
+    if(args->b == 0) {
+      singleAnalysis(sfs, args, fileName);
+    } else {
+      iniBoot(sfs);
+      for(int i = 0; i < args->b; i++) {
+	bSfs = bootstrapSfs(sfs, rand, args);
+	singleAnalysis(bSfs, args, fileName);
+	freeSfs(bSfs);
+      }
+    }
     freeSfs(sfs);
-    freePopSizes(ps);
   }
 }
 
@@ -31,6 +50,7 @@ int main(int argc, char *argv[]){
   char *version;
   Args *args;
   FILE *fp;
+  gsl_rng *rand;
 
   version = "1.0";
   setprogname2("epos");
@@ -40,19 +60,24 @@ int main(int argc, char *argv[]){
   if(args->h || args->e)
     printUsage(version);
 
+  rand = NULL;
+  if(args->b)
+    rand = ini_gsl_rng(args);
+
   if(args->numInputFiles == 0){
     fp = stdin;
-    scanFile(fp, args);
+    scanFile(fp, args, "stdin", rand);
   }else{
     for(i=0;i<args->numInputFiles;i++){
-      printf("#InputFile:\t%s\n", args->inputFiles[i]);
       fp = efopen(args->inputFiles[i],"r");
-      scanFile(fp, args);
+      scanFile(fp, args, args->inputFiles[i], rand);
       fclose(fp);
     }
   }
   free(args);
   free(progname());
+  if(args->b)
+    free_gsl_rng(rand, args);
 
   return 0;
 }

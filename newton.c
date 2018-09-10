@@ -229,8 +229,6 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   }
   f.n = ps->m;
   f.params = p;
-  if(!args->w)
-    findIniN(ps, sfs);
   for(i = 0; i < ps->m; i++) {
     gsl_vector_set(x, i, ps->iniN[i]);
   }
@@ -243,8 +241,6 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
     iter++;
     status = gsl_multiroot_fsolver_iterate(s);
     if(status) {
-      fprintf(stderr, "# WARNING: The solver is stuck at iteration %ld.\n# Status of solver: ", iter);
-      printState(iter, s, ps->m);
       gsl_multiroot_fsolver_free(s);
       gsl_vector_free(x);
       return status;

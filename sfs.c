@@ -18,6 +18,7 @@ Sfs *newSfs(int n, int type){
   sfs->f = (double *)emalloc(n*sizeof(double));
   for(i=0; i<n; i++)
     sfs->f[i] = 0.;
+  sfs->arr = NULL;
   sfs->type = type;
   sfs->nullCount = 0.;
   sfs->numPol = 0.;
@@ -30,6 +31,8 @@ void freeSfs(Sfs *sfs){
   if(sfs == NULL)
     return;
   free(sfs->f);
+  if(sfs->arr != NULL)
+    free(sfs->arr);
   free(sfs);
 }
 
@@ -95,4 +98,48 @@ Sfs *getSfs(FILE *fp, Args *args){
   }
 
   return sfs;
+}
+
+void iniBoot(Sfs *sfs) {
+  int i, j, x, nc, n;
+
+  sfs->arr = (int *)emalloc((sfs->numPol + sfs->nullCount)*sizeof(int));
+  n = sfs->n;
+  if(sfs->type == FOLDED_EVEN)
+    n /= 2;
+  nc = sfs->nullCount;
+  for(i=0;i<nc;i++)
+    sfs->arr[i] = 0;
+  x = nc;
+  for(i=0;i<n;i++)
+    for(j=0;j<sfs->f[i];j++)
+      sfs->arr[x++] = i+1;
+  if(x != sfs->numPol + sfs->nullCount){
+    printf("ERROR in bootstrapping; sfs->numPol: %d; sfs->nullCount: %d; x: %d; expected(x): %d\n", (int)sfs->numPol, (int)sfs->nullCount, x, (int)(sfs->numPol+sfs->nullCount));
+    exit(-1);
+  }
+}
+
+Sfs *bootstrapSfs(Sfs *sfs, gsl_rng *rand, Args *args){
+  int i, j, x, y, type;
+  Sfs *bootSfs;
+  
+  if(args->U)
+    type = UNFOLDED;
+  else
+    type = FOLDED_EVEN;
+  bootSfs = newSfs(sfs->n, type);
+  bootSfs->u = args->u;
+  x = sfs->numPol + sfs->nullCount;
+  for(i=0; i<x; i++){
+    y = gsl_rng_uniform(rand) * x;
+    j = sfs->arr[y];
+    if(j){
+      bootSfs->f[j-1]++;
+      bootSfs->numPol++;
+    }else
+      bootSfs->nullCount++;
+  }
+
+  return bootSfs;
 }

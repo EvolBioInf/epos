@@ -15,14 +15,15 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvUwu:l:c:";
+  char *optString = "hvUu:l:c:s:b:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
   args->v = 0;
   args->e = 0;
   args->U = 0;
-  args->w = 0;
+  args->s = 0;
+  args->b = 0;
   args->u = DEFAULT_U;
   args->c = DEFAULT_C;
   args->l = 0;
@@ -34,11 +35,14 @@ Args *getArgs(int argc, char *argv[]){
     case 'l':                           /* sequence length */
       args->l = atoi(optarg);
       break;
+    case 's':                           /* seed for random number generator */
+      args->s = atoi(optarg);
+      break;
+    case 'b':                           /* number of bootstrap replicates */
+      args->b = atoi(optarg);
+      break;
     case 'U':                           /* unfolded */
       args->U = 1;
-      break;
-    case 'w':                           /* always start from watterson's estimator */
-      args->w = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
@@ -75,7 +79,8 @@ void printUsage(char *version){
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
   printf("\t[-c NUM minimum change in log-likelihood for accepatnce of new level; default: %g]\n", DEFAULT_C);
-  printf("\t[-w start search for pop. sizes from Watterson's estimator; default: previous pop. sizes]\n");
+  printf("\t[-b NUM number of bootstrap replicates; default: no bootrstrap]\n");
+  printf("\t[-s NUM seed for random number generator used in bootstrap; default: system, randomSeed.dat]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");

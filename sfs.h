@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "interface.h"
+#include "gsl_rng.h"
 
 /* define site frequency spectrum */
 typedef struct sfs{
@@ -20,6 +21,7 @@ typedef struct sfs{
   double nullCount; /* number of unmutated sites */
   double u;         /* mutation rate */
   short type;       /* type of site frequency spectrum */
+  int *arr;         /* array for bootstrapping */
 } Sfs;
 
 Sfs *getSfs(FILE *fp, Args *args);
@@ -27,5 +29,7 @@ void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
 void resetSfs(Sfs *sfs);
 Sfs *newSfs(int n, int type);
+Sfs *bootstrapSfs(Sfs *sfs, gsl_rng *rand, Args *args);
+void iniBoot(Sfs *sfs);
 
 #endif 

@@ -11,8 +11,9 @@ typedef struct args{
   char v;      /* version message? */
   char e;      /* error message? */
   char U;      /* unfolded? */
-  char w;      /* watterson's estimator is initial population size */
   int l;       /* sequence length */
+  int s;       /* seed for random number generator */
+  int b;       /* number of bootstrap replicates */
   char **inputFiles;
   double u;    /* mutation rate */
   double c;    /* minimum change */
