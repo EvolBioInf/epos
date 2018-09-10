@@ -24,14 +24,3 @@ then
 else
     echo "Test(Newton, kap144i): fail" ${DIFF}
 fi
-
-./epos -w data/kap144i.dat > tmp.out
-DIFF=$(diff tmp.out data/kap144i.out)
-if [ "$DIFF" == "" ] 
-then
-    echo "Test(Newton, kap144i, watterson): pass"
-else
-    echo "Test(Newton, kap144i, watterson): fail" ${DIFF}
-fi
-
-rm tmp.out
