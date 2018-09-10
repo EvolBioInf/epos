@@ -160,6 +160,8 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   for(i = 0; i < m; i++) {
     gsl_vector_set(f, i, y[i]);
   }
+  free(N);
+  free(y);
 
   return GSL_SUCCESS;
 }
@@ -243,6 +245,8 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
     if(status) {
       fprintf(stderr, "# WARNING: The solver is stuck at iteration %ld.\n# Status of solver: ", iter);
       printState(iter, s, ps->m);
+      gsl_multiroot_fsolver_free(s);
+      gsl_vector_free(x);
       return status;
     }
     status = gsl_multiroot_test_residual(s->f, 1e-7);
@@ -252,6 +256,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
   }
   gsl_multiroot_fsolver_free(s);
   gsl_vector_free(x);
+  free(p);
 
   return status;
 }
