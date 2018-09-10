@@ -12,7 +12,7 @@
 #include "popSizes.h"
 #include "util.h"
 
-void scanFile(FILE *fp, Args *args, char *fileName){
+void scanFile(FILE *fp, Args *args){
   Sfs *sfs;
   PopSizes *ps;
 
@@ -42,12 +42,12 @@ int main(int argc, char *argv[]){
 
   if(args->numInputFiles == 0){
     fp = stdin;
-    scanFile(fp, args, "stdin");
+    scanFile(fp, args);
   }else{
     for(i=0;i<args->numInputFiles;i++){
       printf("#InputFile:\t%s\n", args->inputFiles[i]);
       fp = efopen(args->inputFiles[i],"r");
-      scanFile(fp, args, args->inputFiles[i]);
+      scanFile(fp, args);
       fclose(fp);
     }
   }
