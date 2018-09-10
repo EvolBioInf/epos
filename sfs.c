@@ -57,7 +57,7 @@ Sfs *getSfs(FILE *fp, Args *args){
       j = 0;
     }
     /* look for comment and blank lines */
-    if(line[0] == '#' || !tabNfield()){
+    if(line[0] == '#' || tabNfield() < 2){
       if(body)
 	break;
       else
@@ -78,11 +78,7 @@ Sfs *getSfs(FILE *fp, Args *args){
     freeSfs(sfs);
     return NULL;
   }
-  j = 0;
-  for(i=0; i<sfs->n; i++)
-    j += sfs->f[i];
   sfs->u = args->u;
-  /* if monomorphic sites are included in the data, compute sample-wide mutation rate */
   if(sfs->nullCount == 0){
     if(args->l == 0) {
       fprintf(stderr, "ERROR[epos]: Please include either the zero-class in the SFS or enter the sequence length via the -l option.\n");
