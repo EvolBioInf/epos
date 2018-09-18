@@ -50,6 +50,7 @@ int negPopSizes(PopSizes *ps){
 void freePopSizes(PopSizes *ps){
   free(ps->k);
   free(ps->N);
+  free(ps->aaa);
   free(ps->prevK);
   free(ps->iniN);
   free(ps);
@@ -61,6 +62,7 @@ PopSizes *newPopSizes(Sfs *sfs){
 
   ps = (PopSizes *)emalloc(sizeof(PopSizes));
   ps->N = (double *)emalloc(sfs->n * sizeof(double));
+  ps->aaa = (double *)emalloc(sfs->n * sizeof(double));
   ps->iniN = (double *)emalloc(sfs->n * sizeof(double));
   ps->k = (int *)emalloc((sfs->n+1) * sizeof(int));
   ps->prevK = (int *)emalloc((sfs->n+1) * sizeof(int));
@@ -212,6 +214,7 @@ PopSizes *getPopSizes(Sfs *sfs, Args *args){
     }
     prevMinPsi = currMinPsi;
   }
+  compAaa(ps, sfs);
   free(avail);
 
   return ps;

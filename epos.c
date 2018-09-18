@@ -23,7 +23,10 @@ void singleAnalysis(Sfs *sfs, Args *args, char *fileName) {
   printf("%s\n", fileName);
   printSfsStats(sfs);
   ps = getPopSizes(sfs, args);
-  printTimes(ps, sfs);
+  if(args->a)
+    printAaa(ps, sfs);
+  else
+    printTimes(ps, sfs);
   freePopSizes(ps);
 }
 
@@ -74,10 +77,10 @@ int main(int argc, char *argv[]){
       fclose(fp);
     }
   }
-  free(args);
-  free(progname());
   if(args->b)
     free_gsl_rng(rand, args);
+  free(args);
+  free(progname());
 
   return 0;
 }

@@ -15,7 +15,7 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvUu:l:c:s:b:";
+  char *optString = "hvUau:l:c:s:b:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
@@ -24,6 +24,7 @@ Args *getArgs(int argc, char *argv[]){
   args->U = 0;
   args->s = 0;
   args->b = 0;
+  args->a = 0;
   args->u = DEFAULT_U;
   args->c = DEFAULT_C;
   args->l = 0;
@@ -43,6 +44,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
+      break;
+    case 'a':                           /* average age of an allele */
+      args->a = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
@@ -82,6 +86,7 @@ void printUsage(char *version){
   printf("\t[-b NUM number of bootstrap replicates; default: no bootrstrap]\n");
   printf("\t[-s NUM seed for random number generator used in bootstrap; default: system, randomSeed.dat]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
+  printf("\t[-a print average ages of alleles; default: print population size]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");
   exit(0);

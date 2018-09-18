@@ -11,6 +11,7 @@ typedef struct args{
   char v;      /* version message? */
   char e;      /* error message? */
   char U;      /* unfolded? */
+  char a;      /* average age of an allele? */
   int l;       /* sequence length */
   int s;       /* seed for random number generator */
   int b;       /* number of bootstrap replicates */

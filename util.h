@@ -15,6 +15,7 @@ double gi(int i, int n, int r, int *k);
 double hi(int i, int n, int r, int *k);
 int delta(int j, int k);
 void printTimes(PopSizes *ps, Sfs *sfs);
+void printAaa(PopSizes *ps, Sfs *sfs);
 void printSfsStats(Sfs *sfs);
 double watterson(Sfs *sfs);
 

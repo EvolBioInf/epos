@@ -17,6 +17,7 @@ typedef struct popSizes {
   int *k;
   int *prevK;
   double *iniN; /* initial population sizes */
+  double *aaa;  /* average ages of alleles */
   int prevM;
   int n;
 } PopSizes;
@@ -30,5 +31,6 @@ void freePopSizes(PopSizes *ps);
 int negPopSizes(PopSizes *ps);
 double psi(PopSizes *ps, Sfs *sfs);
 void findIniN(PopSizes *ps, Sfs *sfs);
+void compAaa(PopSizes *ps, Sfs *sfs);
 
 #endif

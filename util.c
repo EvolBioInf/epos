@@ -85,6 +85,21 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   }
 }
 
+void printAaa(PopSizes *ps, Sfs *sfs) {
+  int n = ps->n;
+  int max;
+
+  if(sfs->type == UNFOLDED)
+    max = n - 1;
+  else
+    max = n / 2;
+
+  printf("#r\tA[r]\n");	
+  for(int r = 1; r <= max; r++)
+    printf("%d\t%g\n", r, ps->aaa[r-1]);
+  
+}
+
 /* watterson: Using Watterson's estimator of N */
 double watterson(Sfs *sfs){
   int i;
