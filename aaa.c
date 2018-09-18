@@ -10,24 +10,24 @@
 #include "util.h"
 
 double aaa(double *N, int n, int r) {
-  double de = 0.;
+  double nu = 0.;
 
-  /* Denominator */
+  /* Numerator */
   for(int k = 2; k <= n; k++) {
     double s = 0.;
     for(int l = k; l <= n; l++) {
       s += 4. * N[l-1] / (double) l / (double) (l-1);
     }
-    de += N[k-1] * binomial(n-k, r-1) * s;
+    nu += N[k-1] * binomial(n-k, r-1) * s;
   }
 
-  /* Numerator */
-  double nu = 0.;
+  /* Denomiator */
+  double de = 0.;
   for(int k = 2; k <= n; k++) {
-    nu += N[k-1] * binomial(n-k, r-1);
+    de += N[k-1] * binomial(n-k, r-1);
   }
 
-  return de / nu;
+  return nu / de;
 }
 
 void compAaa(PopSizes *ps, Sfs *sfs) {
