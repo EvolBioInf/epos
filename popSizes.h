@@ -11,6 +11,7 @@
 
 typedef struct popSizes {
   double *N;
+  double *allN;
   double psi;
   double watterson;
   int m;

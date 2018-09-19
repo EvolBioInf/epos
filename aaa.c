@@ -10,9 +10,9 @@
 #include "util.h"
 
 double aaa(double *N, int n, int r) {
-  double nu = 0.;
 
   /* Numerator */
+  double nu = 0.;
   for(int k = 2; k <= n; k++) {
     double s = 0.;
     for(int l = k; l <= n; l++) {
@@ -30,6 +30,14 @@ double aaa(double *N, int n, int r) {
   return nu / de;
 }
 
+void allN(PopSizes *ps) {
+  for(int i = 0; i < ps->m; i++) {
+    for(int j = ps->k[i]; j <= ps->k[i+1]; j++)
+      ps->allN[j-1] = ps->N[i];
+  }
+}
+
+
 void compAaa(PopSizes *ps, Sfs *sfs) {
   int n = ps->n;
   int max;
@@ -38,8 +46,7 @@ void compAaa(PopSizes *ps, Sfs *sfs) {
     max = n - 1;
   else
     max = n / 2;
-
-  for(int r = 1; r <= max; r++) {
-    ps->aaa[r-1] = aaa(ps->N, n, r);
-  }
+  allN(ps);
+  for(int r = 1; r <= max; r++)
+    ps->aaa[r-1] = aaa(ps->allN, n, r);
 }
