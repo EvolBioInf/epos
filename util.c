@@ -9,6 +9,27 @@
 #include <gsl/gsl_sf_gamma.h>
 #include <math.h>
 #include "util.h"
+#include "eprintf.h"
+
+double **bin = NULL;
+int nn;
+
+void iniBinom(int n) {
+  nn = n;
+  bin = (double  **)emalloc((n + 1) * sizeof(double *));
+  for(int i = 0; i <= n; i++) {
+    bin[i] = (double *)emalloc((n + 1) * sizeof(double));
+    for(int j = 0; j <= n; j++)
+      bin[i][j] = -1;
+  }
+}
+
+void freeBinom() {
+  for(int i = 0; i <= nn; i++)
+    free(bin[i]);
+  free(bin);
+  bin = NULL;
+}
 
 double binomial(int n, int k){
   double x, y;
@@ -17,13 +38,22 @@ double binomial(int n, int k){
     return 1;
   if(n < k)
     return 0;
-
-  x = gsl_sf_lnfact(n) - (gsl_sf_lnfact(k) + gsl_sf_lnfact(n-k));
-  y = exp(x);
-  y = round(y);
+  if(!bin) {
+    x = gsl_sf_lnfact(n) - (gsl_sf_lnfact(k) + gsl_sf_lnfact(n-k));
+    y = exp(x);
+    y = round(y);
+  } else {
+    y = bin[n][k];
+    if(y < 0) {
+      x = gsl_sf_lnfact(n) - (gsl_sf_lnfact(k) + gsl_sf_lnfact(n-k));
+      y = exp(x);
+      y = round(y);
+      bin[n][k] = y;
+    }
+  }
   
   
-return y;
+  return y;
 }
 
 /* fi: Equation (5) */

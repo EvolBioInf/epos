@@ -18,5 +18,6 @@ void printTimes(PopSizes *ps, Sfs *sfs);
 void printAaa(PopSizes *ps, Sfs *sfs);
 void printSfsStats(Sfs *sfs);
 double watterson(Sfs *sfs);
-
+void iniBinom(int n);
+void freeBinom();
 #endif

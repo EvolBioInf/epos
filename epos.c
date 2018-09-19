@@ -34,6 +34,7 @@ void scanFile(FILE *fp, Args *args, char *fileName, gsl_rng *rand){
   Sfs *sfs, *bSfs;
 
   while((sfs = getSfs(fp, args)) != NULL) {
+    iniBinom(sfs->n);
     if(args->b == 0) {
       singleAnalysis(sfs, args, fileName);
     } else {
@@ -44,6 +45,7 @@ void scanFile(FILE *fp, Args *args, char *fileName, gsl_rng *rand){
 	freeSfs(bSfs);
       }
     }
+    freeBinom();
     freeSfs(sfs);
   }
 }
