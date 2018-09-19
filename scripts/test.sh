@@ -24,3 +24,15 @@ then
 else
     echo "Test(Newton, kap144i): fail" ${DIFF}
 fi
+
+./epos -a data/kap144i.dat > tmp.out
+DIFF=$(diff tmp.out data/kap144ia.out)
+if [ "$DIFF" == "" ] 
+then
+    echo "Test(Newton, kap144i, avg. allele age): pass"
+else
+    echo "Test(Newton, kap144i, avg. allele age): fail" ${DIFF}
+fi
+
+
+rm tmp.out
