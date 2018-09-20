@@ -41,8 +41,11 @@ void freeBinom() {
 }
 
 double binomial(int n, int k){
-  
-  return bin[n][k];
+
+  if(n < k)
+    return 0;
+  else
+    return bin[n][k];
   
 }
 
