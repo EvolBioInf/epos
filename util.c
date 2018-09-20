@@ -15,12 +15,21 @@ double **bin = NULL;
 int nn;
 
 void iniBinom(int n) {
+  double x, y;
+
   nn = n;
+
   bin = (double  **)emalloc((n + 1) * sizeof(double *));
   for(int i = 0; i <= n; i++) {
     bin[i] = (double *)emalloc((n + 1) * sizeof(double));
-    for(int j = 0; j <= n; j++)
-      bin[i][j] = -1;
+    for(int j = 0; j <= n; j++) {
+      if(i >= j) {
+	x = gsl_sf_lnfact(i) - (gsl_sf_lnfact(j) + gsl_sf_lnfact(i-j));
+	y = exp(x);
+	y = round(y);
+	bin[i][j] = y;
+      }
+    }
   }
 }
 
@@ -32,28 +41,9 @@ void freeBinom() {
 }
 
 double binomial(int n, int k){
-  double x, y;
   
-  if(n==k)
-    return 1;
-  if(n < k)
-    return 0;
-  if(!bin) {
-    x = gsl_sf_lnfact(n) - (gsl_sf_lnfact(k) + gsl_sf_lnfact(n-k));
-    y = exp(x);
-    y = round(y);
-  } else {
-    y = bin[n][k];
-    if(y < 0) {
-      x = gsl_sf_lnfact(n) - (gsl_sf_lnfact(k) + gsl_sf_lnfact(n-k));
-      y = exp(x);
-      y = round(y);
-      bin[n][k] = y;
-    }
-  }
+  return bin[n][k];
   
-  
-  return y;
 }
 
 /* fi: Equation (5) */
