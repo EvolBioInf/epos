@@ -9,5 +9,9 @@ epos
 *.tex
 *.bbl
 *.blg
+doc/*.dat
+doc/*.eps
+doc/*.sh
+doc/*.gp
 randomSeed.dat
 seedms
