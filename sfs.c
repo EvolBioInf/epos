@@ -111,7 +111,7 @@ void iniBoot(Sfs *sfs) {
   for(i=0;i<nc;i++)
     sfs->arr[i] = 0;
   x = nc;
-  for(i=0;i<n;i++)
+  for(i=0;i<n-1;i++)
     for(j=0;j<sfs->f[i];j++)
       sfs->arr[x++] = i+1;
   if(x != sfs->numPol + sfs->nullCount){
