@@ -115,7 +115,7 @@ void iniBoot(Sfs *sfs) {
     for(j=0;j<sfs->f[i];j++)
       sfs->arr[x++] = i+1;
   if(x != sfs->numPol + sfs->nullCount){
-    printf("ERROR in bootstrapping; sfs->numPol: %d; sfs->nullCount: %d; x: %d; expected(x): %d\n", (int)sfs->numPol, (int)sfs->nullCount, x, (int)(sfs->numPol+sfs->nullCount));
+    printf("ERROR in bootstrapping; sfs->numPol: %d; sfs->nullCount: %d; x: %d; expected(x): %d. Is this an unfolded SFS? If so, please use -U.\n", (int)sfs->numPol, (int)sfs->nullCount, x, (int)(sfs->numPol+sfs->nullCount));
     exit(-1);
   }
 }
