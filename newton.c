@@ -122,6 +122,8 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
     gsl_vector_set(f, i, y[i]);
   }
 
+  free(N);
+  free(y);
   return GSL_SUCCESS;
 }
 
@@ -243,6 +245,7 @@ int newtonComp(Sfs *sfs, PopSizes *ps, Args *args) {
     if(status) {
       gsl_multiroot_fsolver_free(s);
       gsl_vector_free(x);
+      free(p);
       return status;
     }
     status = gsl_multiroot_test_residual(s->f, 1e-7);
