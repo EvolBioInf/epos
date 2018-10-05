@@ -101,7 +101,7 @@ Sfs *getSfs(FILE *fp, Args *args){
 }
 
 void iniBoot(Sfs *sfs) {
-  int i, j, x, nc, n;
+  int i, j, x, y, nc, n;
 
   sfs->arr = (int *)emalloc((sfs->numPol + sfs->nullCount)*sizeof(int));
   n = sfs->n;
@@ -111,7 +111,11 @@ void iniBoot(Sfs *sfs) {
   for(i=0;i<nc;i++)
     sfs->arr[i] = 0;
   x = nc;
-  for(i=0;i<n-1;i++)
+  if(sfs->type == FOLDED_EVEN)
+    y = 0;
+  else
+    y = 1;
+  for(i=0;i<n-y;i++)
     for(j=0;j<sfs->f[i];j++)
       sfs->arr[x++] = i+1;
   if(x != sfs->numPol + sfs->nullCount){
