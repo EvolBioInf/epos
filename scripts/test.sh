@@ -34,5 +34,13 @@ else
     echo "Test(Newton, kap144i, avg. allele age): fail" ${DIFF}
 fi
 
+./epos -x 1,2 data/kap144i.dat > tmp.out
+DIFF=$(diff tmp.out data/kap144ix.out)
+if [ "$DIFF" == "" ] 
+then
+    echo "Test(Newton, kap144i, exclude singletons & doubletons): pass"
+else
+    echo "Test(Newton, kap144i, exclude singletons & doubletons): fail" ${DIFF}
+fi
 
 rm tmp.out
