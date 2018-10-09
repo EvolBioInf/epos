@@ -10,9 +10,26 @@
 #include "tab.h"
 #include "sfs.h"
 
+/* exFreq exlucdes the frequency categories indicated by the -x option */
+void exFreq(Sfs *sfs, Args *args) {
+  char *c;
+  int i;
+
+  if(args->x == NULL)
+    return;
+  c = strtok(args->x, ",");
+  i = atoi(c);
+  sfs->x[i-1] = 0;
+  sfs->numPol -= sfs->f[i-1];
+  while((c = strtok(NULL, ",")) != NULL){
+    i = atoi(c);
+    sfs->x[i-1] = 1;
+    sfs->numPol -= sfs->f[i-1];
+  }
+}  
+
 Sfs *newSfs(int n, Args *args){
   Sfs *sfs;
-  char *c;
   int i;
 
   sfs = (Sfs *)emalloc(sizeof(Sfs));
@@ -22,14 +39,6 @@ Sfs *newSfs(int n, Args *args){
   for(i=0; i<n; i++) {
     sfs->f[i] = 0.;
     sfs->x[i] = 0;
-  }
-  /* Note the excluded frequency categories */
-  c = strtok(args->x, ",");
-  i = atoi(c);
-  sfs->x[i-1] = 0;
-  while((c = strtok(NULL, ",")) != NULL){
-    i = atoi(c);
-    sfs->x[i-1] = 1;
   }
   sfs->arr = NULL;
   if(args->U)
@@ -83,7 +92,9 @@ Sfs *getSfs(FILE *fp, Args *args){
     }else{
       body = 1;
       sfs->f = (double *)erealloc(sfs->f, (sfs->n+1)*sizeof(double));
+      sfs->x = (char *)  erealloc(sfs->x, (sfs->n+1)*sizeof(char));
       sfs->f[sfs->n] = (double)atof(tabField(1));
+      sfs->x[sfs->n] = 0;
       sfs->numPol += sfs->f[sfs->n];
       sfs->n++;
     }
@@ -108,7 +119,7 @@ Sfs *getSfs(FILE *fp, Args *args){
     sfs->n *= 2;
     sfs->type = FOLDED_EVEN;
   }
-
+  exFreq(sfs, args);
   return sfs;
 }
 

@@ -16,6 +16,7 @@ typedef struct rparams {
   int l;       /* sequence length                      */
   int o;       /* number of unmutated positions        */
   int *k;      /* locations of population size changes */
+  char *x;     /* excluded frequency categories        */
   double *g;   /* observed site frequency spectrum     */
   double u;    /* mutation rate                        */
 } Rparams;

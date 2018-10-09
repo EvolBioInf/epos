@@ -15,7 +15,7 @@ Args *args;
 
 Args *getArgs(int argc, char *argv[]){
   char c;
-  char *optString = "hvUau:l:c:s:b:";
+  char *optString = "hvUau:l:c:s:b:x:";
 
   args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
@@ -25,6 +25,7 @@ Args *getArgs(int argc, char *argv[]){
   args->s = 0;
   args->b = 0;
   args->a = 0;
+  args->x = NULL;
   args->u = DEFAULT_U;
   args->c = DEFAULT_C;
   args->l = 0;

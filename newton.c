@@ -26,6 +26,7 @@ Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
   r->m = ps->m;
   r->k = ps->k;
   r->g = sfs->f;
+  r->x = sfs->x;
   r->u = sfs->u;
   r->l = sfs->nullCount + sfs->numPol;
   r->o = sfs->nullCount;
@@ -90,6 +91,7 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
   double *g = ((Rparams *) params)->g;
+  char *ex  = ((Rparams *) params)->x;
   double u  = ((Rparams *) params)->u;
   int l     = ((Rparams *) params)->l;
   int o     = ((Rparams *) params)->o;
@@ -110,13 +112,17 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
     if(yy < 0)
       yy = 0;
     for(r = 1; r < n/2; r++) {
+      if(ex[r-1]) /* is frequency category f[r-1] excluded from the analysis? */
+	continue;
       eg = expF(N, u, m, n, l, k, r);
       bb = binomial(xx, r) - binomial(yy, r) + binomial(xx, n-r) - binomial(yy, n-r);
       y[i] += (g[r-1] / eg - (double)o / e) / (double)r * bb / binomial(n - 1, r);
     }
+    if(ex[n/2-1]) /* is frequency category f[n/2-1] excluded from the analysis? */
+      continue; 
     eg = expF(N, u, m, n, l, k, n/2);
     bb = binomial(xx, n/2) - 2. * binomial(yy, n/2);
-    y[i] += 2./n * (g[n/2] / eg - (double)o / e) * bb / binomial(n-1, n/2);
+    y[i] += 2./n * (g[n/2 - 1] / eg - (double)o / e) * bb / binomial(n-1, n/2);
   }
   for(i = 0; i < m; i++) {
     gsl_vector_set(f, i, y[i]);
@@ -134,6 +140,7 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
   double *g = ((Rparams *) params)->g;
+  char *ex  = ((Rparams *) params)->x;
   double u  = ((Rparams *) params)->u;
   int l     = ((Rparams *) params)->l;
   int o     = ((Rparams *) params)->o;
@@ -154,6 +161,8 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
     if(yy < 0)
       yy = 0;
     for(r = 1; r < n; r++) {
+      if(ex[r-1]) /* is frequency category f[r-1] excluded from the analysis? */
+	continue;
       eg = expG(N, u, m, n, l, k, r);
       bb = binomial(xx, r) - binomial(yy, r);
       y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * bb / binomial(n - 1, r);
@@ -201,7 +210,8 @@ double logLik(PopSizes *ps, Sfs *sfs) {
       e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
     else
       e = expF(ps->N, sfs->u, ps->m, ps->n, x, ps->k, r);
-    l += sfs->f[r-1] * log(e) - e;
+    if(!sfs->x[r-1])
+      l += sfs->f[r-1] * log(e) - e;
   }
   if(sfs->type == UNFOLDED)
     e = expG(ps->N, sfs->u, ps->m, ps->n, x, ps->k, 0);
