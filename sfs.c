@@ -4,22 +4,38 @@
  * Date: Mon Oct 23 10:30:27 2017
  **************************************************/
 #include <stdlib.h>
+#include <string.h>
 #include "sfs.h"
 #include "eprintf.h"
 #include "tab.h"
 #include "sfs.h"
 
-Sfs *newSfs(int n, int type){
+Sfs *newSfs(int n, Args *args){
   Sfs *sfs;
+  char *c;
   int i;
 
   sfs = (Sfs *)emalloc(sizeof(Sfs));
   sfs->n = n;
   sfs->f = (double *)emalloc(n*sizeof(double));
-  for(i=0; i<n; i++)
+  sfs->x = (char *)emalloc(n*sizeof(double));
+  for(i=0; i<n; i++) {
     sfs->f[i] = 0.;
+    sfs->x[i] = 0;
+  }
+  /* Note the excluded frequency categories */
+  c = strtok(args->x, ",");
+  i = atoi(c);
+  sfs->x[i-1] = 0;
+  while((c = strtok(NULL, ",")) != NULL){
+    i = atoi(c);
+    sfs->x[i-1] = 1;
+  }
   sfs->arr = NULL;
-  sfs->type = type;
+  if(args->U)
+    sfs->type = UNFOLDED;
+  else
+    sfs->type = FOLDED_EVEN;
   sfs->nullCount = 0.;
   sfs->numPol = 0.;
   sfs->u = 0.;
@@ -31,6 +47,7 @@ void freeSfs(Sfs *sfs){
   if(sfs == NULL)
     return;
   free(sfs->f);
+  free(sfs->x);
   if(sfs->arr != NULL)
     free(sfs->arr);
   free(sfs);
@@ -40,16 +57,11 @@ void freeSfs(Sfs *sfs){
 Sfs *getSfs(FILE *fp, Args *args){
   char *line;
   Sfs *sfs;
-  int i, type;
+  int i;
   char body;
   double j;
 
-  if(args->U){
-    type = UNFOLDED;
-  }else{
-    type = FOLDED_EVEN;
-  }
-  sfs = newSfs(0, type);
+  sfs = newSfs(0, args);
   body = 0;
   while((line = tabGetLine(fp)) != NULL){
     if(tabNfield() >= 2){
@@ -125,14 +137,10 @@ void iniBoot(Sfs *sfs) {
 }
 
 Sfs *bootstrapSfs(Sfs *sfs, gsl_rng *rand, Args *args){
-  int i, j, x, y, type;
+  int i, j, x, y;
   Sfs *bootSfs;
   
-  if(args->U)
-    type = UNFOLDED;
-  else
-    type = FOLDED_EVEN;
-  bootSfs = newSfs(sfs->n, type);
+  bootSfs = newSfs(sfs->n, args);
   bootSfs->u = args->u;
   x = sfs->numPol + sfs->nullCount;
   for(i=0; i<x; i++){

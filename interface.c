@@ -45,6 +45,9 @@ Args *getArgs(int argc, char *argv[]){
     case 'U':                           /* unfolded */
       args->U = 1;
       break;
+    case 'x':
+      args->x = estrdup(optarg);
+      break;
     case 'a':                           /* average age of an allele */
       args->a = 1;
       break;
@@ -85,6 +88,7 @@ void printUsage(char *version){
   printf("\t[-c NUM minimum change in log-likelihood for accepatnce of new level; default: %g]\n", DEFAULT_C);
   printf("\t[-b NUM number of bootstrap replicates; default: no bootrstrap]\n");
   printf("\t[-s NUM seed for random number generator used in bootstrap; default: system, randomSeed.dat]\n");
+  printf("\t[-x NUM1,NUM2... exclude frequency categories NUM1, NUM2, etc.; default: include all categories]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-a print average ages of alleles; default: print population size]\n");
   printf("\t[-h print this help message and exit]\n");

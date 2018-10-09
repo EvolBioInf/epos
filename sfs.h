@@ -16,6 +16,7 @@
 /* define site frequency spectrum */
 typedef struct sfs{
   double *f;        /* frequency spectrum */
+  char *x;          /* excluded frequency category? */
   double numPol;    /* number of polymorphic sites */
   int n;            /* sample size */
   double nullCount; /* number of unmutated sites */
@@ -28,7 +29,7 @@ Sfs *getSfs(FILE *fp, Args *args);
 void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
 void resetSfs(Sfs *sfs);
-Sfs *newSfs(int n, int type);
+Sfs *newSfs(int n, Args *args);
 Sfs *bootstrapSfs(Sfs *sfs, gsl_rng *rand, Args *args);
 void iniBoot(Sfs *sfs);
 

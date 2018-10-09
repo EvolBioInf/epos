@@ -16,6 +16,7 @@ typedef struct args{
   int s;       /* seed for random number generator */
   int b;       /* number of bootstrap replicates */
   char **inputFiles;
+  char *x;     /* excluded frequency categories, e. g. 1,2 for excluding singletons & doubletons */
   double u;    /* mutation rate */
   double c;    /* minimum change */
   int numInputFiles;
