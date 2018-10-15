@@ -112,6 +112,10 @@ Sfs *getSfs(FILE *fp, Args *args){
     }
     sfs->nullCount = args->l - sfs->numPol;
   }
+  if(sfs->nullCount <= 0) {
+    printf("ERROR[epos]: The sequence length (%.0f) must be at least equal the number of polymorphic sites plus one (%.0f).\n", sfs->nullCount+sfs->numPol, sfs->numPol+1);
+    exit(-1);
+  }
   if(args->U){ /* unfolded */
     sfs->n++;
     sfs->type = UNFOLDED;
