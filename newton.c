@@ -86,7 +86,8 @@ double expF(double *N, double u, int m, int n, int l, int *k, int r) {
 
 int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   int i, r;
-  double eg, xx, yy, bb;
+  double e, eg, xx, yy, bb, q;
+  char excluded;
   int n     = ((Rparams *) params)->n;
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
@@ -101,7 +102,16 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   for(i = 0; i < m; i++) {
     N[i] = gsl_vector_get(x, i);
   }
-  double e = expF(N, u, m, n, l, k, 0);
+  e = expF(N, u, m, n, l, k, 0);
+  /* is a frequency category excluded? */
+  excluded = 0;
+  for(i = 1; i < n/2; i++)
+    if(ex[i-1])
+      excluded = 1;
+  if(excluded)
+    q = 1;
+  else
+    q = (double)o / e;
   /* equation (4b) */
   for(i = 0; i < m; i++) {
     y[i] = 0.;
@@ -116,13 +126,13 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
 	continue;
       eg = expF(N, u, m, n, l, k, r);
       bb = binomial(xx, r) - binomial(yy, r) + binomial(xx, n-r) - binomial(yy, n-r);
-      y[i] += (g[r-1] / eg - (double)o / e) / (double)r * bb / binomial(n - 1, r);
+      y[i] += (g[r-1] / eg - q) / (double)r * bb / binomial(n - 1, r);
     }
     if(ex[n/2-1]) /* is frequency category f[n/2-1] excluded from the analysis? */
       continue; 
     eg = expF(N, u, m, n, l, k, n/2);
     bb = binomial(xx, n/2) - 2. * binomial(yy, n/2);
-    y[i] += 2./n * (g[n/2 - 1] / eg - (double)o / e) * bb / binomial(n-1, n/2);
+    y[i] += 2./n * (g[n/2 - 1] / eg - q) * bb / binomial(n-1, n/2);
   }
   for(i = 0; i < m; i++) {
     gsl_vector_set(f, i, y[i]);
@@ -135,7 +145,8 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
 
 int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   int i, r;
-  double eg, xx, yy, bb;
+  char excluded;
+  double e, eg, xx, yy, bb, q;
   int n     = ((Rparams *) params)->n;
   int m     = ((Rparams *) params)->m;
   int *k    = ((Rparams *) params)->k;
@@ -150,10 +161,19 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   for(i = 0; i < m; i++) {
     N[i] = gsl_vector_get(x, i);
   }
+  e = expG(N, u, m, n, l, k, 0);
+  /* is a frequency category excluded? */
+  excluded = 0;
+  for(i = 1; i < n; i++)
+    if(ex[i-1])
+      excluded = 1;
+  if(excluded)
+    q = 1;
+  else
+    q = (double)o / e;
   /* equation (3) */
   for(i = 0; i < m; i++) {
     y[i] = 0.;
-    double e = expG(N, u, m, n, l, k, 0);
     xx = n - k[i] + 1;
     if(xx < 0)
       xx = 0;
@@ -165,7 +185,7 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
 	continue;
       eg = expG(N, u, m, n, l, k, r);
       bb = binomial(xx, r) - binomial(yy, r);
-      y[i] += 1. / r * (g[r-1] / eg - (double)o / e) * bb / binomial(n - 1, r);
+      y[i] += 1. / r * (g[r-1] / eg - q) * bb / binomial(n - 1, r);
     }
   }
   for(i = 0; i < m; i++) {
