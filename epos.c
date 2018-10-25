@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
   }
   if(args->b)
     free_gsl_rng(rand, args);
-  free(args);
+  freeArgs();
   free(progname());
 
   return 0;

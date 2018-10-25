@@ -13,6 +13,12 @@
 
 Args *args;
 
+void freeArgs() {
+  if(args->x)
+    free(args->x);
+  free(args);
+}
+
 Args *getArgs(int argc, char *argv[]){
   char c;
   char *optString = "hvUau:l:c:s:b:x:";
@@ -86,7 +92,7 @@ void printUsage(char *version){
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
-  printf("\t[-c NUM minimum change in log-likelihood for accepatnce of new level; default: %g]\n", DEFAULT_C);
+  printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g]\n", DEFAULT_C);
   printf("\t[-b NUM number of bootstrap replicates; default: no bootrstrap]\n");
   printf("\t[-s NUM seed for random number generator used in bootstrap; default: system, randomSeed.dat]\n");
   printf("\t[-x NUM1,NUM2... exclude frequency categories NUM1, NUM2, etc.; default: include all categories]\n");

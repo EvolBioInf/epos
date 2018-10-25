@@ -25,5 +25,6 @@ typedef struct args{
 Args *getArgs(int argc, char *argv[]);
 void printUsage(char *version);
 void printSplash(char *version);
+void freeArgs();
 
 #endif
