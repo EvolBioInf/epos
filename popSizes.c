@@ -52,6 +52,7 @@ void freePopSizes(PopSizes *ps){
   free(ps->N);
   free(ps->allN);
   free(ps->aaa);
+  free(ps->asa);
   free(ps->prevK);
   free(ps->iniN);
   free(ps);
@@ -65,6 +66,7 @@ PopSizes *newPopSizes(Sfs *sfs){
   ps->N = (double *)emalloc(sfs->n * sizeof(double));
   ps->allN = (double *)emalloc((sfs->n + 1) * sizeof(double));
   ps->aaa = (double *)emalloc(sfs->n * sizeof(double));
+  ps->asa = (double *)emalloc(sfs->n * sizeof(double));
   ps->iniN = (double *)emalloc(sfs->n * sizeof(double));
   ps->k = (int *)emalloc((sfs->n+1) * sizeof(int));
   ps->prevK = (int *)emalloc((sfs->n+1) * sizeof(int));

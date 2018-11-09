@@ -9,9 +9,8 @@
 #include "eprintf.h"
 #include "util.h"
 
-double aaa(double *N, int n, int r) {
-
-  /* Numerator */
+/* numAaa computes the numerator in the equation for the average age of an allele */
+double numAaa(double *N, int n, int r) {
   double nu = 0.;
   for(int k = 2; k <= n; k++) {
     double s = 0.;
@@ -20,12 +19,36 @@ double aaa(double *N, int n, int r) {
     }
     nu += N[k-1] * binomial(n-k, r-1) * s;
   }
+  return nu;
+}
 
+/* aaa computes the average age of an allele */
+double aaa(double *N, int n, int r) {
+
+  /* Numerator */
+  double nu = numAaa(N, n, r);
   /* Denomiator */
   double de = 0.;
   for(int k = 2; k <= n; k++) {
     de += N[k-1] * binomial(n-k, r-1);
   }
+
+  return nu / de;
+}
+
+/* asa computes the average size of an allele */
+double asa(double *N, int n, int r) {
+  /* Numerator */
+  double nu = 0.;
+  for(int k = 2; k <= n; k++) {
+    double s = 0.;
+    for(int l = k; l <= n; l++) {
+      s += 4. * N[l-1] * N[l-1] / (double) l / (double) (l-1);
+    }
+    nu += N[k-1] * binomial(n-k, r-1) * s;
+  }
+  /* Denomiator */
+  double de = numAaa(N, n, r);
 
   return nu / de;
 }
@@ -47,6 +70,8 @@ void compAaa(PopSizes *ps, Sfs *sfs) {
   else
     max = n / 2;
   allN(ps);
-  for(int r = 1; r <= max; r++)
+  for(int r = 1; r <= max; r++) {
     ps->aaa[r-1] = aaa(ps->allN, n, r);
+    ps->asa[r-1] = asa(ps->allN, n, r);
+  }
 }

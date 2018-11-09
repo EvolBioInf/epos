@@ -19,6 +19,7 @@ typedef struct popSizes {
   int *prevK;
   double *iniN; /* initial population sizes */
   double *aaa;  /* average ages of alleles */
+  double *asa;  /* average sizes of alleles */
   int prevM;
   int n;
 } PopSizes;

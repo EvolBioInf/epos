@@ -117,9 +117,9 @@ void printAaa(PopSizes *ps, Sfs *sfs) {
   else
     max = n / 2;
 
-  printf("#r\tA[r]\n");	
+  printf("#r\tA[r]\tP[r]\n");	
   for(int r = 1; r <= max; r++)
-    printf("%d\t%g\n", r, ps->aaa[r-1]);
+    printf("%d\t%g\t%g\n", r, ps->aaa[r-1], ps->asa[r-1]);
   
 }
 
