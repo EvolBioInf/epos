@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gsl/gsl_errno.h>
+#include "tab.h"
 #include "interface.h"
 #include "eprintf.h"
 #include "sfs.h"
@@ -14,48 +15,37 @@
 #include "gsl_rng.h"
 
 
-void singleAnalysis(Sfs *sfs, Args *args, char *fileName) {
-  PopSizes *ps;
+void analysis(Sfs *sfs, Args *args, char *fileName) {
+  /* PopSizes *ps; */
 
   printf("#InputFile:\t");
-  if(args->b)
-    printf("bootstrapped_");
   printf("%s\n", fileName);
-  printSfsStats(sfs);
-  ps = getPopSizes(sfs, args);
-  if(args->a)
-    printAaa(ps, sfs);
-  else
-    printTimes(ps, sfs);
-  freePopSizes(ps);
+  printSfs(sfs);
+  /* printSfsStats(sfs); */
+  /* ps = getPopSizes(sfs, args); */
+  /* if(args->a) */
+  /*   printAaa(ps, sfs); */
+  /* else */
+  /*   printTimes(ps, sfs); */
+  /* freePopSizes(ps); */
 }
 
-void scanFile(FILE *fp, Args *args, char *fileName, gsl_rng *rand){
-  Sfs *sfs, *bSfs;
+void scanFile(FILE *fp, Args *args, char *fileName){
+  Sfs *sfs;
 
-  while((sfs = getSfs(fp, args)) != NULL) {
+  while((sfs = readSfs(fp, args)) != NULL) {
     iniBinom(sfs->n);
-    if(args->b == 0) {
-      singleAnalysis(sfs, args, fileName);
-    } else {
-      iniBoot(sfs);
-      for(int i = 0; i < args->b; i++) {
-	bSfs = bootstrapSfs(sfs, rand, args);
-	singleAnalysis(bSfs, args, fileName);
-	freeSfs(bSfs);
-      }
-    }
+    analysis(sfs, args, fileName);
     freeBinom();
     freeSfs(sfs);
   }
+  tabFree();
 }
 
 int main(int argc, char *argv[]){
-  int i;
   char *version;
   Args *args;
   FILE *fp;
-  gsl_rng *rand;
 
   version = "1.0";
   setprogname2("epos");
@@ -64,24 +54,17 @@ int main(int argc, char *argv[]){
     printSplash(version);
   if(args->h || args->e)
     printUsage(version);
-
-  rand = NULL;
-  if(args->b)
-    rand = ini_gsl_rng(args);
-
   if(args->numInputFiles == 0){
     fp = stdin;
-    scanFile(fp, args, "stdin", rand);
+    scanFile(fp, args, "stdin");
   }else{
-    for(i=0;i<args->numInputFiles;i++){
-      fp = efopen(args->inputFiles[i],"r");
-      scanFile(fp, args, args->inputFiles[i], rand);
+    for(int i = 0; i < args->numInputFiles; i++){
+      fp = efopen(args->inputFiles[i], "r");
+      scanFile(fp, args, args->inputFiles[i]);
       fclose(fp);
     }
   }
-  if(args->b)
-    free_gsl_rng(rand, args);
-  freeArgs();
+  free(args);
   free(progname());
 
   return 0;

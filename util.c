@@ -87,8 +87,8 @@ int delta(int x, int y){
 }
 
 void printSfsStats(Sfs *sfs){
-  printf("#Polymorphic sites surveyed:\t%g\n", sfs->numPol);
-  printf("#Monomorphic sites surveyed:\t%g\n", sfs->nullCount);
+  printf("#Polymorphic sites surveyed:\t%d\n", sfs->p);
+  printf("#Monomorphic sites surveyed:\t%d\n", sfs->G[0]);
 }
 
 void printTimes(PopSizes *ps, Sfs *sfs){
@@ -109,18 +109,9 @@ void printTimes(PopSizes *ps, Sfs *sfs){
 }
 
 void printAaa(PopSizes *ps, Sfs *sfs) {
-  int n = ps->n;
-  int max;
-
-  if(sfs->type == UNFOLDED)
-    max = n - 1;
-  else
-    max = n / 2;
-
   printf("#r\tA[r]\tP[r]\n");	
-  for(int r = 1; r <= max; r++)
+  for(int r = 1; r <= sfs->m; r++)
     printf("%d\t%g\t%g\n", r, ps->aaa[r-1], ps->asa[r-1]);
-  
 }
 
 /* watterson: Using Watterson's estimator of N */
@@ -131,8 +122,8 @@ double watterson(Sfs *sfs){
   s = 0.;
   for(i=1; i<sfs->n; i++)
     s += 1./i;
-  l = sfs->nullCount + sfs->numPol;
-  w = sfs->numPol / s / 4. / sfs->u / l;
+  l = sfs->G[0] + sfs->p;
+  w = sfs->p / s / 4. / sfs->u / l;
 
   return w;
 }

@@ -13,10 +13,7 @@ typedef struct args{
   char U;      /* unfolded? */
   char a;      /* average age of an allele? */
   int l;       /* sequence length */
-  int s;       /* seed for random number generator */
-  int b;       /* number of bootstrap replicates */
   char **inputFiles;
-  char *x;     /* excluded frequency categories, e. g. 1,2 for excluding singletons & doubletons */
   double u;    /* mutation rate */
   double c;    /* minimum change */
   int numInputFiles;
@@ -25,6 +22,5 @@ typedef struct args{
 Args *getArgs(int argc, char *argv[]);
 void printUsage(char *version);
 void printSplash(char *version);
-void freeArgs();
 
 #endif
