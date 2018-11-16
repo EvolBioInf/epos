@@ -131,7 +131,7 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
     if(ex[n/2-1]) /* is frequency category f[n/2-1] excluded from the analysis? */
       continue; 
     eg = expF(N, u, m, n, l, k, n/2);
-    bb = binomial(xx, n/2) - 2. * binomial(yy, n/2);
+    bb = binomial(xx, n/2) - binomial(yy, n/2);
     y[i] += 2./n * (g[n/2 - 1] / eg - q) * bb / binomial(n-1, n/2);
   }
   for(i = 0; i < m; i++) {
