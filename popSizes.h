@@ -10,29 +10,14 @@
 #include "interface.h"
 
 typedef struct popSizes {
-  double *N;
-  double *allN;
-  double psi;
-  double watterson;
-  int m;
-  int *k;
-  int *prevK;
-  double *iniN; /* initial population sizes */
-  double *aaa;  /* average ages of alleles */
-  double *asa;  /* average sizes of alleles */
-  int prevM;
-  int n;
+  int     m;  /* number of population size changes, 1 <= m <= n-1 */
+  double *N;  /* m population sizes                               */
+  int    *k;  /* m+1 positions where population size changes      */
+  double  l;  /* log-likelihood                                   */
 } PopSizes;
 
-PopSizes *getPopSizes(Sfs *sfs, Args *args);
 PopSizes *newPopSizes(Sfs *sfs);
-void addTestK(PopSizes *ps, int k);
-void addK(PopSizes *ps, int k);
-void restoreK(PopSizes *ps);
-void freePopSizes(PopSizes *ps);
-int negPopSizes(PopSizes *ps);
-double psi(PopSizes *ps, Sfs *sfs);
-void findIniN(PopSizes *ps, Sfs *sfs);
-void compAaa(PopSizes *ps, Sfs *sfs);
+double expF(PopSizes *p, Sfs *s, int r);
+double expG(PopSizes *p, Sfs *s, int r);
 
 #endif

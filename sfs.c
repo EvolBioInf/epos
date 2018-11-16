@@ -23,7 +23,7 @@ void printSfs(Sfs *sfs) {
   printf("Sequence length: %d\n", sfs->l);
   printf("Mutation rate: %g\n", sfs->u);
   printf("# r\tG[r]\n");
-  for(int i = 0; i <= sfs->m; i++)
+  for(int i = 0; i <= sfs->a; i++)
     printf("%d\t%d\n", i, sfs->G[i]);
   printf("*****************\n");
 }
@@ -54,7 +54,7 @@ void freeSfs(Sfs *sfs){
 int numPol(Sfs *sfs) {
   int p = 0;
 
-  for(int i = 1; i <= sfs->m; i++)
+  for(int i = 1; i <= sfs->a; i++)
     p += sfs->G[i];
 
   return p;
@@ -70,7 +70,7 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
     sfs->n = 2 * r;
   else
     sfs->n = r + 1;
-  sfs->m = r;
+  sfs->a = r;
   sfs->p = numPol(sfs);
   /* deal with monomorphic sites */
   if(sfs->G[0] == 0) {

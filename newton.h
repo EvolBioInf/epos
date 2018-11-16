@@ -11,17 +11,11 @@
 #include "popSizes.h"
 
 typedef struct rparams {
-  int n;       /* sample size                          */
-  int m;       /* number of population sizes           */
-  int l;       /* sequence length                      */
-  int o;       /* number of unmutated positions        */
-  int *k;      /* locations of population size changes */
-  char *x;     /* excluded frequency categories        */
-  double *g;   /* observed site frequency spectrum     */
-  double u;    /* mutation rate                        */
+  Sfs      *s;
+  PopSizes *p;
 } Rparams;
 
-int newton(Sfs *sfs, PopSizes *ps, Args *args);
-double logLik(PopSizes *ps, Sfs *sfs);
+int newton(Sfs *s, PopSizes *p, Args *a);
+double logLik(PopSizes *p, Sfs *s);
 
 #endif

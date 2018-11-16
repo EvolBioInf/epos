@@ -11,7 +11,7 @@
 
 typedef struct sfs{
   int   *G; /* frequency spectrum          */
-  int    m; /* maximum index in G          */
+  int    a; /* maximum index in G          */
   int    l; /* sequence length             */
   int    n; /* number of haplotypes        */
   double u; /* mutation rate               */

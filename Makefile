@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS= -O3 -Wall -Wshadow -pedantic -std=gnu99 -g #-fopenmp # -pthread -fsanitize=thread #-pg
 # The source files, object files, libraries and executable name.
-SRCFILES= epos.c interface.c eprintf.c sfs.c tab.c util.c # popSizes.c newton.c gsl_rng.c aaa.c
-OBJFILES= epos.o interface.o eprintf.o sfs.o tab.o util.o # popSizes.o newton.o gsl_rng.o aaa.o
+SRCFILES= epos.c interface.c eprintf.c sfs.c tab.c util.c popSizes.c newton.c # gsl_rng.c aaa.c
+OBJFILES= epos.o interface.o eprintf.o sfs.o tab.o util.o popSizes.o newton.o # gsl_rng.o aaa.o
 LIBS= -lm -lgsl -lblas #-pg
 EXECFILE=epos
 DIRECTORY=Epos

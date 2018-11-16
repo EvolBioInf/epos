@@ -95,8 +95,8 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   int i, k;
   double t;
 
-  k = ps->n;
-  printf("#LogLik:\t\t%g\n", ps->psi);
+  k = sfs->n;
+  printf("#LogLik:\t\t%g\n", ps->l);
   printf("#Level\tT[Level]\tN[T]\n");
   t = 0.;
   for(i=ps->m-1;i>=0;i--){
@@ -108,11 +108,11 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   }
 }
 
-void printAaa(PopSizes *ps, Sfs *sfs) {
-  printf("#r\tA[r]\tP[r]\n");	
-  for(int r = 1; r <= sfs->m; r++)
-    printf("%d\t%g\t%g\n", r, ps->aaa[r-1], ps->asa[r-1]);
-}
+/* void printAaa(PopSizes *ps, Sfs *sfs) { */
+/*   printf("#r\tA[r]\tP[r]\n");	 */
+/*   for(int r = 1; r <= ps->m; r++) */
+/*     printf("%d\t%g\t%g\n", r, ps->aaa[r-1], ps->asa[r-1]); */
+/* } */
 
 /* watterson: Using Watterson's estimator of N */
 double watterson(Sfs *sfs){
@@ -126,4 +126,11 @@ double watterson(Sfs *sfs){
   w = sfs->p / s / 4. / sfs->u / l;
 
   return w;
+}
+
+int max(int a, int b) {
+  if(a > b)
+    return a;
+  else
+    return b;
 }

@@ -21,8 +21,8 @@ void analysis(Sfs *sfs, Args *args, char *fileName) {
   printf("#InputFile:\t");
   printf("%s\n", fileName);
   printSfs(sfs);
-  /* printSfsStats(sfs); */
-  /* ps = getPopSizes(sfs, args); */
+  printSfsStats(sfs);
+  /* ps = searchLevels(sfs, args); */
   /* if(args->a) */
   /*   printAaa(ps, sfs); */
   /* else */
