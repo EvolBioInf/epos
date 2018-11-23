@@ -16,6 +16,5 @@ typedef struct rparams {
 } Rparams;
 
 int newton(Sfs *s, PopSizes *p, Args *a);
-double logLik(PopSizes *p, Sfs *s);
 
 #endif

@@ -41,7 +41,7 @@ double expGr(PopSizes *ps, Sfs *sfs, int r){
     s += N[i] * (a - b);
   }
   s *= 4. * u * l / (double)r / binomial(n - 1, r);
-  
+
   return s;
 }
 
@@ -81,6 +81,8 @@ PopSizes *newPopSizes(Sfs *sfs){
   ps->m = 1;
   ps->N = (double *)emalloc(sfs->n * sizeof(double));
   ps->k = (int *)emalloc((sfs->n + 1) * sizeof(int));
+  ps->k[1] = 2;
+  ps->k[2] = sfs->n + 1;
   ps->l = 0.;
 
   return ps;

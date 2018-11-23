@@ -62,7 +62,6 @@ int numPol(Sfs *sfs) {
 
 /* prepSfs prepares the raw data ready by readSfs for further analysis */
 void prepSfs(Sfs *sfs, int r, Args *args) {
-  printf("prepSfs\n");
   sfs->u = args->u;
   sfs->l = args->l;
   /* deal with sample size */
@@ -83,7 +82,8 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
       fprintf(stderr, "ERROR[epos]: The sequence length (%d) must be greater than the number of polymorphic sites (%d).\n", sfs->l, numPol(sfs));
       exit(-1);
     }
-  }
+  } else
+    sfs->l = sfs->G[0] + numPol(sfs);
 }
 
 /* getSfs obtains the next SFS from an open file */
@@ -105,8 +105,8 @@ Sfs *readSfs(FILE *fp, Args *args){
 	return sfs;
       }
     }
-    r = atoi(tabField(0));        /* degree */
-    f = atof(tabField(1)); /* frequency */
+    r = atoi(tabField(0));       /* degree */
+    f = atof(tabField(1));       /* frequency */
     sfs->G = (int *)erealloc(sfs->G, (r + 1) * sizeof(int));
     sfs->G[r] = f;
   }

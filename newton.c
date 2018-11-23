@@ -42,7 +42,6 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   double   *N = p->N;
   
   double *y = (double *)emalloc((m + 1) * sizeof(double));
-  
   for(int i = 1; i <= m; i++)
     N[i] = gsl_vector_get(x, i - 1);
   e = expF(p, s, 0);
@@ -130,17 +129,14 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
     f.f = &folded;
   else
     f.f = &unfolded;
-  
   f.n = ps->m;
   f.params = p;
   double w = watterson(sfs);
   for(int i = 1; i <= ps->m; i++)
     gsl_vector_set(x, i-1, w);
-
   T = gsl_multiroot_fsolver_hybrids;
   s = gsl_multiroot_fsolver_alloc(T, ps->m);
   gsl_multiroot_fsolver_set(s, &f, x);
-
   status = 0;
   do {
     iter++;
@@ -155,6 +151,7 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   } while (status == GSL_CONTINUE && iter < 1000);
   for(int i = 1; i <= ps->m; i++)
     ps->N[i] = gsl_vector_get(s->x, i - 1);
+  ps->l = logLik(ps, sfs);
   gsl_multiroot_fsolver_free(s);
   gsl_vector_free(x);
   free(p);
