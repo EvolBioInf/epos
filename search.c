@@ -26,11 +26,11 @@ int *nextConfig(int m, int n, int *start, Args *args, short setup) {
     return nextExhaustive(m, n, start, setup);
 }
 
-void printConfig(int *k, int m) {
+void printConfig(int *k, int m, double ll) {
   printf("%d", k[1]);
   for(int i = 2; i <= m + 1; i++)
     printf(" %d", k[i]);
-  printf("\n");
+  printf(" %f\n", ll);
 }
 
 /* compPopSizes computes population sizes and returns their log-likelihood */
@@ -44,38 +44,45 @@ double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args) {
 }
 
 PopSizes *searchLevels(Sfs *sfs, Args *args) {
-  int *kd, *ka, *k; /* arrays of levels   */
+  int *kd, *ka, *kp, *k; /* arrays of levels   */
   int m;
 
   /* initialize search */
   PopSizes *ps = newPopSizes(sfs);
   ka = (int *)emalloc((sfs->n + 1) * sizeof(int));
   k  = (int *)emalloc((sfs->n + 1) * sizeof(int));
+  kp = (int *)emalloc((sfs->n + 1) * sizeof(int));
   newton(sfs, ps, args);
   double l = ps->l;
   double la = l;
   cpK(ps->k, ka, ps->m);
   cpK(ps->k,  k, ps->m);
+  cpK(ps->k, kp, ps->m);
   /* iterate over the possible number of levels, n */
   for(m = 2; m <= sfs->n; m++) {
-    kd = nextConfig(m, sfs->n, ka, args, 1);
-    while((kd = nextConfig(m, sfs->n, ka, args, 0)) != NULL) {
+    kd = nextConfig(m, sfs->n, k, args, 1);
+    while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld = compPopSizes(kd, m, sfs, ps, args);
       if(ld > la) {
 	la = ld;
 	cpK(kd, ka, m);
       }
     }
-    if(la <= l + 2) {
-      compPopSizes(k, m - 1, sfs, ps, args);
+    if(la <= l + args->c) { /* no improvement, quit search */
+      compPopSizes(kp, m - 1, sfs, ps, args);
+      free(ka);
+      free(k);
+      free(kp);
       return ps;
     }
     cpK(ka, k, m);
+    cpK(ka, kp, m);
     l = la;
   }
-  compPopSizes(k, m - 1, sfs, ps, args);
+  compPopSizes(kp, m - 1, sfs, ps, args);
   free(k);
   free(ka);
+  free(kp);
 
   return ps;
 }

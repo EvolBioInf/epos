@@ -30,7 +30,7 @@ void analysis(Sfs *sfs, Args *args, char *fileName) {
   /*   printAaa(ps, sfs); */
   /* else */
   /*   printTimes(ps, sfs); */
-  /* freePopSizes(ps); */
+  freePopSizes(ps);
 }
 
 void scanFile(FILE *fp, Args *args, char *fileName){

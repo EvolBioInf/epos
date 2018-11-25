@@ -8,7 +8,7 @@
 #include "eprintf.h"
 
 /* se sets up the computation of all n \choose m combinations */
-static int *se(int n, int m) {
+static int *se(int m, int n) {
   int *c;
 
   c = (int *)emalloc((m + 3) * sizeof(int));
@@ -21,16 +21,16 @@ static int *se(int n, int m) {
 }
 
 /* ne returns the next combination in a sequence of of n \choose m combinations */
-static int *ne(int n, int m, int *k, short setup) {
+static int *ne(int m, int n, int *k, short setup) {
   static short finished = 0;
   static int *c;
 
   if(setup) {
-    c = se(n, m);
+    finished = 0;
+    c = se(m, n);
     return NULL;
   }
   if(finished) {
-    free(k);
     free(c);
     return NULL;
   }
@@ -52,16 +52,16 @@ static int *ne(int n, int m, int *k, short setup) {
   return k;
 }
 
-int *nextExhaustive(int n, int m, int *k, short setup) {
-  return ne(n - 2, m - 1, k, setup);
+int *nextExhaustive(int m, int n, int *k, short setup) {
+  return ne(m-1, n - 2, k, setup);
 }
 
 void testExhaustive() {
   int n = 5, m = 3;
   int *k = (int *)emalloc((m + 2) * sizeof(int));
 
-  nextExhaustive(n, m, k, 1);
-  while((k = nextExhaustive(n, m, k, 0)) != NULL) {
+  nextExhaustive(m, n, k, 1);
+  while((k = nextExhaustive(m, n, k, 0)) != NULL) {
     printf("%d", k[1]);
     for(int i = 2; i <= m + 1; i++)
       printf(" %d", k[i]);
