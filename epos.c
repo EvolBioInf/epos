@@ -13,16 +13,19 @@
 #include "popSizes.h"
 #include "util.h"
 #include "gsl_rng.h"
+#include "search.h"
 
+void test(Args *args);
 
 void analysis(Sfs *sfs, Args *args, char *fileName) {
-  /* PopSizes *ps; */
+  PopSizes *ps;
 
   printf("#InputFile:\t");
   printf("%s\n", fileName);
-  printSfs(sfs);
+  /* printSfs(sfs); */
   printSfsStats(sfs);
-  /* ps = searchLevels(sfs, args); */
+  ps = searchLevels(sfs, args);
+  printTimes(ps, sfs);
   /* if(args->a) */
   /*   printAaa(ps, sfs); */
   /* else */
@@ -47,9 +50,13 @@ int main(int argc, char *argv[]){
   Args *args;
   FILE *fp;
 
+  args = getArgs(argc, argv);
+  if(args->t) {
+    test(args);
+    return 0;
+  }
   version = "1.0";
   setprogname2("epos");
-  args = getArgs(argc, argv);
   if(args->v)
     printSplash(version);
   if(args->h || args->e)

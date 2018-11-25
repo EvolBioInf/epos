@@ -17,8 +17,10 @@ typedef struct popSizes {
 } PopSizes;
 
 PopSizes *newPopSizes(Sfs *sfs);
+void freePopSizes(PopSizes *ps);
 double logLik(PopSizes *p, Sfs *s);
 double expF(PopSizes *p, Sfs *s, int r);
 double expG(PopSizes *p, Sfs *s, int r);
+int negPopSizes(PopSizes *ps);
 
 #endif

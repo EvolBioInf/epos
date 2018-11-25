@@ -18,6 +18,7 @@
 #include "sfs.h"
 #include "popSizes.h"
 #include "newton.h"
+#include "tab.h"
 
 Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
   Rparams *r = (Rparams *)emalloc(sizeof(Rparams));
@@ -151,10 +152,37 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   } while (status == GSL_CONTINUE && iter < 1000);
   for(int i = 1; i <= ps->m; i++)
     ps->N[i] = gsl_vector_get(s->x, i - 1);
-  ps->l = logLik(ps, sfs);
+  if(negPopSizes(ps))
+    ps->l = -DBL_MAX;
+  else
+    ps->l = logLik(ps, sfs);
   gsl_multiroot_fsolver_free(s);
   gsl_vector_free(x);
   free(p);
 
   return status;
+}
+
+void testNewton() {
+  char *fn = "data/kap144i.dat";
+  FILE *fp = efopen(fn, "r");
+  Args *args = newArgs();
+  Sfs *sfs = readSfs(fp, args);
+  fclose(fp);
+  iniBinom(sfs->n);
+  PopSizes *ps = newPopSizes(sfs);
+  ps->m = 4;
+  ps->k[1] = 2;
+  ps->k[2] = 4;
+  ps->k[3] = 6;
+  ps->k[4] = 25;
+  ps->k[ps->m + 1] = sfs->n + 1;
+  newton(sfs, ps, args);
+  freeArgs(args);
+  printSfsStats(sfs);
+  printTimes(ps, sfs);
+  freeSfs(sfs);
+  freePopSizes(ps);
+  freeBinom();
+  tabFree();
 }

@@ -11,22 +11,30 @@
 #include "interface.h"
 #include "eprintf.h"
 
-Args *args;
-
-Args *getArgs(int argc, char *argv[]){
-  int c;
-  char *optString = "hvUau:l:c:";
-
-  args = (Args *)emalloc(sizeof(Args));
+Args *newArgs() {
+  Args *args = (Args *)emalloc(sizeof(Args));
   args->h = 0;
   args->v = 0;
   args->e = 0;
   args->U = 0;
   args->a = 0;
+  args->t = 0;
   args->u = DEFAULT_U;
   args->c = DEFAULT_C;
   args->l = 0;
+  args->E = DEFAULT_E;
+  return args;
+}
 
+void freeArgs(Args *args) {
+  free(args);
+}
+
+Args *getArgs(int argc, char *argv[]){
+  int c;
+  char *optString = "hvUatu:l:c:E:";
+
+  Args *args = newArgs();
   c = getopt(argc, argv, optString);
   while(c != -1){
     switch(c){
@@ -34,8 +42,14 @@ Args *getArgs(int argc, char *argv[]){
     case 'l':                           /* sequence length */
       args->l = atoi(optarg);
       break;
+    case 'E':                           /* levels of exhaustive search */
+      args->E = atoi(optarg);
+      break;
     case 'U':                           /* unfolded */
       args->U = 1;
+      break;
+    case 't':                           /* testing? */
+      args->t = 1;
       break;
     case 'a':                           /* average age of an allele */
       args->a = 1;
@@ -75,8 +89,10 @@ void printUsage(char *version){
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
   printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g]\n", DEFAULT_C);
+  printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-a print average ages of alleles; default: print population size]\n");
+  printf("\t[-t exectute test routines for debuggin]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");
   exit(0);

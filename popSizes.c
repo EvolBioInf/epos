@@ -13,7 +13,7 @@
 #include "util.h"
 #include "newton.h"
 
-int negPopSizes(PopSizes *ps){
+int negPopSizes(PopSizes *ps) {
   for(int i = 1; i <= ps->m; i++)
     if(ps->N[i] < 0)
       return 1;
@@ -70,7 +70,7 @@ double expF(PopSizes *ps, Sfs *sfs, int r) {
     return expG(ps, sfs, r) + expG(ps, sfs, sfs->n - r);
 }
 
-void freePopSizes(PopSizes *ps){
+void freePopSizes(PopSizes *ps) {
   free(ps->k);
   free(ps->N);
   free(ps);
