@@ -14,22 +14,32 @@
 #include "util.h"
 #include "gsl_rng.h"
 #include "search.h"
+#include "newton.h"
 
 void test(Args *args);
+
+PopSizes *presetLevels(Sfs *sfs, Args *args) {
+    PopSizes *ps = newPopSizes(sfs);
+    for(int i = 1; i <= args->nl; i++)
+      ps->k[i] = args->al[i];
+    ps->k[args->nl + 1] = sfs->n + 1;
+    ps->m = args->nl;
+    newton(sfs, ps, args);
+    return ps;
+}
 
 void analysis(Sfs *sfs, Args *args, char *fileName) {
   PopSizes *ps;
 
   printf("#InputFile:\t");
   printf("%s\n", fileName);
-  /* printSfs(sfs); */
   printSfsStats(sfs);
-  ps = searchLevels(sfs, args);
+  if(args->L)
+    ps = presetLevels(sfs, args);
+  else {
+    ps = searchLevels(sfs, args);
+  }
   printTimes(ps, sfs);
-  /* if(args->a) */
-  /*   printAaa(ps, sfs); */
-  /* else */
-  /*   printTimes(ps, sfs); */
   freePopSizes(ps);
 }
 
@@ -71,7 +81,7 @@ int main(int argc, char *argv[]){
       fclose(fp);
     }
   }
-  free(args);
+  freeArgs(args);
   free(progname());
 
   return 0;

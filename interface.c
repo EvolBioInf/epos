@@ -23,16 +23,41 @@ Args *newArgs() {
   args->c = DEFAULT_C;
   args->l = 0;
   args->E = DEFAULT_E;
+  args->L = NULL;
+  args->al = (int *)emalloc(3 * sizeof(int));
+  args->nl = 0;
   return args;
 }
 
 void freeArgs(Args *args) {
+  if(args->L != NULL)
+    free(args->L);
+  free(args->al);
   free(args);
+}
+
+void extractLevels(Args *args) {
+  char *c;
+  c = strtok(args->L, ",");
+
+  int i = atoi(c);
+  if(i != 2) {
+    args->nl++;
+    args->al[args->nl] = 2;
+  }
+  args->nl++;
+  args->al[args->nl] = i;
+  while((c = strtok(NULL, ",")) != NULL){
+    i = atoi(c);
+    args->nl++;
+    args->al = (int *)erealloc(args->al, (args->nl + 1) * sizeof(int));
+    args->al[args->nl] = i;
+  }
 }
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUatu:l:c:E:";
+  char *optString = "hvUatu:l:L:c:E:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -41,6 +66,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'l':                           /* sequence length */
       args->l = atoi(optarg);
+      break;
+    case 'L':                           /* preset levels */
+      args->L = estrdup(optarg);
       break;
     case 'E':                           /* levels of exhaustive search */
       args->E = atoi(optarg);
@@ -76,6 +104,8 @@ Args *getArgs(int argc, char *argv[]){
   }
   args->inputFiles = argv + optind;
   args->numInputFiles = argc - optind;
+  if(args->L)
+    extractLevels(args);
   return args;
 }
 
@@ -90,6 +120,7 @@ void printUsage(char *version){
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
   printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
+  printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-a print average ages of alleles; default: print population size]\n");
   printf("\t[-t exectute test routines for debuggin]\n");

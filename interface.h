@@ -15,6 +15,9 @@ typedef struct args{
   char a;      /* average age of an allele? */
   char t;      /* execute test routines? */
   int l;       /* sequence length */
+  char *L;     /* preset levels */
+  int nl;      /* number of levels */
+  int *al;     /* array of nl levels */
   int E;       /* levels of exhaustive search */
   char **inputFiles;
   double u;    /* mutation rate */

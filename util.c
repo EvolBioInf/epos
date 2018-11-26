@@ -91,6 +91,7 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   double t;
 
   k = sfs->n;
+  printf("#LogLik:\t\t%f\n", ps->l);
   printf("#Level\tT[Level]\tN[T]\n");
   t = 0.;
   for(i=ps->m;i>=1;i--){
