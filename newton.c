@@ -55,6 +55,9 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
       bb = binomial(a, r) - binomial(b, r) + binomial(a, n-r) - binomial(b, n-r);
       y[i] += (G[r] / eg - G[0]/e) / (double)r * bb / binomial(n-1, r);
     }
+    eg = expF(p, s, n/2);
+    bb = binomial(a, n/2) - binomial(b, n/2);
+    y[i] += 2./n * (G[n/2] / eg - G[0]/e) * bb / binomial(n-1, n/2);                                                                            
   }
   for(int i = 1; i <= m; i++)
     gsl_vector_set(f, i-1, y[i]);
