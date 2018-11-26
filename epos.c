@@ -12,7 +12,6 @@
 #include "sfs.h"
 #include "popSizes.h"
 #include "util.h"
-#include "gsl_rng.h"
 #include "search.h"
 #include "newton.h"
 
