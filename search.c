@@ -27,10 +27,10 @@ int *nextConfig(int m, int n, int *start, Args *args, short setup) {
 }
 
 void printConfig(int *k, int m, double ll) {
-  printf("%d", k[1]);
-  for(int i = 2; i <= m + 1; i++)
-    printf(" %d", k[i]);
-  printf(" %f\n", ll);
+  printf("#reached: {%d", k[1]);
+  for(int i = 2; i <= m; i++)
+    printf(", %d", k[i]);
+  printf("}\t\t%f\n", ll);
 }
 
 /* compPopSizes computes population sizes and returns their log-likelihood */
@@ -78,6 +78,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
     cpK(ka, k, m);
     cpK(ka, kp, m);
     l = la;
+    printConfig(k, m, l);
   }
   compPopSizes(kp, m - 1, sfs, ps, args);
   free(k);
