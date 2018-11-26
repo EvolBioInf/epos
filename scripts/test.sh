@@ -2,45 +2,36 @@
 DIFF=$(diff tmp.out data/testNewtonU.out)
 if [ "$DIFF" == "" ] 
 then
-    echo "Test(Newton, unfolded): pass"
+    printf "Test(Newton, unfolded)\t\t\tpass\n"
 else
-    echo "Test(Newton, unfolded): fail" ${DIFF}
+    printf "Test(Newton, unfolded)\t\t\tfail: %s\n" ${DIFF}
 fi
 
 ./epos -l 10000000 -u 1.2e-8 data/testNewtonF.dat > tmp.out
 DIFF=$(diff tmp.out data/testNewtonF.out)
 if [ "$DIFF" == "" ] 
 then
-    echo "Test(Newton, folded): pass"
+    printf "Test(Newton, folded)\t\t\tpass\n"
 else
-    echo "Test(Newton, folded): fail" ${DIFF}
+    printf "Test(Newton, folded)\t\t\tfail: %s\n" ${DIFF}
 fi
 
 ./epos data/kap144i.dat > tmp.out
 DIFF=$(diff tmp.out data/kap144i.out)
 if [ "$DIFF" == "" ] 
 then
-    echo "Test(Newton, kap144i): pass"
+    printf "Test(Newton, kap144i, greedy)\t\tpass\n"
 else
-    echo "Test(Newton, kap144i): fail" ${DIFF}
+    printf "Test(Newton, kap144i, greedy)\t\tfail: %s\n" ${DIFF}
 fi
 
-./epos -a data/kap144i.dat > tmp.out
-DIFF=$(diff tmp.out data/kap144ia.out)
+./epos -E 3 data/kap144i.dat > tmp.out
+DIFF=$(diff tmp.out data/kap144ie.out)
 if [ "$DIFF" == "" ] 
 then
-    echo "Test(Newton, kap144i, avg. allele age): pass"
+    printf "Test(Newton, kap144i, exhaustive)\tpass\n"
 else
-    echo "Test(Newton, kap144i, avg. allele age): fail" ${DIFF}
-fi
-
-./epos -x 1,2 data/kap144i.dat > tmp.out
-DIFF=$(diff tmp.out data/kap144ix.out)
-if [ "$DIFF" == "" ] 
-then
-    echo "Test(Newton, kap144i, exclude singletons & doubletons): pass"
-else
-    echo "Test(Newton, kap144i, exclude singletons & doubletons): fail" ${DIFF}
+    printf "Test(Newton, kap144i, exhaustive)\tfail: %s\n" ${DIFF}
 fi
 
 rm tmp.out

@@ -81,11 +81,6 @@ double hi(int i, int n, int r, int *k){
   }
 }
 
-/* delta: As explained by Peter */
-int delta(int x, int y){
-  return x==y ? 1 : 0;
-}
-
 void printSfsStats(Sfs *sfs){
   printf("#Polymorphic sites surveyed:\t%d\n", sfs->p);
   printf("#Monomorphic sites surveyed:\t%d\n", sfs->G[0]);
@@ -95,6 +90,7 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   int i, k;
   double t;
 
+  k = sfs->n;
   printf("#Level\tT[Level]\tN[T]\n");
   t = 0.;
   for(i=ps->m;i>=1;i--){
@@ -105,12 +101,6 @@ void printTimes(PopSizes *ps, Sfs *sfs){
       break;
   }
 }
-
-/* void printAaa(PopSizes *ps, Sfs *sfs) { */
-/*   printf("#r\tA[r]\tP[r]\n");	 */
-/*   for(int r = 1; r <= ps->m; r++) */
-/*     printf("%d\t%g\t%g\n", r, ps->aaa[r-1], ps->asa[r-1]); */
-/* } */
 
 /* watterson: Using Watterson's estimator of N */
 double watterson(Sfs *sfs){

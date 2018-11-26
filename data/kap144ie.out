@@ -1,0 +1,9 @@
+#InputFile:	data/kap144i.dat
+#Polymorphic sites surveyed:	18037
+#Monomorphic sites surveyed:	185297
+#reached: {2, 25}		2150273.576946
+#reached: {2, 4, 14}		2150286.461335
+#Level	T[Level]	N[T]
+14	1.15e+05	4.11e+05
+4	1.57e+06	1.42e+06
+2	3.62e+06	7.68e+05
