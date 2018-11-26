@@ -1,225 +1,103 @@
 /***** popSizes.c *********************************
- * Description: 
+ * Description: Computation of population sizes
+ * based on the mathematics layed out in Peter
+ * Pfaffelhuber's memo dated November 8, 2018.
  * Author: Bernhard Haubold, haubold@evolbio.mpg.de
  * Date: Mon Dec 18 11:19:32 2017
  **************************************************/
 #include <stdlib.h>
 #include <omp.h>
+#include <math.h>
 #include "eprintf.h"
 #include "popSizes.h"
 #include "util.h"
 #include "newton.h"
 
-void findIniN(PopSizes *ps, Sfs *sfs) {
-  int id;
-  char found;
-
-  id = -1;
-  if(ps->m == 1) {
-    ps->iniN[0] = watterson(sfs);
-    return;
-  }
-  for(int i = 1; i < ps->m; i++) {
-    found = 0;
-    for(int j = 1; j < ps->m - 1; j++) {
-      if(ps->k[i] == ps->prevK[j]) {
-	found = 1;
-      }
-    }
-    if(!found) {
-      id = i;
-      break;
-    }
-  }
-  for(int i = 0; i < id; i++)
-    ps->iniN[i] = ps->N[i];
-  for(int i = id; i < ps->m; i++)
-    ps->iniN[i] = ps->N[i - 1];
-}
-
-int negPopSizes(PopSizes *ps){
-  int i;
-
-  for(i=0; i<ps->m; i++)
-    if(ps->N[i] < 1)
+int negPopSizes(PopSizes *ps) {
+  for(int i = 1; i <= ps->m; i++)
+    if(ps->N[i] < 0)
       return 1;
-
   return 0;
 }
 
-void freePopSizes(PopSizes *ps){
+/* expG returns the expected value of the r-th entry 
+ * in the unfolded site frequency spectrum given r > 0
+ * as described in equation (S4).
+ */
+double expGr(PopSizes *ps, Sfs *sfs, int r){
+  int n     = sfs->n;
+  int m     = ps->m;
+  int l     = sfs->l;
+  int *k    = ps->k;
+  double u  = sfs->u;
+  double *N = ps->N;
+
+  double s = 0.;
+  for(int i = 1; i <= m; i++) {
+    int x = max(n - k[i] + 1, 0);
+    double a = binomial(x, r);
+    x = max(n - k[i+1] + 1, 0);
+    double b = binomial(x, r);
+    s += N[i] * (a - b);
+  }
+  s *= 4. * u * l / (double)r / binomial(n - 1, r);
+
+  return s;
+}
+
+/* expG returns the expected value of the r-th entry 
+ * in the unfolded site frequency spectrum for all r
+ * as specified in equation (S1).
+ */
+double expG(PopSizes *ps, Sfs *sfs, int r) {
+  if(r == 0){
+    double s = 0.;
+    for(int i = 1; i <= sfs->n - 1; i++)
+      s += expGr(ps, sfs, i);
+    s = sfs->l - s;
+    return s;
+  } else
+    return expGr(ps, sfs, r);
+}
+
+/* expF returns the expected value of the r-th entry 
+ * in the folded site frequency spectrum for all r.
+ */
+double expF(PopSizes *ps, Sfs *sfs, int r) {
+  if(r == 0)
+    return expG(ps, sfs, r);
+  else
+    return expG(ps, sfs, r) + expG(ps, sfs, sfs->n - r);
+}
+
+void freePopSizes(PopSizes *ps) {
   free(ps->k);
   free(ps->N);
-  free(ps->allN);
-  free(ps->aaa);
-  free(ps->asa);
-  free(ps->prevK);
-  free(ps->iniN);
   free(ps);
 }
 
 PopSizes *newPopSizes(Sfs *sfs){
-  PopSizes *ps;
-  int i, n;
-
-  ps = (PopSizes *)emalloc(sizeof(PopSizes));
+  PopSizes *ps = (PopSizes *)emalloc(sizeof(PopSizes));
+  ps->m = 1;
   ps->N = (double *)emalloc(sfs->n * sizeof(double));
-  ps->allN = (double *)emalloc((sfs->n + 1) * sizeof(double));
-  ps->aaa = (double *)emalloc(sfs->n * sizeof(double));
-  ps->asa = (double *)emalloc(sfs->n * sizeof(double));
-  ps->iniN = (double *)emalloc(sfs->n * sizeof(double));
-  ps->k = (int *)emalloc((sfs->n+1) * sizeof(int));
-  ps->prevK = (int *)emalloc((sfs->n+1) * sizeof(int));
-  n = sfs->n;
-  ps->watterson = watterson(sfs);
-  for(i=0; i<n; i++){
-    ps->N[i]    = 0;
-    ps->k[i]    = 0;
-    ps->iniN[i] = ps->watterson;
-  }
-  ps->k[0] = n+1;
-  ps->prevK[0] = n+1;
-  ps->m = 0;
-  ps->prevM = 0;
+  ps->k = (int *)emalloc((sfs->n + 1) * sizeof(int));
+  ps->k[1] = 2;
+  ps->k[2] = sfs->n + 1;
+  ps->l = 0.;
 
   return ps;
 }
 
-int cmpInt(const void * a, const void * b){
-  return *(int*)a - *(int*)b;
-}
+double logLik(PopSizes *ps, Sfs *sfs) {
+  double e, l = 0.;
 
-void addTestK(PopSizes *ps, int k){
-  int i;
-
-  for(i=0;i<ps->prevM+1;i++)
-    ps->k[i] = ps->prevK[i];
-  ps->k[ps->prevM+1] = k;
-  ps->m = ps->prevM + 1;
-  qsort(ps->k,ps->m+1,sizeof(int),cmpInt);
-}
-
-void addK(PopSizes *ps, int k){
-  int i;
-
-  addTestK(ps,k);
-  for(i=0;i<ps->m+1;i++)
-    ps->prevK[i] = ps->k[i];
-  ps->prevM++;
-}
-
-void restoreK(PopSizes *ps){
-  int i;
-
-  for(i=0;i<ps->prevM+1;i++)
-    ps->k[i] = ps->prevK[i];
-  ps->m--;
-}
-
-double psi(PopSizes *ps, Sfs *sfs){
-  return logLik(ps, sfs);
-}
-
-int compPopSizes(Sfs *sfs, PopSizes *ps, Args *args) {
-  return newton(sfs, ps, args);
-}
-
-double testK(Sfs *sfs, PopSizes *ps, Args *args, int k){
-  int status;
-
-  addTestK(ps, k);
-  if((status = compPopSizes(sfs, ps, args)) > 0)
-    return DBL_MIN;
-  if(negPopSizes(ps))
-    return DBL_MIN;
-
-  return logLik(ps, sfs);
-}
-
-PopSizes *copyPopSizes(PopSizes *ps){
-  PopSizes *cps;
-  int i;
-
-  cps = (PopSizes *)emalloc(sizeof(PopSizes));
-  cps->N = (double *)emalloc((ps->m+2) * sizeof(double));
-  cps->k = (int *)emalloc((ps->m+2) * sizeof(int));
-  cps->prevK = (int *)emalloc((ps->m+2) * sizeof(int));
-  cps->n = ps->n;
-  cps->m = ps->m;
-  cps->prevM = ps->prevM;
-  cps->psi = ps->psi;
-
-  for(i=0; i<cps->m+1; i++){
-    cps->N[i] = ps->N[i];
-    cps->k[i] = ps->k[i];
-    cps->prevK[i] = ps->prevK[i];
-  }
-
-  return cps;
-}
-
-int getNextLevel(Sfs *sfs, PopSizes *ps, Args *args, int *avail){
-  double p, currMinPsi;
-  int i, minK;
-
-  currMinPsi = DBL_MIN;
-  minK = 0;
-  for(i=3; i<=sfs->n; i++){
-    if(avail[i]){
-      p = testK(sfs, ps, args, i);
-      if(p > currMinPsi){
-	minK = i;
-	currMinPsi = p;
-      }
-    }
-  }
-  avail[minK] = 0;
-
-  return minK;
-}
-
-PopSizes *getPopSizes(Sfs *sfs, Args *args){
-  int i, l, n, minK, *avail;
-  double prevMinPsi, currMinPsi, change;
-  PopSizes *ps;
-
-  ps = newPopSizes(sfs);
-  n = sfs->n;
-  ps->n = sfs->n;
-  /* add first entry, single pop size for entire coalescent */
-  minK = 2;
-  testK(sfs, ps, args, minK);
-  addK(ps, minK);
-  compPopSizes(sfs, ps, args);
-  ps->psi = psi(ps, sfs);
-  prevMinPsi = ps->psi;
-  /* find remaining entries */
-  /* keep track of which entries are still available */
-  avail = (int *)emalloc((n+2)*sizeof(int));
-  for(i=3; i<=n; i++)
-    avail[i] = 1;
-  /* iterate over the remaining number of possible population sizes */
-  for(i=3; i<=n; i++){
-    l = getNextLevel(sfs, ps, args, avail);
-    if(l)
-      currMinPsi = testK(sfs, ps, args, l);
+  for(int r = 0; r <= sfs->a; r++) {
+    if(sfs->f)
+      e = expF(ps, sfs, r);
     else
-      currMinPsi = DBL_MIN;
-    change = currMinPsi - prevMinPsi;
-    if(change < args->c){
-      restoreK(ps);
-      compPopSizes(sfs, ps, args);
-      ps->psi = psi(ps, sfs);
-      break;
-    }else{
-      addK(ps, l);
-      compPopSizes(sfs, ps, args);
-      currMinPsi = psi(ps, sfs);
-    }
-    prevMinPsi = currMinPsi;
+      e = expG(ps, sfs, r);
+    l += sfs->G[r] * log(e) - e;
   }
-  compAaa(ps, sfs);
-  free(avail);
 
-  return ps;
+  return l;
 }

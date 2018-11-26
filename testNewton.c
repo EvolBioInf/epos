@@ -1,7 +1,7 @@
-/***** epos.c *************************************
+/***** testNewton.c *******************************
  * Description: 
  * Author: Bernhard Haubold, haubold@evolbio.mpg.de
- * Date: Mon Oct 23 10:10:47 2017
+ * Date: Fri Nov 23 11:30:37 2018
  **************************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,35 +13,26 @@
 #include "popSizes.h"
 #include "util.h"
 #include "gsl_rng.h"
-#include "search.h"
-
-void test(Args *args);
-
-void analysis(Sfs *sfs, Args *args, char *fileName) {
-  PopSizes *ps;
-
-  printf("#InputFile:\t");
-  printf("%s\n", fileName);
-  /* printSfs(sfs); */
-  printSfsStats(sfs);
-  ps = searchLevels(sfs, args);
-  printTimes(ps, sfs);
-  /* if(args->a) */
-  /*   printAaa(ps, sfs); */
-  /* else */
-  /*   printTimes(ps, sfs); */
-  freePopSizes(ps);
-}
+#include "newton.h"
 
 void scanFile(FILE *fp, Args *args, char *fileName){
   Sfs *sfs;
+  PopSizes *ps;
 
-  while((sfs = readSfs(fp, args)) != NULL) {
-    iniBinom(sfs->n);
-    analysis(sfs, args, fileName);
-    freeBinom();
-    freeSfs(sfs);
-  }
+  sfs = readSfs(fp, args);
+  iniBinom(sfs->n);
+  ps = newPopSizes(sfs);
+  ps->m = 4;
+  ps->k[1] = 2;
+  ps->k[2] = 4;
+  ps->k[3] = 6;
+  ps->k[4] = 25;
+  ps->k[ps->m + 1] = sfs->n + 1;
+  newton(sfs, ps, args);
+  printSfsStats(sfs);
+  printTimes(ps, sfs);
+  freeBinom();
+  freeSfs(sfs);
   tabFree();
 }
 
@@ -50,13 +41,9 @@ int main(int argc, char *argv[]){
   Args *args;
   FILE *fp;
 
+  version = "0.1";
+  setprogname2("testEpos");
   args = getArgs(argc, argv);
-  if(args->t) {
-    test(args);
-    return 0;
-  }
-  version = "1.0";
-  setprogname2("epos");
   if(args->v)
     printSplash(version);
   if(args->h || args->e)

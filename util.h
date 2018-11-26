@@ -20,4 +20,6 @@ void printSfsStats(Sfs *sfs);
 double watterson(Sfs *sfs);
 void iniBinom(int n);
 void freeBinom();
+int max(int a, int b);
+
 #endif

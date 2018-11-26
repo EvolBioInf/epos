@@ -3,8 +3,9 @@
 
 #include <float.h>
 
-#define DEFAULT_U 5.e-9 /* default mutation rate */
-#define DEFAULT_C 2.    /* default minimum change in log-likelihood for acceptance of new level */ 
+#define DEFAULT_U 5.e-9 /* mutation rate                                                */
+#define DEFAULT_C 2.    /* minimum change in log-likelihood for acceptance of new level */
+#define DEFAULT_E 2     /* number of levels searched exhaustively                       */
 /* define argument container */
 typedef struct args{
   char h;      /* help message? */
@@ -12,19 +13,19 @@ typedef struct args{
   char e;      /* error message? */
   char U;      /* unfolded? */
   char a;      /* average age of an allele? */
+  char t;      /* execute test routines? */
   int l;       /* sequence length */
-  int s;       /* seed for random number generator */
-  int b;       /* number of bootstrap replicates */
+  int E;       /* levels of exhaustive search */
   char **inputFiles;
-  char *x;     /* excluded frequency categories, e. g. 1,2 for excluding singletons & doubletons */
   double u;    /* mutation rate */
   double c;    /* minimum change */
   int numInputFiles;
 } Args;
 
 Args *getArgs(int argc, char *argv[]);
+Args *newArgs();
+void freeArgs(Args *args);
 void printUsage(char *version);
 void printSplash(char *version);
-void freeArgs();
 
 #endif
