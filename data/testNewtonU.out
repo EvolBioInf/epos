@@ -1,7 +1,0 @@
-#InputFile:	data/testNewtonU.dat
-#Polymorphic sites surveyed:	16390
-#Monomorphic sites surveyed:	9983610
-#reached: {2, 30}		151015174.471712
-#Level	T[Level]	N[T]
-30	3.62e+02	7.88e+04
-2	3.13e+04	8.00e+03
