@@ -27,10 +27,11 @@ int *nextConfig(int m, int n, int *start, Args *args, short setup) {
 }
 
 void printConfig(int *k, int m, double ll) {
-  printf("#reached: {%d", k[1]);
+  printf("#Intermediate Log(Likelihood): %f\t", ll);
+  printf("{%d", k[1]);
   for(int i = 2; i <= m; i++)
     printf(", %d", k[i]);
-  printf("}\t\t%f\n", ll);
+  printf("}\n");
 }
 
 /* compPopSizes computes population sizes and returns their log-likelihood */
@@ -58,6 +59,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
   cpK(ps->k, ka, ps->m);
   cpK(ps->k,  k, ps->m);
   cpK(ps->k, kp, ps->m);
+  printConfig(k, 1, l);
   /* iterate over the possible number of levels, n */
   for(m = 2; m <= sfs->n; m++) {
     kd = nextConfig(m, sfs->n, k, args, 1);
