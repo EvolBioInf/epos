@@ -1,4 +1,4 @@
-#InputFile:	data/testF.dat
+#InputFile:	../data/testF.dat
 #Polymorphic sites surveyed:	16390
 #Monomorphic sites surveyed:	9983610
 #Intermediate Log(Likelihood): 151020882.932693	{2}
