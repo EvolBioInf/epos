@@ -1,6 +1,7 @@
 *.o
 *.val
 epos
+epos2ages
 *.aux
 *.log
 *.ps
@@ -9,10 +10,10 @@ epos
 *.tex
 *.bbl
 *.blg
-doc/*.dat
-doc/*.eps
+doc/*.pdf
 doc/*.sh
 doc/*.gp
+doc/*.dat
 randomSeed.dat
 seedms
 build

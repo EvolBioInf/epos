@@ -1,13 +1,19 @@
 export VERSION = $(shell git describe)
+TAG := $(shell git describe | sed 's/-.*//')
 all:
 	make -C srcEpos
 	mkdir -p build
-	mv srcEpos/epos build
+	cp srcEpos/epos build
 	make -C srcEpos2ages
-	mv srcEpos2ages/epos2ages build
+	cp srcEpos2ages/epos2ages build
 test:
 	make -C srcEpos test
 	make -C srcEpos2ages test
 clean:
 	make -C srcEpos clean
 	make -C srcEpos2ages clean
+	make -C doc clean
+.PHONY:	doc
+doc:	
+	echo $(TAG) > doc/version.tex
+	make -C doc
