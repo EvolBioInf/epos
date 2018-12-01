@@ -55,7 +55,6 @@ void scanFile(FILE *fp, Args *args, char *fileName){
 }
 
 int main(int argc, char *argv[]){
-  char *version;
   Args *args;
   FILE *fp;
 
@@ -64,7 +63,7 @@ int main(int argc, char *argv[]){
     test(args);
     return 0;
   }
-  version = "1.0";
+  char *version = VERSION;
   setprogname2("epos");
   if(args->v)
     printSplash(version);

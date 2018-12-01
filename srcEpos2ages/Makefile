@@ -1,12 +1,11 @@
 CC=gcc
-CFLAGS= -O3 -Wall -Wshadow -pedantic -std=gnu99 -g
+CFLAGS= -DVERSION=\"$(VERSION)\" -O3 -Wall -Wshadow -pedantic -std=gnu99 -g
 # The source files, object files, libraries and executable name.
 SRCFILES= epos2ages.c interface.c eprintf.c tab.c util.c popSizes.c ages.c
 OBJFILES= epos2ages.o interface.o eprintf.o tab.o util.o popSizes.o ages.o
 LIBS= -lm -lgsl -lblas
 EXECFILE=epos2ages
 DIRECTORY=Epos2ages
-VERSION=0.1
 # The make rule for the executable
 .PHONY : all
 all : $(EXECFILE)

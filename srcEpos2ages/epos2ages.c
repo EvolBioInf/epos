@@ -27,11 +27,10 @@ void scanFile(FILE *fp, Args *args){
 
 int main(int argc, char *argv[]){
   int i;
-  char *version;
   Args *args;
   FILE *fp;
 
-  version = "0.1";
+  char *version = VERSION;
   setprogname2("epos2age");
   args = getArgs(argc, argv);
   iniBinom(args->n);

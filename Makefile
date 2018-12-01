@@ -1,3 +1,4 @@
+export VERSION = $(shell git describe)
 all:
 	make -C srcEpos
 	mkdir -p build

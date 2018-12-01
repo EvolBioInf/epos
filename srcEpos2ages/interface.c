@@ -44,10 +44,8 @@ Args *getArgs(int argc, char *argv[]){
   }
   args->inputFiles = argv + optind;
   args->numInputFiles = argc - optind;
-  if(!args->n) {
+  if(!args->n)
     args->e = 1;
-    fprintf(stderr, "ERROR: Please enter the sample size using -n\n");
-  }
   return args;
 }
 
