@@ -1,0 +1,749 @@
+\documentclass[a4paper]{article}
+\usepackage{graphics,eurosym,latexsym}
+\usepackage{listings}
+\lstset{columns=fixed,basicstyle=\ttfamily,numbers=left,numberstyle=\tiny,stepnumber=5,breaklines=true}
+\usepackage{times}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\oddsidemargin=0cm
+\evensidemargin=0cm
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\I}{\item}
+\newcommand{\ty}{\texttt}
+\textwidth=16cm
+\textheight=23cm
+\begin{document}
+\title{\ty{Epos} \input{version}: Estimating Population Sizes and Allele Ages from
+  Site Frequency Spectra}
+\author{Bernhard Haubold\\\small Max-Planck-Institute for Evolutionary Biology, Pl\"on, Germany}
+\maketitle
+\section{Introduction} 
+\ty{Epos} estimates historical population sizes based on site
+frequency spectra. A site frequency spectrum is computed from a
+haplotype sample. Table~\ref{tab:hap} shows a sample of $n=4$ haplotypes,
+$h_1$--$h_4$, with $S=8$ segregating (polymorphic)
+sites, $s_1$--$s_8$. Each segregating site consists of a column of four zeros and ones, where the
+zeros indicate the ancestral state and the ones a mutation. We can
+count the number of sites where one, two, or three haplotypes are mutated. This is called
+the site frequency spectrum (SFS) of the sample, and Table~\ref{tab:sfs}A shows the spectrum
+for our example data. There are seven mutations affecting a
+single haplotype (singletons), zero mutations affecting two haplotypes
+(doubletons), and one mutation affecting three haplotypes (tripleton).
+\begin{table}
+  \caption{Four example haplotypes}\label{tab:hap}
+  \begin{center}
+    \begin{tabular}{lcccccccc}\hline
+haplotype   &   $s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$\\\hline
+$h_1$ &      \ty{1} & \ty{0} & \ty{0} & \ty{0} & \ty{0} & \ty{0} & \ty{0} & \ty{0}\\
+$h_2$ &      \ty{0} & \ty{1} & \ty{0} & \ty{0} & \ty{1} & \ty{0} & \ty{0} & \ty{1}\\
+$h_3$ &      \ty{0} & \ty{1} & \ty{0} & \ty{1} & \ty{0} & \ty{1} & \ty{0} & \ty{0}\\
+$h_4$ &      \ty{0} & \ty{1} & \ty{1} & \ty{0} & \ty{0} & \ty{0} & \ty{1} &
+      \ty{0}\\\hline
+      \end{tabular}
+  \end{center}
+\end{table}
+In many empirical data sets it is not possible to distinguish between
+segregating sites with $r$ mutations and those with $n-r$
+mutations. In this case the spectrum is \textit{folded} by adding the
+number of sites affecting $r$ haplotypes to the number of sites
+affecting $n-$ haplotypes. Table~\ref{tab:hap}B shows the folded
+version of the spectrum in Table~\ref{tab:hap}A: The single tripleton
+is added to the seven singletons, while the number of doubletons
+remains unchanged.
+In addition to population sizes, \ty{epos} can also compute the
+average ages of mutations affecting $1, 2,...,n-1$ haplotypes.
+
+\begin{table}
+  \caption{Folded (\textbf{A}) and unfolded (\textbf{B}) site
+    frequency spectrum corresponding to the haplotype sample shown in Table~\ref{tab:hap}}\label{tab:sfs}
+  \begin{center}
+  \begin{tabular}{cc}
+    \textbf{A} & \textbf{B}\\
+    \begin{tabular}{cc}
+      \hline
+      $r$ & $f(r)$\\\hline
+      1 & 7\\
+      2 & 0\\
+      3 & 1\\\hline
+    \end{tabular}
+    &
+    \begin{tabular}{cc}
+      \hline
+      $r$ & $f(r)$\\\hline
+      1 & 8\\
+      2 & 0\\
+      \hline
+    \end{tabular}
+  \end{tabular}
+  \end{center}
+\end{table}
+
+\ty{Epos} implements theory developed by Michael Lynch (Arizona
+State University) and Peter Pfaffelhuber (Freiburg University). The
+theory is similar to the method developed by \cite{liu15:exp} and will
+be described in a forthcoming paper.
+
+\section{Getting Started}
+\ty{Epos} was written in C on a computer running Linux. It depends on
+two libraries, the Gnu Scientific Library
+(\ty{lgsl}), and the Basic Linear Algebra Subprograms (\ty{lblas}). 
+Please contact \ty{haubold@evolbio.mpg.de} if there are any problems with the program.
+\bi
+\I Change into the \ty{epos} directory
+\begin{verbatim}
+cd epos
+\end{verbatim}
+and list its contents
+\begin{verbatim}
+ls
+\end{verbatim}
+\I Generate \ty{epos}
+\begin{verbatim}
+make
+\end{verbatim}
+\I List its options
+\begin{verbatim}
+./epos -h
+\end{verbatim}
+\I Run tests
+\begin{verbatim}
+bash scripts/test.sh
+\end{verbatim}
+\ei
+
+\section{Tutorial}
+I first explain how to test \ty{epos} using simulated
+data, and then how it can be applied to real data.
+\subsection{Simulated Data}
+\ty{Epos} was developed for estimating variable population
+sizes. Nevertheless, we begin by simulating simple constant-size
+scenarios before generating samples under models with varying population
+sizes.
+\subsubsection{Constant Population Size}
+\begin{itemize}
+\item We simulate samples with
+  $n=30$ haplotypes using the well-known coalescent simulator \ty{ms} \citep{hud02:gen}:
+\begin{verbatim}
+ms 30 1 -t 10 
+\end{verbatim}
+These can automatically be converted to site frequency spectra using
+my program \ty{sfs}, which is available form the same 
+\ty{github} page as (\ty{evolbioinf}):
+\begin{verbatim}
+ms 30 1 -t 10 | sfs
+\end{verbatim}
+This spectrum is used by \ty{epos} to estimate population
+sizes:
+\begin{verbatim}
+ms 30 1 -t 10 | sfs | epos -U -l 1000
+#InputFile:	stdin
+#Polymorphic sites surveyed:	48
+#Monomorphic sites surveyed:	952
+#LogLik:		5581.73
+#Level  T[Level]  N[T]
+2       2.34e+06  6.06e+05
+\end{verbatim}
+where \ty{-U} an unfolded site frequency spectrum, and \ty{-l} is the
+sequence length, $l=1000$. \ty{Epos} interprets the population
+mutation parameter, $\theta=4N_{\rm e}\mu$, as per-site, which means that under constant population size
+the expected effective size is
+\[
+E[N_{\rm e}]=\frac{\theta}{4\mu l}.
+\]
+Since \ty{epos} uses by default $\mu=5\times 10^{-9}$, 
+the expected population size for our simulation data
+ is therefore 500,000. We can check this
+by simulating 1000 samples, calculating a site frequency
+spectrum for each, and averaging over the estimated population sizes:
+\begin{verbatim}
+ms 30 1000 -t 10 |              # generate 1000 samples of 30 haplotypes
+sfs -i           |              # compute spectra for individual samples
+epos -U -l 1000  |              # estimate population sizes
+grep -v '^#'     |              # remove hashed lines
+awk '{s+=$3;c++}END{print s/c}' # compute average population size
+502000
+\end{verbatim}
+which is close to the expected 500,000. Let's see if folding the
+spectrum changes this result by adjusting the options for \ty{sfs} and
+\ty{epos}:
+\begin{verbatim}
+ms 30 1000 -t 10 | 
+sfs -f -i        |  # fold the spectra of individual samples
+epos -l 1000     |  
+grep -v '^#'     |
+awk '{s+=$3;c++}END{print s/c}'
+481000
+\end{verbatim}
+This is again very similar to the expected value of 500,000.
+\end{itemize}
+\subsubsection{Variable Population Size}
+\begin{itemize}
+  \item For estimating variable population sizes we need the program \ty{epos2plot} to
+    plot size as a function of time. \ty{Epos2plot} is also available form the \ty{evolbioinf} page
+    on \ty{github}. We begin again by simulating samples under constant population
+    size, but this time add plotting
+\begin{verbatim}
+ms 30 1000 -t 10 | 
+sfs -i           | 
+epos -U -l 1000  | 
+epos2plot > epos1.dat # generate data ready for plotting
+\end{verbatim}
+Draw the graph by applying the program
+\ty{gnuplot}\footnote{\ty{http://www.gnuplot.info/}} to the file
+\ty{fig1.gp}, which is part of the \ty{epos} package:
+\begin{verbatim}
+gnuplot -p fig1.gp
+\end{verbatim}
+to get Figure~\ref{fig:con}. The fit between the estimated median size
+and the true size is excellent for most of the plot, though it drifts
+upward in the very distant past. It is important to realize that the number of samples
+from which the estimates are derived declines into the past. Near the
+present we have
+\begin{verbatim}
+head -n 5 epos1.dat 
+#Time  LowerQ  Median  UpperQ    SampleSize
+0      25300   484000  1.81e+07  1000
+128    25300   484000  1.81e+07	 1000
+324    26700   489000  1.81e+07	 1000
+345    29800   492000  1.81e+07	 1000
+\end{verbatim}        
+while the furthest point in the past is usually computed from a single
+sample:
+\begin{verbatim}
+tail -n 5 epos1.dat 
+6.58e+06  2.34e+06  2.36e+06  2.71e+06  5
+6.6e+06   2.34e+06  2.4e+06   2.71e+06  4
+7.06e+06  2.34e+06  2.4e+06   2.71e+06  3
+7.21e+06  2.4e+06   2.71e+06  2.71e+06  2
+7.3e+06   2.71e+06  2.71e+06  2.71e+06  1
+\end{verbatim}
+Also, the variation in Figure~\ref{fig:con} is
+large, especially close to the present.
+\begin{figure}
+  \begin{center}
+    \scalebox{0.6}{\input{con}}
+  \end{center}
+  \caption{Estimating constant population size. For details see
+  text.}\label{fig:con}
+\end{figure}
+\item Next, we simulate the scenario in Figure 2b of \cite{liu15:exp}
+  with a single, approximately threefold change in population size
+  from 7778 to 25636, which takes place 6809 generations in the
+  past. Since this simulation includes substantial recombination, we
+  replace \ty{ms} by its fast re-implementation, \ty{mspms}
+  \citep{kel16:eff}:
+\begin{verbatim}
+mspms 30 1000 -t 12310 -r 9750 10000000 -eN 0.066 0.3 |
+sfs -i                                                |
+epos -u 1.2e-8 -l 10000000 -U                         |
+epos2plot > epos2.dat
+\end{verbatim}
+This takes about 11 minutes. Notice the \ty{-u} option for \ty{epos},
+which specifies the mutation rate per generation used by \cite{liu15:exp}, $\mu=1.2\times
+10^{-8}$. Plot the result
+\begin{verbatim}
+gnuplot -p fig2.gp
+\end{verbatim}
+to get Figure~\ref{fig:2b}. The fit between the median estimated
+population size and its true value remains excellent. However, the
+variation in estimates is again large, particularly toward the present.
+\begin{figure}
+  \begin{center}
+    \scalebox{0.6}{\input{fig2b}}
+  \end{center}
+  \caption{Estimating population sizes under a model with one
+    instantaneous change. See text for details.}\label{fig:2b}
+\end{figure}
+\item As a last example, we simulate haplotypes under
+  the exponential growth scenario \cite{liu15:exp} used in their
+  Figure 2e:
+    \small
+\begin{verbatim}
+mspms 30 1000 -t 432000 -r 340000 10000000 -G 46368 -eN 0.0001027 0.008889 |
+sfs -i                                                                     |
+epos -u 1.2e-8 -l 10000000 -U                                              |
+epos2plot > epos3.dat
+\end{verbatim}
+\normalsize
+Plot this
+\begin{verbatim}
+gnuplot -p fig3.gp
+\end{verbatim}
+to get Figure~\ref{fig:2e}, where the estimation is less
+accurate than in the one-step scenario in Figure~\ref{fig:2b}.
+This illustrates the difficulty of accurately capturing population size
+changes in the recent past.
+\begin{figure}
+  \begin{center}
+    \scalebox{0.6}{\input{fig2e}}
+  \end{center}
+  \caption{Estimating population sizes under an exponential growth
+    model. See text for details.}\label{fig:2e}
+\end{figure}
+\end{itemize}
+
+\subsection{Real Data}
+\begin{itemize}
+\item As an example for empirical data we use a site frequency spectrum obtained from
+  the Kap population of \textit{Daphnia pulex}:
+\begin{verbatim}
+head kap144i.dat 
+0	185297
+1	1987
+2	1138
+3	851
+4	729
+5	672
+6	542
+7	509
+8	459
+9	430
+\end{verbatim}
+Notice the ``zero-class'', which does not appear in the
+example spectra in Tables~\ref{tab:sfs}A and B. The zero-class gives
+the number of monomorphic sites. If a spectrum contains a zero-class,
+the sequence length is simply the sum of all counts, and there is no need
+to pass the sequence length to \ty{epos} using \ty{-l}. Moreover, the
+site frequency spectrum of Kap is folded, i. e. there is no need for \ty{-U}. Hence
+we analyze our example data without any options:
+\begin{verbatim}
+epos kap144i.dat
+#InputFile:	../data/kap144i.dat
+#Polymorphic sites surveyed:	18037
+#Monomorphic sites surveyed:	185297
+#LogLik:		2.1501e+06
+#Level  T[Level]  N[T]
+25      5.18e+04  3.73e+05
+2       3.90e+06  1.00e+06
+\end{verbatim}
+\item This only gives a single point estimate, and in the absence of
+  further samples it is hard to judge its reliability. However,
+  \ty{epos} implements the bootstrap to investigate the robustness of
+  results based on single samples. To run 1000 bootstrap replicates, enter
+\begin{verbatim}
+epos -b 10000 kap144i.dat | epos2plot > epos4.dat
+\end{verbatim}
+This takes about five minutes. Plot the result
+\begin{verbatim}
+gnuplot -p fig4.gp
+\end{verbatim}
+to get Figure~\ref{fig:kap}.
+\begin{figure}
+  \begin{center}
+    \scalebox{0.6}{\input{kap}}
+  \end{center}
+  \caption{Estimating the population size of the \textit{D. pulex} Kap
+    population.}\label{fig:kap}
+\end{figure}
+\end{itemize}
+
+\section{The Averge Age of an Allele}
+\begin{itemize}
+  \item The expected
+    time to the most recent common
+    ancestor in a constant size population is
+    \[
+    E[T_{\rm MRCA}]=2\left(1-\frac{1}{n}\right),
+    \]
+    where time is measured in $2N$
+    generations  \citep[p.76]{wak09:coa}. Now, if $n=2$, $E[T_{\rm
+        MRCA}]=1$. We simulate a site frequency spectrum with $n=2$,
+\begin{verbatim}
+ms 2 1 -t 10 | sfs > test.sfs
+\end{verbatim}
+estimate the population size,
+\begin{verbatim}
+epos -U -l 1000 test.sfs
+#InputFile:	test.sfs
+#Polymorphic sites surveyed:	15
+#Monomorphic sites surveyed:	985
+#LogLik:		5804.25
+#Level  T[Level]  N[T]
+2       1.50e+06  7.50e+05
+\end{verbatim}
+and estimate the age of singleton alleles
+\begin{verbatim}
+epos -U -l 1000 -a test.sfs
+#InputFile:	test.sfs
+#Polymorphic sites surveyed:	15
+#Monomorphic sites surveyed:	985
+#r  A[r]
+1   1.5e+06
+\end{verbatim}
+which is twice the population size, as expected, given that
+\ty{epos} estimates time in units of generations.
+\item For larger samples the population sizes might look like this
+\begin{verbatim}
+ms 30 1 -t 1000 | sfs | tee test.sfs | epos -U -l 10000000 
+#InputFile:	stdin
+#Polymorphic sites surveyed:	4169
+#Monomorphic sites surveyed:	9.99583e+06
+#LogLik:		1.51132e+08
+#Level  T[Level]  N[T]
+16      1.30e+01  9.73e+01
+8       3.62e+03  1.18e+04
+2       1.94e+04  4.59e+03
+\end{verbatim}
+and the corresponding allele sizes like that
+\begin{verbatim}
+epos -U -l 10000000 -a test.sfs 
+#InputFile:	test.sfs
+#Polymorphic sites surveyed:	4169
+#Monomorphic sites surveyed:	9.99583e+06
+#r  A[r]
+1   3117.22
+2   3741.8
+3   4455.55
+...
+29  19359.7
+\end{verbatim}
+\item Finally, we can estimate the average age of alleles for the Kap
+  population:
+\begin{verbatim}
+epos -a .kap144i.dat | head
+#InputFile:	../data/kap144i.dat
+#Polymorphic sites surveyed:	18037
+#Monomorphic sites surveyed:	185297
+#r  A[r]
+1   190499
+2   309342
+3   396787
+...
+72  2.68069e+06
+\end{verbatim}  
+\end{itemize}
+
+\section{Change Log}
+\begin{itemize}
+\item Version 0.1 (Oct. 25, 2017)
+  \begin{itemize}
+  \item First running version based on the GSL.
+  \end{itemize}
+\item Version 0.2 (Oct 26, 2017)
+  \begin{itemize}
+    \item Used \ty{LAPACKE\_dgesv} in \ty{getPopSizes}; makes no
+      difference compared to the previous version.
+  \end{itemize}
+\item Version 0.3 (Oct 26, 2017)
+  \begin{itemize}
+    \item Used \ty{LAPACKE\_dgesvx} in \ty{getPopSizes}; makes no
+      difference compared to previous version.
+  \end{itemize}
+\item Version 0.4 (Oct 27, 2017)
+  \begin{itemize}
+  \item Allow construction of SFS based on \ty{-t} switch.
+  \item Allow switching between the GSL algorithm (\ty{-g}) and the
+    default LAPACK algorithm. 
+  \end{itemize}
+\item Version 0.5 (November 2, 2017)
+  \begin{itemize}
+    \item Allow the straight usage of the trapezoid matrix for solving
+      the system (\ty{-T}).
+    \item Print out coefficient matrix (\ty{-p}).
+  \end{itemize}
+\item Version 0.6 (November 10, 2017)
+  \begin{itemize}
+  \item Use \ty{long double} in \ty{getPopSizesTri2}; did not help.
+  \end{itemize}
+\item Version 0.7 (November 10, 2017)
+  \begin{itemize}
+    \item Implement Peter Pfaffelhuber's formula; working only partially.
+  \end{itemize}
+\item Version 0.8 (November 10, 2017)
+  \begin{itemize}
+    \item Peter's equation (6) is working.
+  \end{itemize}
+\item Version 0.9 (November 10, 2017)
+  \begin{itemize}
+  \item Peter's equation in arbitrary precision in MPFR
+    library. Numerical stability achieved with 329 bits per number.
+  \end{itemize}
+\item Version 0.10 (November 30, 2017)
+  \begin{itemize}
+  \item Implemented equation (3) from Peter's memo dated Nov. 13. Not
+    working.
+  \end{itemize}
+\item Version 0.11 (December 1, 2017)
+  \begin{itemize}
+  \item Implemented revised equation (3) from Peter's memo dated Nov. 30. Not
+    working.
+  \end{itemize}
+\item Version 0.12 (December 15, 2017)
+  \begin{itemize}
+    \item Implemented Estimator 2.1 from Peter's memo dated Dec. 2,
+      2017. Code is running, but the results look odd.
+  \end{itemize}
+\item Version 0.13 (December 16, 2017)
+  \begin{itemize}
+  \item Fixed the implementation of Estimator 2.1; results OK now.
+  \end{itemize}
+\item Version 0.14 (December 18, 2017)
+  \begin{itemize}
+  \item Implemented optimization strategy for folded SFS; working.
+  \item Implemented optimization strategy for unfolded/even SFS;
+    working.
+  \item Implemented optimization strategy for folded/odd SFS; not
+    working yet.
+  \end{itemize}
+\item Version 0.15 (December 18, 2017)
+  \begin{itemize}
+  \item Fixed error in search for optimal number of steps.
+  \end{itemize}
+\item Version 0.16 (December 19, 2017)
+  \begin{itemize}
+  \item Fixed error in left-hand side of folded/odd equation; working.
+  \item Changed search strategy.
+  \item Changed default value of \ty{-d} from $10^{-6}$ to $10^{-3}$.
+  \item Simplified user interface.
+  \item Included set of test cases (\ty{test.sh}).
+  \end{itemize}
+  \item Version 0.17 (December 20, 2017)
+  \begin{itemize}
+  \item Fixed searching routine.
+  \item Changed default value of \ty{-d} from $10^{-3}$ to $10^{-2}$.
+  \item Included addition of the $\lambda$-factor; seems to make no difference.
+  \end{itemize}
+\item Version 0.18 (December 20, 2017)
+  \begin{itemize}
+  \item Fixed the $\lambda$-factor; computation is now much
+    stabilized.
+  \end{itemize}
+\item Version 0.19 (January 11, 2018)
+  \begin{itemize}
+  \item Included the $\lambda$-factor in the computation of
+    $\Psi$. Computations now applicable to real data.
+  \item Changed the default-value of $\lambda$ from $10^{-7}$ to $10^{-5}$.
+  \end{itemize}
+\item Version 0.20 (January 11, 2018)
+  \begin{itemize}
+  \item Consider zero-class mutations in computation, if present.
+  \item Changed default $\lambda$ to $2\times 10^{-5}$ to get all data
+    sets to run.
+  \end{itemize}
+\item Version 0.21 (January 13, 2018)
+  \begin{itemize}
+    \item Reverted output of levels, going from the present into the
+      past.
+    \item Default output is now as a function of times instead as a
+      function of levels.
+    \item Included ``step-wise'' option for plotting times and levels.
+    \item Fixed time computation.
+    \item Included error message for negative population sizes.
+    \item Removed memory leaks and other subtle bugs using \ty{valgrind}.
+  \end{itemize}
+\item Version 0.22 (January 16, 2018)
+  \begin{itemize}
+    \item Fixed important bug in function foldedEpsi, where variable
+      \ty{b} was computed as a function of \verb+sfs->f[n/2]+ instead
+      of, now \verb+sfs->f[n/2-1]+.
+  \end{itemize}
+\item Version 0.23 (January 16, 2018)
+  \begin{itemize}
+  \item Search for optimal $\lambda$.
+  \item Allow arbitrary level as first entry in level list.
+  \item Output $\lambda$, $\Psi$, and the levels added to make it
+    easier to follow the program.
+  \item Reduced program to folded/even case.
+  \end{itemize}
+\item Version 0.23 (January 17, 2018)
+  \begin{itemize}
+  \item Catch GSL-exceptions.
+  \item Changed output format
+  \end{itemize}
+\item Version 0.24 (January 18, 2018)
+  \begin{itemize}
+  \item Not quite sure what changed.
+  \end{itemize}
+\item Version 0.25 (January 18, 2018)
+  \begin{itemize}
+  \item Fixed bug in computation of the $\lambda$-term in
+    \ty{foldedEpsi}.
+  \end{itemize}
+\item Version 0.26 (January 19, 2018)
+  \begin{itemize}
+  \item Set $\lambda=0$ and add levels until negative population sizes
+    appear. This is fast and appears to be effective.
+  \end{itemize}
+\item Version 0.27 (January 24, 2018)
+  \begin{itemize}
+  \item Output number of polymorphic and monomorphic sites surveyed.
+  \end{itemize}
+\item Version 0.28 (???)
+\item Version 0.29 (January 28, 2018)
+  \begin{itemize}
+  \item Fixed missing resetting of times during iteration over files.
+  \item Removed superfluous option for step-wise output (\ty{-s}).
+  \item Output name of input file.
+  \item Removed inclusion of \ty{mpfr.h} from \ty{epos.c}.
+  \item Removed search for the initial level to add; by definition
+    this must be 2, i. e. one population size for the entire coalescent.
+  \end{itemize}
+\item Version 0.30 (January 31, 2018)
+  \begin{itemize}
+  \item Fixed computation of the mutation rate. Previously I
+    multiplied the per site mutation rate with the number of
+    monomorphic positions. Now it is mutated by the number of all
+    positions.
+  \item Added bootstrapping.
+  \end{itemize}
+\item Version 0.31 (February 1, 2018)
+  \begin{itemize}
+    \item Computation of mutation rate was correct in previous
+      version, after all, so reverted to that.
+  \end{itemize}
+\item Version 0.32 (February 7, 2018)
+  \begin{itemize}
+    \item Introduced the \ty{-m} switch.
+  \end{itemize}
+\item Version 0.33 (February 7, 2018)
+  \begin{itemize}
+    \item Fixed $\delta$ computation in function \ty{delta} in
+      \ty{util.c}. This reduces the computation for $m=1$ to
+      Watterson's estimator, as expected.
+  \end{itemize}
+\item Version 0.34 (February 9, 2018)
+  \begin{itemize}
+    \item Reintroduced unfolded spectrum (\ty{-u}) and compared to the equations
+      in Peter's memo of December 19, 2017.
+    \item Reintroduced $\lambda$ and set it by default to $10^{-7}$.
+    \item Reintroduced $\delta$ and set it by default to $0.0$.
+    \item Fixed sample size computation at the end of \ty{sfs.c}.
+  \end{itemize}
+\item Version 0.35 (February 9, 2018)
+  \begin{itemize}
+  \item Introduced estimation of $\lambda=1./\mu/\texttt{args->f}$.
+  \end{itemize}
+\item Version 0.36 (February 14, 2018)
+  \begin{itemize}
+    \item Changed setting of $\lambda$ to
+      $\lambda=\mu\times\texttt{args->f}$. By default
+      $\texttt{args->f}=1$.
+  \end{itemize}
+\item Version 0.37 (February 16, 2018)
+  \begin{itemize}
+    \item Fixed sample size computation for folded/even in function
+      \ty{getSfs} in \ty{sfs.c}.
+  \end{itemize}
+\item Version 0.38 (February 16, 2018)
+  \begin{itemize}
+  \item Included working \ty{-m} switch.
+  \end{itemize}
+\item Version 0.39 (February 19, 2018)
+  \begin{itemize}
+  \item Fixed passing of $\lambda$ in iterated runs.
+  \item Fixed numerical underflow when multiplying with $\lambda$ in
+    \ty{foldedEpsi} in \ty{foldedE.c}.
+  \item Fixed numerical underflow when multiplying with $\lambda$ in
+    \ty{psi} in \ty{unfolded.c}
+  \item Included check for positive $\Psi$ in both cases.
+  \item Expanded verbose output.
+  \end{itemize}
+\item Version 0.40 (February 21, 2018)
+  \begin{itemize}
+  \item Fixed error in \ty{foldedEpsi} in \ty{foldedE.c}
+  \item Removed \ty{if(m > 1)} from \ty{getCoeffMat} in
+    \ty{foldedE.c}.
+  \item Switched \ty{n/2} in \ty{foldedEpsi} to \ty{n/2.}.
+  \item Ensured that \ty{sfs->u} is always set to a value in
+    \ty{getSfs}.
+  \item Replace \verb+u = args->u+ by \verb+u = sfs->u+ in
+    \ty{getCoeffMat} in \ty{unfolded.c}.
+  \item Re-implemented \ty{foldedEpsi} in \ty{foldedE.c}
+  \end{itemize}
+\item Version 0.41 (February 22, 2018)
+  \begin{itemize}
+    \item Changed \ty{4.*u*(n/2.)} to \ty{4.*u/(n/2.)} in
+      \ty{foldedEpsi} in \ty{foldedE.c}. This was a bug in the
+      computation of $\Psi$ for the folded/even case.
+  \end{itemize}
+\item Version 0.42 (February 22, 2018)
+  \begin{itemize}
+    \item Removed line \ty{prevMinPsi = DBL\_MAX} in \ty{foldedE} in \ty{foldedE.c}.
+  \end{itemize}
+\item Version 0.43 (February 22, 2018)
+  \begin{itemize}
+    \item Added diagnostic output in case negative population sizes
+      are found.
+  \end{itemize}
+\item Version 0.44 (February 22, 2018)
+  \begin{itemize}
+  \item $\Psi$ now also reported if only one level is included.
+  \end{itemize}
+\item Version 0.45 (February 23, 2018)
+  \begin{itemize}
+  \item Included the \ty{-n} option to allow negative population
+    sizes.
+  \end{itemize}
+\item Version 0.46 (February 23, 2018)
+  \begin{itemize}
+    \item Fixed \ty{if(change > args->d)}-phrase in \ty{unfolded} and
+      \ty{foldedE}. This lacked re-computation of the population sizes
+      with the best new level added, and assignment of $\Psi$.
+  \end{itemize}
+\item Version 0.47 (February 26, 2018)
+  \begin{itemize}
+    \item Reorganized code to remove duplication. The searching for
+      best population sizes is now done in only one place,
+      \ty{getPopSizes} in \ty{popSizes.c}.
+    \item Added printing of intermediate population sizes if the
+      \ty{-V} option is used.
+  \end{itemize}
+\item Version 0.48 (March 2, 2018)
+  \begin{itemize}
+  \item Multi-threaded version.
+  \end{itemize}
+\item Version 0.49 (March 6, 2018)
+  \begin{itemize}
+  \item Reverted to single-threaded behavior by removing \ty{-t} from
+    the options list and setting it to 1 in the background. This avoids the occasional
+    race-conditions observed with the multi-threaded version.
+  \end{itemize}
+\item Version 0.50 (March 14, 2018)
+  \begin{itemize}
+  \item Find number of levels through cross-validation (\ty{-c}).
+  \end{itemize}
+\item Version 0.51 (March 14, 2018)
+  \begin{itemize}
+  \item Find lambda through cross-validation (\ty{-L}).
+  \end{itemize}
+\item Version 0.52 (March 17, 2018)
+  \begin{itemize}
+    \item Include reporting of negative population sizes in verbose
+      output (\ty{-V}).
+    \item Changed     \ty{prevMinPsi = prevMinPsi;} in
+      \ty{getPopSizes} to \ty{prevMinPsi = currMinPsi;}.
+  \end{itemize}
+\item Version 0.53 (April 7, 2018)
+  \begin{itemize}
+  \item Always allow negative population sizes.
+  \item Cross-validation by default.
+  \item $\lambda=0$ by default.
+  \item If negative population sizes are found, the program searches
+    for optimal $\lambda$ by going through $\lambda=0..\mu$. This is
+    slow and would need to be optimized in future versions.
+  \item Added Scripts for extracting quantiles from \ty{epos} output.
+  \end{itemize}
+\item Version 0.54 (April 11, 2018)
+  \begin{itemize}
+    \item Fixed array out-of-bounds error in \ty{shuffleArr} in \ty{sfs.c}.
+  \end{itemize}
+\item Version 0.55 (April 12, 2018)
+  \begin{itemize}
+    \item ``Unfolded'' mode not working; so I removed that option for now.
+  \end{itemize}
+\item Version 0.56 (May 31, 2018)
+  \begin{itemize}
+  \item Fixed Error in documentation.
+  \end{itemize}
+\item June 13, 2018
+  \begin{itemize}
+    \item Posted \ty{epos} on \ty{github}. Please refer to the commit
+      messages for details on subsequent changes.
+  \end{itemize}
+\end{itemize}
+\bibliography{/home/haubold/References/references}
+\end{document}
+

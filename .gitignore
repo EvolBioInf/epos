@@ -6,8 +6,6 @@ epos2ages
 *.log
 *.ps
 *.dvi
-*.ps
-*.tex
 *.bbl
 *.blg
 doc/*.pdf
