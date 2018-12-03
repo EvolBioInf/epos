@@ -71,6 +71,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
       }
     }
     if(la <= l + args->c) { /* no improvement, quit search */
+      printConfig(ka, m, la);
       compPopSizes(kp, m - 1, sfs, ps, args);
       free(ka);
       free(k);
