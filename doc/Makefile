@@ -4,4 +4,4 @@ all:
 	pdflatex epos
 	pdflatex epos
 clean:	
-	rm -f epos.pdf *.eps *.ps *.log *.bbl *.blg *.dvi
+	rm -f epos.pdf *.log *.bbl *.blg *.dvi

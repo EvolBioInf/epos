@@ -17,7 +17,6 @@ Args *newArgs() {
   args->v = 0;
   args->e = 0;
   args->U = 0;
-  args->a = 0;
   args->t = 0;
   args->u = DEFAULT_U;
   args->c = DEFAULT_C;
@@ -57,7 +56,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUatu:l:L:c:E:";
+  char *optString = "hvUtu:l:L:c:E:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -78,9 +77,6 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 't':                           /* testing? */
       args->t = 1;
-      break;
-    case 'a':                           /* average age of an allele */
-      args->a = 1;
       break;
     case 'u':
       args->u = atof(optarg);           /* mutation rate */
@@ -110,7 +106,7 @@ Args *getArgs(int argc, char *argv[]){
 }
 
 
-void printUsage(char *version){
+void printUsage(){
   printf("Usage: %s [options] [inputFiles]\n",progname());
   printf("Estimate population size from site frequency data\n");
   printf("Usage: ./epos [options] sfs.txt\n");
@@ -122,15 +118,14 @@ void printUsage(char *version){
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
-  printf("\t[-a print average ages of alleles; default: print population size]\n");
   printf("\t[-t exectute test routines for debuggin]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");
   exit(0);
 }
 
-void printSplash(char *version){
-  printf("%s %s\n",progname(),version);
+void printSplash(char *version, char *date){
+  printf("%s %s, %s\n", progname(), version, date);
   printf("Written by Bernhard Haubold.\n");
   printf("Distributed under the GNU General Public License.\n");
   printf("Please send bug reports to haubold@evolbio.mpg.de\n");

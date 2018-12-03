@@ -31,11 +31,12 @@ int main(int argc, char *argv[]){
   FILE *fp;
 
   char *version = VERSION;
+  char *date    = DATE;
   setprogname2("epos2age");
   args = getArgs(argc, argv);
   iniBinom(args->n);
   if(args->v)
-    printSplash(version);
+    printSplash(version, date);
   if(args->h || args->e)
     printUsage(version);
   if(args->numInputFiles == 0){

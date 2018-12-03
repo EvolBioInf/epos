@@ -12,7 +12,6 @@ typedef struct args{
   char v;      /* version message? */
   char e;      /* error message? */
   char U;      /* unfolded? */
-  char a;      /* average age of an allele? */
   char t;      /* execute test routines? */
   int l;       /* sequence length */
   char *L;     /* preset levels */
@@ -28,7 +27,7 @@ typedef struct args{
 Args *getArgs(int argc, char *argv[]);
 Args *newArgs();
 void freeArgs(Args *args);
-void printUsage(char *version);
-void printSplash(char *version);
+void printUsage();
+void printSplash(char *version, char *date);
 
 #endif

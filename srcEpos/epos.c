@@ -64,11 +64,12 @@ int main(int argc, char *argv[]){
     return 0;
   }
   char *version = VERSION;
+  char *date    = DATE;
   setprogname2("epos");
   if(args->v)
-    printSplash(version);
+    printSplash(version, date);
   if(args->h || args->e)
-    printUsage(version);
+    printUsage(version, date);
   if(args->numInputFiles == 0){
     fp = stdin;
     scanFile(fp, args, "stdin");

@@ -1,8 +1,9 @@
 #InputFile:	../data/testU.dat
 #Polymorphic sites surveyed:	16390
 #Monomorphic sites surveyed:	9983610
-#Intermediate Log(Likelihood): 151015055.614343	{2}
-#Intermediate Log(Likelihood): 151015174.471712	{2, 30}
+#m = 1; maximum Log(Likelihood): 151015055.614343	{2}
+#m = 2; maximum Log(Likelihood): 151015174.471712	{2, 30}
+#m = 3; maximum Log(Likelihood): 151015175.818092	{2, 3, 30}
 #Final        Log(Likelihood): 151015174.471712
 #Level	T[Level]	N[Level]
 30	3.62e+02	7.88e+04

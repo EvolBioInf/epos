@@ -1,4 +1,3 @@
-export VERSION = $(shell git describe)
 TAG := $(shell git describe | sed 's/-.*//')
 all:
 	make -C srcEpos

@@ -27,7 +27,7 @@ int *nextConfig(int m, int n, int *start, Args *args, short setup) {
 }
 
 void printConfig(int *k, int m, double ll) {
-  printf("#m = %d; intermediate Log(Likelihood): %f\t", m, ll);
+  printf("#m = %d; maximum Log(Likelihood): %f\t", m, ll);
   printf("{%d", k[1]);
   for(int i = 2; i <= m; i++)
     printf(", %d", k[i]);

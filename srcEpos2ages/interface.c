@@ -50,7 +50,7 @@ Args *getArgs(int argc, char *argv[]){
 }
 
 
-void printUsage(char *version){
+void printUsage(){
   printf("Usage: %s [options] [inputFiles]\n",progname());
   printf("Compute the average ages of alleles and the average population size they experienced.\n");
   printf("Example: epos kap144i.dat | epos2ages -n 144\n");
@@ -61,8 +61,8 @@ void printUsage(char *version){
   exit(0);
 }
 
-void printSplash(char *version){
-  printf("%s %s\n",progname(),version);
+void printSplash(char *version, char *date){
+  printf("%s %s, %s\n", progname(), version, date);
   printf("Written by Bernhard Haubold.\n");
   printf("Distributed under the GNU General Public License.\n");
   printf("Please send bug reports to haubold@evolbio.mpg.de\n");

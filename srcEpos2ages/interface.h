@@ -12,7 +12,7 @@ typedef struct args{
 } Args;
 
 Args *getArgs(int argc, char *argv[]);
-void printUsage(char *version);
-void printSplash(char *version);
+void printUsage();
+void printSplash(char *version, char *date);
 
 #endif
