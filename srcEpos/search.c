@@ -47,7 +47,7 @@ double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args) {
 PopSizes *searchLevels(Sfs *sfs, Args *args) {
   int *kd, *ka, *kp, *k; /* arrays of levels   */
   int m;
-  short found;
+  short improved;
 
   /* initialize search */
   PopSizes *ps = newPopSizes(sfs);
@@ -64,20 +64,20 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
   /* iterate over the possible number of levels, n */
   for(m = 2; m <= sfs->n; m++) {
     kd = nextConfig(m, sfs->n, k, args, 1);
-    found = 0;
+    improved = 0;
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld = compPopSizes(kd, m, sfs, ps, args);
       if(ld > la) {
-	found = 1;
+	improved = 1;
 	la = ld;
 	cpK(kd, ka, m);
       }
     }
-    if(la <= l + args->c) { /* no improvement, quit search */
-      if(found)
+    if(la < l + args->c) { /* no significant improvement, quit search */
+      if(improved)
 	printConfig(ka, m, la);
       else
-	printf("#m = %d; no improvement\n", m);
+	printf("#m = %d; found no sets of only positive population sizes with improved log-likelihood\n", m);
       compPopSizes(kp, m - 1, sfs, ps, args);
       free(ka);
       free(k);
