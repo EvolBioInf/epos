@@ -8,6 +8,7 @@ epos2ages
 *.dvi
 *.bbl
 *.blg
+*.a
 doc/*.pdf
 doc/*.sh
 doc/*.gp
