@@ -146,6 +146,7 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
       gsl_multiroot_fsolver_free(s);
       gsl_vector_free(x);
       free(p);
+      ps->l = logLik(ps, sfs);
       return status;
     }
     status = gsl_multiroot_test_residual(s->f, 1e-7);
