@@ -5,7 +5,7 @@
 #m = 2; maximum Log(Likelihood): 151021022.993658	{2, 29}
 #m = 3; maximum Log(Likelihood): 151021028.075352	{2, 3, 30}
 #m = 4; maximum Log(Likelihood): 151021045.261079	{2, 5, 6, 22}
-#m = 5; found no sets of only positive population sizes with improved log-likelihood
+#m = 5; maximum Log(Likelihood): 151021045.266004	{2, 3, 5, 6, 24}
 #Final        Log(Likelihood): 151021045.261079
 #Level	T[Level]	N[Level]
 22	1.17e+03	2.05e+04
