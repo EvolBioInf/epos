@@ -154,7 +154,7 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   for(int i = 1; i <= ps->m; i++) {
     ps->N[i] = gsl_vector_get(s->x, i - 1);
     if(ps->N[i] < 0)
-      ps->N[i] = 0.;
+      ps->N[i] = 1.; /* smallest population size possible: 1 individual */
   }
   ps->l = logLik(ps, sfs);
   gsl_multiroot_fsolver_free(s);
