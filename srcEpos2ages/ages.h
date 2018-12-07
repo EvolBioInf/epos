@@ -9,10 +9,11 @@
 #include "popSizes.h"
 
 typedef struct ages {
-  int n;     /* sample size */
+  int n;     /* sample size                           */
   double *N; /* population sizes N[2], N[3],..., N[n] */
-  double *a; /* ages        */
-  double *s; /* sizes       */
+  double *a; /* average ages                          */
+  double *v; /* var of ages                           */
+  double *s; /* sizes                                 */
 } Ages;
 
 Ages *compAges(PopSizes *ps);
