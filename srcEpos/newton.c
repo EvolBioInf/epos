@@ -151,12 +151,12 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
     }
     status = gsl_multiroot_test_residual(s->f, 1e-7);
   } while (status == GSL_CONTINUE && iter < 1000);
-  for(int i = 1; i <= ps->m; i++)
+  for(int i = 1; i <= ps->m; i++) {
     ps->N[i] = gsl_vector_get(s->x, i - 1);
-  if(negPopSizes(ps))
-    ps->l = -DBL_MAX;
-  else
-    ps->l = logLik(ps, sfs);
+    if(ps->N[i] < 0)
+      ps->N[i] = 0.;
+  }
+  ps->l = logLik(ps, sfs);
   gsl_multiroot_fsolver_free(s);
   gsl_vector_free(x);
   free(p);

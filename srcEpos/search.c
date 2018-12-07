@@ -77,7 +77,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
       if(improved)
 	printConfig(ka, m, la);
       else
-	printf("#m = %d; found no sets of only positive population sizes with improved log-likelihood\n", m);
+	printf("#m = %d; no improvement\n", m);
       compPopSizes(kp, m - 1, sfs, ps, args);
       free(ka);
       free(k);

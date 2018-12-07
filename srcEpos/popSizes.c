@@ -13,13 +13,6 @@
 #include "util.h"
 #include "newton.h"
 
-int negPopSizes(PopSizes *ps) {
-  for(int i = 1; i <= ps->m; i++)
-    if(ps->N[i] < 0)
-      return 1;
-  return 0;
-}
-
 /* expG returns the expected value of the r-th entry 
  * in the unfolded site frequency spectrum given r > 0
  * as described in equation (S4).
