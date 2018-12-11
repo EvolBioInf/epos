@@ -146,6 +146,10 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
       gsl_multiroot_fsolver_free(s);
       gsl_vector_free(x);
       free(p);
+      for(int i = 1; i <= ps->m; i++) {
+	if(ps->N[i] < 1)
+	  ps->N[i] = 1;
+      }
       ps->l = logLik(ps, sfs);
       return status;
     }
