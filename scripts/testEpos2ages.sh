@@ -8,3 +8,4 @@ else
     echo ${DIFF}
 fi
 
+rm tmp.out
