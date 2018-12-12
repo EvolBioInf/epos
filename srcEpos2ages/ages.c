@@ -64,7 +64,7 @@ double varAaa(Ages *a, int r) {
       }
       s1 += N[l] / (double) l / (double) (l - 1) * s2;
     }
-    nu += N[k] * binomial(n - k, r - 1) * s1 * s2;
+    nu += N[k] * binomial(n - k, r - 1) * s1;
   }
   nu *= 32.;
 
