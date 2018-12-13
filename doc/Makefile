@@ -1,4 +1,8 @@
-all:	
+TAG := $(shell git describe | sed 's/-.*//')
+DATE := $(shell git log -1 --format=%ai $(TAG) | sed 's/-/ /g' | awk '{printf "\\\\DTMdisplaydate{%s}{%s}{%s}{-1}\n", $$1, $$2, $$3}')
+all:
+	echo $(TAG)  > version.tex
+	echo $(DATE) > date.tex
 	latex epos
 	bibtex epos
 	latex epos
