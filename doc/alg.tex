@@ -1,0 +1,37 @@
+\begin{algorithmic}[1]
+  \REQUIRE{$n$} \COMMENT{Sample size}
+  \REQUIRE{$\mathrm{f}$} \COMMENT{Array of $n-1$ or $n/2$ site frequencies, the
+  unfolded or folded site frequency spectrum, SFS}
+  \ENSURE{$m$} \COMMENT{Number of estimated population sizes}
+  \ENSURE{$\mathrm{k}$} \COMMENT{Array of $m$ population size change points}
+  \ENSURE{$\mathrm{N}$} \COMMENT{Array of $m$ population sizes at
+    change points $\mathrm{k}[i], i=1,2,...,m$}
+  \STATE{$m\leftarrow 1$} \COMMENT{Initialize to one population size...}
+  \STATE{$\mathrm{k}[m]\leftarrow 2$} \COMMENT{...which starts at the root}
+  \STATE{$\mathrm{N}\leftarrow \ty{popSizes}(m, \mathrm{k}, \mathrm{f})$}
+  \COMMENT{Size of constant population}
+  \STATE{$l\leftarrow\ty{likelihood}(\mathrm{N}, m, \mathrm{k},
+    \mathrm{f})$} \COMMENT{Likelihood of population size given the SFS}
+  \STATE{$l_{\rm a}\leftarrow l$} \COMMENT{The initial likelihood is
+    also the maximum}
+  \FOR{$m\leftarrow 2$ to $n$} 
+     \WHILE{$(\mathrm{k}'\leftarrow\ty{nextConfig}(m, n))\ne\mathrm{null}$} 
+        \STATE{$\mathrm{N}'\leftarrow\ty{popSizes}(m, \mathrm{k}',
+          \mathrm{f})$}
+        \STATE{$l'\leftarrow\ty{likelihood}(\mathrm{N}', m, \mathrm{k}',
+          \mathrm{f})$}
+        \IF{$l'>l_{\rm a}$}
+           \STATE{$\mathrm{k}_{\rm a}\leftarrow\mathrm{k}'$}
+           \STATE{$\mathrm{N}_{\rm a}\leftarrow\mathrm{N}'$}
+           \STATE{$l_{\rm a}\leftarrow l'$}
+        \ENDIF
+     \ENDWHILE
+     \IF{$l_{\rm a} < l+2$}
+        \STATE{$\ty{report}(\mathrm{N}, \mathrm{k}, m-1)$}
+        \STATE{$\ty{break}$}
+     \ENDIF
+     \STATE{$\mathrm{k}\leftarrow \mathrm{k}_{\rm a}$}
+     \STATE{$\mathrm{N}\leftarrow \mathrm{N}_{\rm a}$}
+     \STATE{$l\leftarrow l_{\rm a}$}
+  \ENDFOR
+\end{algorithmic}

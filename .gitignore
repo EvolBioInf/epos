@@ -13,6 +13,8 @@ doc/*.pdf
 doc/*.sh
 doc/*.gp
 doc/*.dat
+doc/version.tex
+doc/date.tex
 randomSeed.dat
 seedms
 build

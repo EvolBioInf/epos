@@ -1,0 +1,39 @@
+\begin{pspicture}(-1.5,0)(2.5,2.75)
+  \psset{xunit=0.25,yunit=0.25}
+  \rput( 0.00, 0.00){\Rnode{1}{$h_1$}}
+  \rput( 3.33, 0.00){\Rnode{2}{$h_2$}}
+  \rput( 6.67, 0.00){\Rnode{3}{$h_3$}}
+  \rput(10.00, 0.00){\Rnode{4}{$h_4$}}
+  \rput( 1.67, 3.09){\Rnode{5}{}}
+  \rput( 5.00, 2.43){\Rnode{6}{}}
+  \rput( 8.33, 8.57){\Rnode{7}{}}
+  
+  \ncline[nodesepA=2pt]{1}{5}
+  \ncline[nodesepA=2pt]{2}{6}
+  \ncline[nodesepA=2pt]{3}{6}
+  \ncline{6}{5}
+  \ncline{5}{7}
+  \ncline[nodesepA=2pt]{4}{7}
+
+  \rput(-2, 11){$T_i$, $N_i$}
+  \rput(12, 11){Level}
+
+  \rput(-2, 0.00){\Rnode{ 8}{}}
+  \rput(-2, 2.43){\Rnode{ 9}{}}
+  \rput(-2, 3.09){\Rnode{10}{}}
+  \rput(-2, 8.57){\Rnode{11}{}}
+
+  \rput(12, 0.00){\Rnode{12}{ 5}}
+  \rput(13, 2.43){\Rnode{13}{ 4}}
+  \rput(12, 3.09){\Rnode{14}{ 3}}
+  \rput(12, 8.57){\Rnode{15}{ 2}}
+
+  \ncline[linestyle=dotted]{8}{12}
+  \ncline[linestyle=dotted]{9}{13}
+  \ncline[linestyle=dotted]{10}{14}
+  \ncline[linestyle=dotted]{11}{15}
+
+  \ncline{<->}{8}{9}\naput{$T_4, N_4$}
+  \ncline{<->}{9}{10}\naput{$T_3, N_3$}
+  \ncline{<->}{10}{11}\naput{$T_2, N_2$}
+\end{pspicture}
