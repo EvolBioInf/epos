@@ -1,6 +1,6 @@
 CC=gcc
-export VERSION = $(shell git describe)
-export DATE    = $(shell git log | grep Date | head -n 1 | awk '{printf "%s\\ %s\\ %s\\ %s\\ %s\n", $$2, $$3, $$4, $$5, $$6}')
+export VERSION = $(shell bash ../scripts/getVersion.sh) 
+export DATE    = $(shell bash ../scripts/getDate.sh) 
 CFLAGS= -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\" -O3 -Wall -Wshadow -pedantic -std=gnu99 -I../common -L../common -g
 # The source files, object files, libraries and executable name.
 SRCFILES= epos2ages.c interface.c util.c popSizes.c ages.c

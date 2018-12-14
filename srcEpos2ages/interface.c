@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "interface.h"
 #include "eprintf.h"
 
@@ -62,7 +63,11 @@ void printUsage(){
 }
 
 void printSplash(char *version, char *date){
-  printf("%s %s, %s\n", progname(), version, date);
+  printf("%s ", progname());
+  int l = strlen(version);
+  for(int i = 0; i < l - 1; i++)
+    printf("%c", version[i]);
+  printf(", %s\n", date);
   printf("Written by Bernhard Haubold.\n");
   printf("Distributed under the GNU General Public License.\n");
   printf("Please send bug reports to haubold@evolbio.mpg.de\n");
