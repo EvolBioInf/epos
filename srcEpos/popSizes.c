@@ -6,7 +6,6 @@
  * Date: Mon Dec 18 11:19:32 2017
  **************************************************/
 #include <stdlib.h>
-#include <omp.h>
 #include <math.h>
 #include "eprintf.h"
 #include "popSizes.h"
