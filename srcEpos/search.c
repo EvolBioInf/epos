@@ -34,17 +34,32 @@ void printConfig(int *k, int m, double ll) {
   printf("}\n");
 }
 
-/* compPopSizes computes population sizes and returns their log-likelihood */
-double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args) {
+/* compPopSizes computes population sizes and returns their log-likelihood 
+ * obtained from cross-validation. 
+ */
+double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args, SfsSet *ss) {
+  /* set the new configuration of breakpoints, kd */
   for(int i = 1; i <= m ; i++)
     ps->k[i] = kd[i];
   ps->k[m + 1] = sfs->n + 1;
   ps->m = m;
+  /* analyze full data set */
   newton(sfs, ps, args);
-  return ps->l;
+  if(ss == NULL)
+    return ps->l;
+  /* obtain likelihood from cross-validation */
+  double l = 0.;
+  for(int i = 0; i < args->x; i++) {
+    newton(ss->train[i], ps, args);
+    double x = logLik(ps, ss->test[i]);
+    l += x;
+  }
+  l /= (double)args->x;
+
+  return l;
 }
 
-PopSizes *searchLevels(Sfs *sfs, Args *args) {
+PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
   int *kd, *ka, *kp, *k; /* arrays of levels   */
   int m;
   short improved;
@@ -62,11 +77,12 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
   cpK(ps->k, kp, ps->m);
   printConfig(k, 1, l);
   /* iterate over the possible number of levels, n */
+  SfsSet *ss = splitSfs(sfs, args, r);
   for(m = 2; m <= sfs->n; m++) {
     kd = nextConfig(m, sfs->n, k, args, 1);
     improved = 0;
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
-      double ld = compPopSizes(kd, m, sfs, ps, args);
+      double ld = compPopSizes(kd, m, sfs, ps, args, ss);
       if(ld > la) {
 	improved = 1;
 	la = ld;
@@ -78,7 +94,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
 	printConfig(ka, m, la);
       else
 	printf("#m = %d; no improvement\n", m);
-      compPopSizes(kp, m - 1, sfs, ps, args);
+      compPopSizes(kp, m - 1, sfs, ps, args, NULL);
       free(ka);
       free(k);
       free(kp);
@@ -89,10 +105,11 @@ PopSizes *searchLevels(Sfs *sfs, Args *args) {
     l = la;
     printConfig(k, m, l);
   }
-  compPopSizes(kp, m - 1, sfs, ps, args);
+  compPopSizes(kp, m - 1, sfs, ps, args, NULL);
   free(k);
   free(ka);
   free(kp);
+  freeSfsSet(ss);
 
   return ps;
 }

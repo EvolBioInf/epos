@@ -14,6 +14,7 @@
 #include "util.h"
 #include "search.h"
 #include "newton.h"
+#include "gsl_rng.h"
 
 void test(Args *args);
 
@@ -36,7 +37,9 @@ void analysis(Sfs *sfs, Args *args, char *fileName) {
   if(args->L)
     ps = presetLevels(sfs, args);
   else {
-    ps = searchLevels(sfs, args);
+    gsl_rng *r = ini_gsl_rng(args);
+    ps = searchLevels(sfs, args, r);
+    free_gsl_rng(r, args);
   }
   printTimes(ps, sfs);
   freePopSizes(ps);

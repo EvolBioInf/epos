@@ -7,9 +7,10 @@
 #define SFS
 
 #include <stdio.h>
+#include <gsl/gsl_randist.h>
 #include "interface.h"
 
-typedef struct sfs{
+typedef struct sfs {
   int   *G; /* frequency spectrum          */
   int    a; /* maximum index in G          */
   int    l; /* sequence length             */
@@ -19,9 +20,18 @@ typedef struct sfs{
   short  f; /* folded?                     */
 } Sfs;
 
+typedef struct sfsSet {
+  int n;       /* size of set        */
+  Sfs **test;  /* n SFS for testing  */
+  Sfs **train; /* n SFS for training */
+} SfsSet;
+
 Sfs *readSfs(FILE *fp, Args *args);
 void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
 Sfs *newSfs(int n, Args *args);
+SfsSet *newSfsSet(Sfs *sfs, Args *args);
+void freeSfsSet(SfsSet *ss);
+SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r);
 
 #endif 

@@ -33,7 +33,6 @@ double expGr(PopSizes *ps, Sfs *sfs, int r){
     s += N[i] * (a - b);
   }
   s *= 4. * u * l / (double)r / binomial(n - 1, r);
-
   return s;
 }
 
@@ -84,10 +83,11 @@ double logLik(PopSizes *ps, Sfs *sfs) {
   double e, l = 0.;
 
   for(int r = 0; r <= sfs->a; r++) {
-    if(sfs->f)
+    if(sfs->f) {
       e = expF(ps, sfs, r);
-    else
+    } else {
       e = expG(ps, sfs, r);
+    }
     l += sfs->G[r] * log(e) - e;
   }
 

@@ -6,6 +6,8 @@
 #ifndef SEARCH
 #define SEARCH
 
-PopSizes *searchLevels(Sfs *sfs, Args *args);
+#include <gsl/gsl_rng.h>
+
+PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r);
 
 #endif

@@ -35,6 +35,7 @@ Sfs *newSfs(int n, Args *args) {
   sfs->l = -1;
   sfs->u = args->u;
   sfs->f = 1;
+  sfs->p = 0;
   if(args->U)
     sfs->f = 0;
   for(int i = 0; i < n; i++)
@@ -60,7 +61,7 @@ int numPol(Sfs *sfs) {
   return p;
 }
 
-/* prepSfs prepares the raw data ready by readSfs for further analysis */
+/* prepSfs prepares the raw data read by readSfs for further analysis */
 void prepSfs(Sfs *sfs, int r, Args *args) {
   sfs->u = args->u;
   sfs->l = args->l;

@@ -22,6 +22,8 @@ Args *newArgs() {
   args->c = DEFAULT_C;
   args->l = 0;
   args->E = DEFAULT_E;
+  args->x = DEFAULT_X;
+  args->s = 0;
   args->L = NULL;
   args->al = (int *)emalloc(3 * sizeof(int));
   args->nl = 0;
@@ -56,7 +58,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtu:l:L:c:E:";
+  char *optString = "hvUtu:l:L:c:E:x:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -71,6 +73,12 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'E':                           /* levels of exhaustive search */
       args->E = atoi(optarg);
+      break;
+    case 's':                           /* seed for random number generator */
+      args->s = atoi(optarg);
+      break;
+    case 'x':                           /* number of categories for cross validation */
+      args->x = atoi(optarg);
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
@@ -116,6 +124,8 @@ void printUsage(){
   printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
+  printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);
+  printf("\t[-s NUM seed for random number generator; default: system, randomSeed.dat]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-t exectute test routines for debuggin]\n");
   printf("\t[-h print this help message and exit]\n");
