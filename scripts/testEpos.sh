@@ -48,4 +48,24 @@ else
     echo ${DIFF}
 fi
 
+./epos -s 13 ../data/kap144i.dat > tmp.out
+DIFF=$(diff tmp.out ../data/kap144ix.out)
+if [ "$DIFF" == "" ] 
+then
+    printf "Test(epos, kap144i,  greedy, x-val)\tpass\n"
+else
+    printf "Test(epos, kap144i,  greedy, x-val)\tfail\n"
+    echo ${DIFF}
+fi
+
+./epos -s 13 -E 3 ../data/kap144i.dat > tmp.out
+DIFF=$(diff tmp.out ../data/kap144iex.out)
+if [ "$DIFF" == "" ] 
+then
+    printf "Test(epos, kap144i,  exhaustive, x-val)\tpass\n"
+else
+    printf "Test(epos, kap144i,  exhaustive, x-val)\tfail\n"
+    echo ${DIFF}
+fi
+
 rm tmp.out
