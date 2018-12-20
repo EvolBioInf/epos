@@ -58,7 +58,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtu:l:L:c:E:x:";
+  char *optString = "hvUtu:l:L:c:E:x:s:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
