@@ -76,11 +76,12 @@ int main(int argc, char *argv[]){
   if(args->numInputFiles == 0){
     fp = stdin;
     scanFile(fp, args, "stdin");
-  }else{
+  } else {
     for(int i = 0; i < args->numInputFiles; i++){
       fp = efopen(args->inputFiles[i], "r");
       scanFile(fp, args, args->inputFiles[i]);
       fclose(fp);
+      resetReadSfs();
     }
   }
   freeArgs(args);

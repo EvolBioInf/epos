@@ -27,6 +27,7 @@ typedef struct sfsSet {
 } SfsSet;
 
 Sfs *readSfs(FILE *fp, Args *args);
+void resetReadSfs();
 void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
 Sfs *newSfs(int n, Args *args);

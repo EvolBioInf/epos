@@ -61,6 +61,11 @@ int numPol(Sfs *sfs) {
   return p;
 }
 
+void resetReadSfs() {
+  first = 1;
+  last  = 0;
+}
+
 /* prepSfs prepares the raw data read by readSfs for further analysis */
 void prepSfs(Sfs *sfs, int r, Args *args) {
   sfs->u = args->u;
