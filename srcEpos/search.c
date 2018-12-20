@@ -69,15 +69,14 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
   ka = (int *)emalloc((sfs->n + 1) * sizeof(int));
   k  = (int *)emalloc((sfs->n + 1) * sizeof(int));
   kp = (int *)emalloc((sfs->n + 1) * sizeof(int));
-  newton(sfs, ps, args);
-  double l = ps->l;
-  double la = l;
   cpK(ps->k, ka, ps->m);
   cpK(ps->k,  k, ps->m);
   cpK(ps->k, kp, ps->m);
+  SfsSet *ss = splitSfs(sfs, args, r);
+  double l = compPopSizes(ka, ps->m, sfs, ps, args, ss);
+  double la = l;
   printConfig(k, 1, l);
   /* iterate over the possible number of levels, n */
-  SfsSet *ss = splitSfs(sfs, args, r);
   for(m = 2; m <= sfs->n; m++) {
     kd = nextConfig(m, sfs->n, k, args, 1);
     improved = 0;
