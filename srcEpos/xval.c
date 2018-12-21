@@ -31,6 +31,8 @@ void freeSfsSet(SfsSet *ss) {
     freeSfs(ss->train[i]);
     freeSfs(ss->test[i]);
   }
+  free(ss->train);
+  free(ss->test);
   free(ss);
 }
 
@@ -73,6 +75,7 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
 	addSfs(ss->train[i], ss->test[j]);
     }
   }
+  free(a);
 
   return ss;
 }

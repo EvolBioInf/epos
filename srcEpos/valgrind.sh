@@ -5,6 +5,6 @@
 
 # valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="testNewton.val" --dsymutil=yes ./testNewton -l 10000000 -U data/testNewtonU.dat
 # valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="test.val" --dsymutil=yes ./epos -t
-valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="test.val" --dsymutil=yes ./epos -l 10000000 -E 10 data/testNewtonF.dat
+valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="epos.val" --dsymutil=yes ./epos -l 10000000 ../data/testF.dat
 
 

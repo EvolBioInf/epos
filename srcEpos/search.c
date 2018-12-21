@@ -59,6 +59,13 @@ double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args, SfsSet *
   return l;
 }
 
+void freeSearch(int *ka, int *k, int *kp, SfsSet *ss) {
+  free(ka);
+  free(k);
+  free(kp);
+  freeSfsSet(ss);
+}
+
 PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
   int *kd, *ka, *kp, *k; /* arrays of levels   */
   int m;
@@ -94,9 +101,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
       else
 	printf("#m = %d; no improvement\n", m);
       compPopSizes(kp, m - 1, sfs, ps, args, NULL);
-      free(ka);
-      free(k);
-      free(kp);
+      freeSearch(ka, k, kp, ss);
       return ps;
     }
     cpK(ka, k, m);
@@ -105,10 +110,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     printConfig(k, m, l);
   }
   compPopSizes(kp, m - 1, sfs, ps, args, NULL);
-  free(k);
-  free(ka);
-  free(kp);
-  freeSfsSet(ss);
+  freeSearch(ka, k, kp, ss);
 
   return ps;
 }
