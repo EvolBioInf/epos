@@ -39,7 +39,7 @@ void analysis(Sfs *sfs, Args *args, char *fileName) {
   else {
     gsl_rng *r = ini_gsl_rng(args);
     ps = searchLevels(sfs, args, r);
-    free_gsl_rng(r, args);
+    gsl_rng_free(r);
   }
   printTimes(ps, sfs);
   freePopSizes(ps);

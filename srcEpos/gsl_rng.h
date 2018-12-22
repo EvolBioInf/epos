@@ -13,6 +13,5 @@
 #include "interface.h"
 
 gsl_rng *ini_gsl_rng(Args *args);
-void free_gsl_rng(gsl_rng *r, Args *args);
 
 #endif
