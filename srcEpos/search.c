@@ -4,6 +4,7 @@
  * Date: Fri Nov 23 15:00:29 2018
  **************************************************/
 #include <stdlib.h>
+#include <math.h>
 #include "sfs.h"
 #include "popSizes.h"
 #include "interface.h"
@@ -88,8 +89,11 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     kd = nextConfig(m, sfs->n, k, args, 1);
     improved = 0;
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
-      double ld = compPopSizes(kd, m, sfs, ps, args, ss);
-      if(ld > la) {
+      double ld  = compPopSizes(kd, m, sfs, ps, args, ss);
+      double ldd = ld;
+      if(args->x > 1)
+	ldd = compPopSizes(kd, m, sfs, ps, args, NULL); /* ensure the full data set also gives a sensible result */
+      if(ld > la && !isnan(ldd)) {
 	improved = 1;
 	la = ld;
 	cpK(kd, ka, m);
