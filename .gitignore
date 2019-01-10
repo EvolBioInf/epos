@@ -18,3 +18,4 @@ doc/date.tex
 randomSeed.dat
 seedms
 build
+scripts/genTestEpos.sh

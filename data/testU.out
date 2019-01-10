@@ -4,7 +4,7 @@
 #m = 1; maximum Log(Likelihood): 151015055.614343	{2}
 #m = 2; maximum Log(Likelihood): 151015174.471712	{2, 30}
 #m = 3; maximum Log(Likelihood): 151015175.818092	{2, 3, 30}
-#Final        Log(Likelihood): 151015174.471712
+#Final Log(Likelihood):          151015174.471712
 #Level	T[Level]	N[Level]
 30	3.62e+02	7.88e+04
 2	3.13e+04	8.00e+03
