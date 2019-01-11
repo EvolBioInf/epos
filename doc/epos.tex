@@ -30,7 +30,7 @@
 The software package \ty{epos} contains two programs, \ty{epos}
 itself and \ty{epos2ages}. \ty{Epos} estimates historical population
 sizes, and \ty{epos2ages} transforms them into allele ages. \ty{Epos} takes site frequency spectra as input. A site frequency
-spectrum is computed from a haplotype sample. Table~\ref{tab:hap}
+spectrum is computed from a haplotype sample. For example, Table~\ref{tab:hap}
 shows a sample of $n=4$ haplotypes, $h_1, h_2,...,h_4$, with $S=8$
 segregating (polymorphic) sites, $s_1, s_2,...,s_8$. Each segregating
 site consists of a column of four zeros and ones, where zero indicate
@@ -55,8 +55,8 @@ $h_4$ &      \ty{0} & \ty{1} & \ty{1} & \ty{0} & \ty{0} & \ty{0} & \ty{1} &
   \end{center}
 \end{table}
 In many empirical data sets it is not possible to distinguish between
-segregating sites with $r$ mutations and those with $n-r$
-mutations. In this case the spectrum is called \textit{folded} and
+segregating sites with $r$ mutant alleles and those with $n-r$
+mutant alleles. In this case the spectrum is called \textit{folded} and
 consists of the
 number of sites affecting $r$ haplotypes plus the number of sites
 affecting $n-r$ haplotypes. Table~\ref{tab:hap}B shows the folded
@@ -64,8 +64,6 @@ version of the spectrum in Table~\ref{tab:hap}A: The singleton
 category now consists of the sum of unfolded singletons and
 tripletons, while the number of doubletons
 remains unchanged.
-In addition to population sizes, \ty{epos} can also compute the
-average ages of mutations affecting $1, 2,...,n-1$ haplotypes.
 
 \begin{table}
   \caption{Folded (\textbf{A}) and unfolded (\textbf{B}) site
@@ -93,18 +91,18 @@ average ages of mutations affecting $1, 2,...,n-1$ haplotypes.
 \end{table}
 
 \section{Theory \& Algorithm}\label{sec:alg}
-\ty{Epos} implements theory by \cite{lyn18:inf}. Here I give a non-technical introduction. Consider the
-coalescent for $n$ haplotypes; Figure~\ref{fig:coa} shows an example
-for $n=4$ haplotypes. Any such coalescent can be divided into levels
-$2, 3,...,n$, where a level, $\ell$, is the coalescence event,
-where the number of lineages changes from $\ell+1$ to $\ell$. The time
-intervals $T_i, 2\le i\le n-1$ denote the segment with $i$
-lineages. For each $T_i$ \ty{epos} can calculate a corresponding
-population size, $N_i$. Unfortunately, for larger sample sizes the
-computation of all $N_i$ invariable returns negative population
-sizes. So instead of allowing the population size to change at every
-coalescence event, we pick a subset of events encapsulating the most
-important size changes.
+\ty{Epos} implements theory by \cite{lyn18:inf}, which I briefly
+summarize here. Consider the coalescent for $n$ haplotypes,
+Figure~\ref{fig:coa} shows an example for $n=4$ haplotypes. Any such
+coalescent can be divided into levels $2, 3,...,n$, where a level,
+$\ell$, is marked by the coalescence event that reduces the number of
+lineages from $\ell+1$ to $\ell$. The time intervals $T_i, 2\le i\le
+n-1$ denote the segments with of the coalescent with $i$ lineages. For each $T_i$ \ty{epos}
+can calculate a corresponding population size, $N_i$. Unfortunately,
+for larger samples the computation of all $N_i$ invariable
+returns negative population sizes. So instead of allowing the
+population size to change at every coalescence event, we pick a subset
+of levels encapsulating the most important size changes.
 
 \begin{figure}
   \begin{center}
@@ -125,7 +123,7 @@ So, given a combination of levels, the population sizes are computed
 with the proviso that negative values are set to the smallest possible
 population size, $N=1$. For each combination of levels and population
 sizes, the log-likelihood of observing the input site frequency
-spectrum is calculated. We now need an efficient and effective method
+spectrum is calculated. We now need an efficient a method
 for maximizing this likelihood.
 
 The starting point is always a single level, $m=1$, the root at level
@@ -134,14 +132,14 @@ most likely combination picked. If this improves the likelihood by at
 least 2 units, the number of levels is increased to $m=3$ and the
 search repeats. Algorithm~\ref{alg:epo} summarizes this strategy. The
 function \ty{nextConfig} in line 7 hides the details of how the next
-configuration is picked. Here I have implemented a \emph{greedy} and
+configuration is picked. I have implemented a \emph{greedy} and
 an \emph{exhaustive} strategy. Under the greedy strategy, the best
 configuration of breakpoints found in round $m$ is retained in round
 $m+1$ and a single new breakpoint is added. Under the exhaustive
 strategy, all ${n-1\choose m-2}$ possible combinations of breakpoints
 are investigated in each round. Unfortunately, for large samples, this
 number quickly leads to unfeasible run times. The greedy and
-exhaustive search strategies are contrasted in the Tutorial in
+exhaustive search strategies are explained further in the Tutorial in
 Section~\ref{sec:tut}, where I also apply \ty{epos} to real site
 frequency spectra.
 
@@ -172,14 +170,15 @@ make
 \begin{verbatim}
 make test
 \end{verbatim}
+which takes approximately one minute.
 \I The executables \ty{epos} and \ty{epos2ages} are located in the
 directory \ty{build}. Place them in your \ty{PATH}.
 \I  Make the documentation
 \begin{verbatim}
 make doc
 \end{verbatim}
-This calls \LaTeX{}, so document construction depends on a reasonably
-complete \ty{latex} installation. The typeset documentation is located
+This calls the typesetting program \ty{latex}, so please make sure it
+is installed before entering this command. The typeset documentation is located
 in
 \begin{verbatim}
 doc/epos.pdf
@@ -191,111 +190,240 @@ I first explain how to test \ty{epos} using simulated data, and then
 analyze real data.
 \subsection{Simulated Data}
 \ty{Epos} was developed for estimating variable population
-sizes. Nevertheless, we begin by simulating simple constant-size
+sizes. Nevertheless, we begin with simulated constant-size
 scenarios before generating samples under models with varying population
 sizes.
 \subsubsection{Constant Population Size}
 \begin{itemize}
-\item Simulate one sample with
-  $n=30$ haplotypes using the coalescent simulator \ty{ms} \citep{hud02:gen}:
+\item First, take a look at one of the simulated data sets supplied
+  with \ty{epos}:
 \begin{verbatim}
-ms 30 1 -t 10 
+cat data/testF.dat 
+#r	f(r)
+1	5166
+2	2030
+3	1383
+4	1116
+5	981
+6	874
+7	702
+8	654
+9	593
+10	573
+11	532
+12	494
+13	463
+14	593
+15	236
 \end{verbatim}
-This can automatically be converted to site frequency spectra using
-my program \ty{ms2sfs}\footnote{\ty{https://www.github.com/evolbioinf/sfs}}:
+It is a folded data set, so the sample size $n=30$.
+\item Let's analyze it using the command
 \begin{verbatim}
-ms 30 1 -t 10 | ms2sfs
+epos -l 1000000 -x 1 data/testF.dat 
 \end{verbatim}
-Finally, \ty{epos} then reads the spectrum and estimates population
-sizes from it:
+where \ty{-l 1000000} indicates that 1 Mb of sequence were surveyed
+and \ty{-x 1} that the number of cross-validation categories is 1,
+which means no cross-validation. I'll return to cross-validation
+later. The result of this command is
 \begin{verbatim}
-ms 30 1 -t 10 | ms2sfs | tee tmp.sfs | epos -U -l 1000
-#InputFile:	stdin
-#Polymorphic sites surveyed:	80
-#Monomorphic sites surveyed:	920
-#m = 1; maximum Log(Likelihood): 5375.211460	{2}
-#m = 2; maximum Log(Likelihood): 5381.027523	{2, 5}
-#m = 3; maximum Log(Likelihood): 5382.600833	{2, 3, 5}
-#Final        Log(Likelihood): 5381.027523
-#Level  T[Level]  N[Level]
-5       4.20e+05  4.84e+05
-2       5.24e+06  1.61e+06
+#InputFile:	data/testF.dat
+#Polymorphic sites surveyed:	16390
+#Monomorphic sites surveyed:	983610
+#m = 1; maximum Log(Likelihood): 12693297.944918	{2}
+#m = 2; maximum Log(Likelihood): 12693438.008153	{2, 29}
+#m = 3; maximum Log(Likelihood): 12693442.317603	{2, 3, 29}
+#m = 4; maximum Log(Likelihood): 12693456.986438	{2, 3, 8, 29}
+#m = 5; no improvement
+#Final Log(Likelihood):          12693456.986438
+#Level	T[Level]	N[Level]
+29	1.29e+04	1.35e+06
+8	7.63e+04	1.48e+05
+3	5.31e+05	3.19e+05
+2	6.19e+05	4.36e+04
 \end{verbatim}
-where \ty{-U} indicates an unfolded site frequency spectrum, and
-\ty{-l} is the sequence length, $l=1000$. The command \ty{tee} saves
-the spectrum in \ty{tmp.sfs} so we can use it again later on.
 \ty{Epos} prints intermediate configurations of $m$ breakpoints: As
 already described in Section~\ref{sec:alg}, it starts with a single
 breakpoint, $m=1$, the root at at level 2. The root level must always
 be present and the population size starting there extends to the next
 breakpoint printed, or, if there is none as in this case, the
-leaves. The log-likelihood of the input site frequency spectrum given
-the best-fitting constant population size, which \ty{epos} does not
-show, is 5375.2. In the next round, $m=2$, one new breakpoint is added
-at level 5. The log-likelihood increases to 5381.0, which is more than
-2 units greater than the previous log-likelihood, so the search is
-continued in round $m=3$. The breakpoint at level 5 from the previous
-round is retained and the next best breakpoint, level 3, is added. The
-log-likelihood grows to 5682.6, an increment of less than 2, so the
-addition of level 3 is rejected and the result from the previous round
-printed. This search strategy is \emph{greedy}, because it cannot
-revise the level configurations found in previous rounds.
-
-As an alternative to the greedy strategy, I have also implemented an
-exhaustive search, where all possible combinations are tested in each
+leaves of the coalescent. The log-likelihood of the input site frequency spectrum given
+the best-fitting constant population size is 12693297.9. In the next
+round, $m=2$, one new breakpoint is added at level 29. The
+log-likelihood increases to 12693438.0, which is roughly 140 log-units
+greater than the previous log-likelihood. As the minimum improvement
+is 2 log-units, the search is continued in round $m=3$. The breakpoint
+at level 29 from the previous round is retained and the next best
+breakpoint, level 3, is added. The log-likelihood grows by roughly 4
+units to 12693442.3, hence the search continues. In round $m=4$ level 3 and
+29 from the previous round are retained and level 8 is added. The
+log-likelihood grows by roughly 15 units to 12693457.0 and the search is repeated
+one more time, but at $m=5$ no improvement is found, so the population
+sizes for the levels 2, 3, 8, and 29 are printed. This search strategy
+is \emph{greedy}, because it cannot revise the level configurations
+found in previous rounds.
+\item Under the exhaustive search all possible combinations are tested in each
 round. This mode is switched on using $\ty{-E}\ n$, meaning up to $n$
 rounds of exhaustive search are conducted before the program reverts
 to the greedy strategy, or quits. Apply the exhaustive strategy to the
 data set just analyzed:
 \begin{verbatim}
-epos -U -l 1000 -E 10 tmp.sfs
-#InputFile:	tmp.sfs
-#Polymorphic sites surveyed:	80
-#Monomorphic sites surveyed:	920
-#m = 1; maximum Log(Likelihood): 5375.211460	{2}
-#m = 2; maximum Log(Likelihood): 5381.027523	{2, 5}
-#m = 3; maximum Log(Likelihood): 5383.636893	{2, 3, 6}
-#m = 4; maximum Log(Likelihood): 5385.036300	{2, 3, 6, 27}
-#Final        Log(Likelihood): 5383.636893
-#Level  T[Level]  N[Level]
-6       1.90e+05  2.85e+05
-3       3.40e+06  2.68e+06
-2       4.35e+06  4.74e+05
+epos -x 1 -l 1000000 -E 30 data/testF.dat 
+#InputFile:	data/testF.dat
+#Polymorphic sites surveyed:	16390
+#Monomorphic sites surveyed:	983610
+#m = 1; maximum Log(Likelihood): 12693297.944918	{2}
+#m = 2; maximum Log(Likelihood): 12693438.008153	{2, 29}
+#m = 3; maximum Log(Likelihood): 12693443.090674	{2, 3, 30}
+#m = 4; maximum Log(Likelihood): 12693460.278162	{2, 5, 6, 22}
+#m = 5; no improvement
+#Final Log(Likelihood):          12693460.278162
+#Level	T[Level]	N[Level]
+22	2.82e+04	4.93e+05
+6	8.17e+04	8.78e+04
+5	3.23e+05	1.20e+06
+2	6.50e+05	1.09e+05
 \end{verbatim}
-Up to $m=2$ the runs are identical. But in $m=3$ the breakpoint at
-level 5 is not retained, which opens the way to finding another
-significant improvement before giving up in round $m=4$. So the
+The option \ty{-E 30} indicates that up to 30 levels, that is all
+possible levels in the coalescent, can be added by
+exhaustive search. Exhaustive searching is computationally demanding, so the run is
+now slower than before. The first two rounds are the same as under the
+greedy regime. However, at $m=3$ level 29 from the previous round is
+dropped and exchanged for level 30. And again at level $m=4$ levels 3
+and 30 from the previous round are replaced to give an end result that
+is roughly three log-units better than the greedy result. So the
 exhaustive search can lead to better results than the greedy
-search. Unfortunately, the exhaustive search requires ${n-1\choose
+search. As already mentioned, the exhaustive search requires ${n-1\choose
   m-2}$ steps for each value of $m$ investigated. If $n$ is large, say
-200, and $m=10$, the number of steps is ${199\choose 8}\approx
-5.3\times10^{13}$, which is an unfeasible number of estimations and
+200, and $m=10$, ${199\choose 8}\approx
+5.3\times10^{13}$ steps are necessary in that round, which is an unfeasible number of estimations and
 likelihood computations. So in many situations the exhaustive search
 is not practical.
-
-\ty{Epos} interprets the population mutation parameter,
+\item A classical problem when estimating model parameters is
+  ``over-fitting''. This refers to the fact that random quirks of a
+  given data set can strongly influence the estimation and hence
+  generate a result specific to the particular sample but misleading
+  with respect to the population from which the sample was drawn.  To
+  avoid over-fitting in our analysis, we now switch on cross-
+  validation in \ty{epos} by dropping the \ty{-x} option, which
+  automatically sets the number of categories to 5. So the site
+  frequency spectrum is divided into five parts of equal size. Four of
+  these, that is 80\% of the data, are merged into the ``training''
+  data set, from which the best configuration of levels is
+  computed. This configuration is then applied to the remaining
+  ``test'' data and the log-likelihood recorded. This is repeated in
+  all five possible permutations and the final log-likelihood is the
+  average printed as an intermediate result by \ty{epos}:
+\begin{verbatim}
+epos -s 13 -l 1000000 data/testF.dat 
+#InputFile:	data/testF.dat
+#Polymorphic sites surveyed:	16390
+#Monomorphic sites surveyed:	983610
+#m = 1; maximum Log(Likelihood): 1739015.209764	{2}
+#m = 2; maximum Log(Likelihood): 1739074.268165	{2, 5}
+#m = 3; no improvement
+#Final Log(Likelihood):          12693399.625504
+#Level	T[Level]	N[Level]
+5	2.07e+05	2.39e+05
+2	7.05e+05	1.66e+05
+\end{verbatim}
+The ``final'' likelihood is again computed for the full data set,
+hence the large jump from  1739074.3 as the last intermediate
+log-likelihood to  12693399.6 as the log-likelihood of the final
+result. Notice that this is much smaller than the log-likelihood found
+without cross validation, which was evidently the result of
+over-fitting.
+\item What happens if we use the exhaustive search with cross-validation?
+\begin{verbatim}
+epos -E 30 -s 13 -l 1000000 data/testF.dat 
+\end{verbatim}
+We get the same result as under the greedy strategy.
+\item The division of the data during cross-validation is random. In
+  order to fix the results for this tutorial, I set the seed for the
+  random number generator using the \ty{-s} option. If we change the
+  seed, we change the division of the data and with it the result:
+\begin{verbatim}
+epos -s 20 -l 1000000 data/testF.dat 
+#InputFile:	data/testF.dat
+#Polymorphic sites surveyed:	16390
+#Monomorphic sites surveyed:	983610
+#m = 1; maximum Log(Likelihood): 1737905.178788	{2}
+#m = 2; maximum Log(Likelihood): 1737954.832488	{2, 27}
+#m = 3; no improvement
+#Final Log(Likelihood):          12693437.619085
+#Level	T[Level]	N[Level]
+27	1.32e+04	6.44e+05
+2	7.39e+05	1.89e+05
+\end{verbatim}
+\item Again, the exhaustive search gives the same result:
+\begin{verbatim}
+epos -E 30 -s 20 -l 1000000 data/testF.dat 
+\end{verbatim}
+\item So far, we do not know what the true result of our analysis
+  should be, so we cannot properly assess the effect of
+  cross-validation. To do this, we need to simulate our own haplotypes
+  under a given scenario. First, we simulate one sample with
+  $n=30$ haplotypes and constant population size using the coalescent simulator \ty{ms} \citep{hud02:gen}:
+\begin{verbatim}
+ms 30 1 -t 10 
+\end{verbatim}
+This can automatically be converted to a site frequency spectrum using
+my program \ty{ms2sfs}\footnote{\ty{https://www.github.com/evolbioinf/sfs}}:
+\begin{verbatim}
+ms 30 1 -t 10 | ms2sfs
+\end{verbatim}
+Finally, \ty{epos} reads the spectrum and estimates population
+sizes from it:
+\begin{verbatim}
+ms 30 1 -t 10 | ms2sfs | epos -U -l 1000
+#InputFile:	stdin
+#Polymorphic sites surveyed:	43
+#Monomorphic sites surveyed:	957
+#m = 1; maximum Log(Likelihood): 320.877986	{2}
+#m = 2; maximum Log(Likelihood): 323.641318	{2, 16}
+#m = 3; maximum Log(Likelihood): 323.873992	{2, 3, 16}
+#Final Log(Likelihood):          5615.240762
+#Level	T[Level]	N[Level]
+16	1.32e+05	9.93e+05
+2	1.80e+06	4.45e+05
+\end{verbatim}
+where \ty{-U} indicates an unfolded site frequency spectrum. Since
+this is a simulation, your results from now on are bound to differ
+from mine in
+numerical detail, though not in the general trend.
+\item \ty{Epos} interprets the population mutation parameter,
 $\theta=4N_{\rm e}\mu$, as per-site, which means that under constant
 population size the expected effective size is
 \[
 E[N_{\rm e}]=\frac{\theta}{4\mu l}.
 \]
 Since \ty{epos} uses by default $\mu=5\times 10^{-9}$, the expected
-population size for our simulation data is therefore 500,000. We can
+population size for our simulation data is 500,000. We can
 test this by simulating 1000 samples, calculating a site frequency
-spectrum for each, and averaging over the estimated population sizes:
+spectrum for each, and averaging over the estimated population
+sizes. First, we do this without cross validation:
+\begin{verbatim}
+ms 30 1000 -t 10     |          # generate 1000 samples of 30 haplotypes
+ms2sfs               |          # compute one spectrum per sample
+epos -U -l 1000 -x 1 |          # estimate population sizes for each spectrum
+grep -v '^#'         |          # remove hashed lines
+awk '{s+=$3;c++}END{print s/c}' # compute average population size
+1.61097e+06
+\end{verbatim}
+This is over three times larger than the expected 500,000. Cross
+validation by dropping \ty{-x} helps:
 \begin{verbatim}
 ms 30 1000 -t 10 |              # generate 1000 samples of 30 haplotypes
 ms2sfs           |              # compute one spectrum per sample
 epos -U -l 1000  |              # estimate population sizes for each spectrum
 grep -v '^#'     |              # remove hashed lines
 awk '{s+=$3;c++}END{print s/c}' # compute average population size
-1.36147e+06
+793919
 \end{verbatim}
-This is almost three times larger than the expected 500,000 and
+Still, this is 50\% larger than the exptected 500,000, and
 illustrates that the average is not a good statistic for monitoring
 the ``majority'' behavior of \ty{epos} estimates. What about the
-median? We repeat the simulation, but this time save the population sizes to
-the file \ty{tmp.txt}:
+median? We repeat the simulation, but this time save the population
+sizes to the file \ty{tmp.txt}:
 \begin{verbatim}
 ms 30 1000 -t 10 |              # generate 1000 samples of 30 haplotypes
 ms2sfs           |              # compute one spectrum per sample
@@ -305,42 +433,43 @@ cut -f 3  > tmp.txt             # extract the third column and save it
 \end{verbatim}
 Now we count the results:
 \begin{verbatim}
-wc -l tmp.txt
-1568 tmp.txt
+wc -l tmp.txt 
+1116 tmp.txt
 \end{verbatim}
-and look up the median
+and look up the middle of the sorted estimates, the median:
 \begin{verbatim}
-sort -g tmp.txt | head -n 784 | tail -n 1
+sort -g tmp.txt | head -n 558 | tail -n 1
 4.67e+05
 \end{verbatim}
-which is reasonably close to the expected value of $5\times 10^5$.
+which is reasonably close to the expected value of $5\times
+10^5$. 
 Let's see if folding the
 spectrum changes this result:
 \begin{verbatim}
 ms 30 1000 -t 10 | 
 ms2sfs -f        |  # fold the spectra 
-epos -l 1000     |  
+epos -l 1000     |  # eliminate the -U option
 grep -v '^#'     |
 cut -f 3         |
 sort -g > tmp.txt
 \end{verbatim}
-Now count the results
+Again, count the results
 \begin{verbatim}
-wc -l tmp.txt
-1667
+wc -l tmp.txt 
+1134 tmp.txt
 \end{verbatim}
-and find the median
+and look up the median
 \begin{verbatim}
-head -n 834 tmp.txt | tail -n 1
-5.27e+05
+head -n 567 tmp.txt | tail -n 1
+4.80e+05
 \end{verbatim}
-which is again similar to the expected 500,000. 
+As before, this is similar to the expected 500,000. 
 \end{itemize}
 \subsubsection{Variable Population Size}
 \begin{itemize}
-  \item For estimating variable population sizes we need to
+  \item For estimating variable population sizes, we need to
     plot size as a function of time. This is implemented in the
-    program \ty{epos2plot}\footnote{\ty{https://www.github.com/evolbioinf/epos2plot}}. Begin again by simulating samples under constant population
+    program \ty{epos2plot}\footnote{\ty{https://www.github.com/evolbioinf/epos2plot}}. Begin again by simulating samples under constant 
     size, but this time add plotting
 \begin{verbatim}
 ms 30 1000 -t 10 | 
@@ -356,26 +485,28 @@ gnuplot -p fig1.gp
 \end{verbatim}
 to get Figure~\ref{fig:con}. The fit between the estimated median size
 and the true size is excellent for most of the plot, though it drifts
-upward in the very distant past. It is important to realize that the number of samples
-from which the estimates are derived declines into the past. Near the
-present we have
+upward in the very distant past. Notice the vertical line at $N$
+generations. It is probably prudent to trust the analysis only up to
+this point. It is also important to realize that the number
+of samples from which the estimates are derived declines into the
+past. Near the present we have
 \begin{verbatim}
 head -n 5 epos1.dat 
 #Time  LowerQ  Median  UpperQ    SampleSize
-0      25300   484000  1.81e+07  1000
-128    25300   484000  1.81e+07	 1000
-324    26700   489000  1.81e+07	 1000
-345    29800   492000  1.81e+07	 1000
+0      189000  480000  5.61e+06  1000
+0.0046 189000  480000  5.61e+06  1000
+0.267  195000  480000  5.61e+06  1000
+0.438  196000  480000  5.61e+06  1000
 \end{verbatim}        
 while the furthest point in the past is usually computed from a single
 sample:
 \begin{verbatim}
 tail -n 5 epos1.dat 
-6.58e+06  2.34e+06  2.36e+06  2.71e+06  5
-6.6e+06   2.34e+06  2.4e+06   2.71e+06  4
-7.06e+06  2.34e+06  2.4e+06   2.71e+06  3
-7.21e+06  2.4e+06   2.71e+06  2.71e+06  2
-7.3e+06   2.71e+06  2.71e+06  2.71e+06  1
+6.42e+06  2.68e+06  3.6e+06   4.28e+06  5
+7.72e+06  3.33e+06  3.96e+06  4.28e+06  4
+8.92e+06  3.33e+06  3.96e+06  4.28e+06  3
+8.93e+06  3.33e+06  4.28e+06  4.28e+06  2
+9.03e+06  3.33e+06  3.33e+06  3.33e+06  1
 \end{verbatim}
 Also, the variation in Figure~\ref{fig:con} is
 large, especially close to the present.
@@ -399,7 +530,8 @@ epos2plot > epos2.dat
 \end{verbatim}
 This takes about 11 minutes. Notice the \ty{-u} option for \ty{epos},
 which specifies the mutation rate per generation used by \cite{liu15:exp}, $\mu=1.2\times
-10^{-8}$. Plot the result
+10^{-8}$.
+\item Plot the result
 \begin{verbatim}
 gnuplot -p fig2.gp
 \end{verbatim}
@@ -428,10 +560,10 @@ Plot this
 \begin{verbatim}
 gnuplot -p fig3.gp
 \end{verbatim}
-to get Figure~\ref{fig:2e}, where the estimation is less
-accurate than in the one-step scenario of Figure~\ref{fig:2b}.
-This illustrates the difficulty of accurately calculating population size
-changes in the recent past.
+to get Figure~\ref{fig:2e}, where the estimation is precise until very
+close to the present, when it starts to diverge. This illustrates
+the difficulty of accurately calculating population size changes
+in the recent past.
 \begin{figure}
   \begin{center}
     \scalebox{0.6}{\input{fig2e}}
@@ -466,21 +598,17 @@ require the sequence length to be passed via the \ty{-l}
 option. Moreover, the site frequency spectrum of Kap is folded, hence
 no \ty{-U}:
 \begin{verbatim}
-epos ../data/kap144i.dat 
-#InputFile:	../data/kap144i.dat
-#Polymorphic sites surveyed:	18037
-#Monomorphic sites surveyed:	185297
-#m = 1; maximum Log(Likelihood): 2149621.403059	{2}
-#m = 2; maximum Log(Likelihood): 2150273.656141	{2, 25}
-#m = 3; maximum Log(Likelihood): 2150277.188377	{2, 3, 25}
-#m = 4; maximum Log(Likelihood): 2150288.578235	{2, 3, 9, 25}
-#m = 5; maximum Log(Likelihood): 2150289.124322	{2, 3, 9, 25, 44}
-#Final        Log(Likelihood): 2150288.578235
-#Level  T[Level]  N[Level]
-25      5.48e+04  3.94e+05
-9       2.98e+05  7.31e+05
-3       2.88e+06  1.72e+06
-2       3.16e+06  1.44e+05
+epos data/kap144i.dat                                                                                       
+#InputFile:     ../data/kap144i.dat
+#Polymorphic sites surveyed:    18037
+#Monomorphic sites surveyed:    185297
+#m = 1; maximum Log(Likelihood): 267278.856200  {2}
+#m = 2; maximum Log(Likelihood): 267396.883483  {2, 31}
+#m = 3; maximum Log(Likelihood): 267397.568867  {2, 3, 31}
+#Final Log(Likelihood):          2150268.330281
+#Level  T[Level]        N[Level]
+31      3.47e+04        3.29e+05
+2       3.85e+06        9.86e+05                              
 \end{verbatim}
 \item This only gives a single point estimate, and in the absence of
   further samples it is hard to judge its reliability. However,
@@ -513,21 +641,20 @@ estimate the population size,
 \begin{verbatim}
 epos -U -l 1000 test.sfs
 #InputFile:	test.sfs
-#Polymorphic sites surveyed:	8
-#Monomorphic sites surveyed:	992
-#m = 1; maximum Log(Likelihood): 5861.160855	{2}
+#Monomorphic sites surveyed:	970
+#m = 1; maximum Log(Likelihood): 354.602622	{2}
 #m = 2; no improvement
-#Final        Log(Likelihood): 5861.160855
+#Final Log(Likelihood):          5773.013111
 #Level  T[Level]  N[Level]
-2       8.00e+05  4.00e+05
+2       3.00e+06  1.50e+06
 \end{verbatim}
 and the age of singletons
 \begin{verbatim}
 epos -U -l 1000 test.sfs | epos2ages -n 2
-#r  A[r]    V(A[r])      P[r]
-1   800000  2.55999e+17  400000
+#r  A[r]   V(A[r])  P[r]
+1   3e+06  9e+12    1.5e+06
 \end{verbatim}
-where the second column gives their average age as $8\times 10^5$,
+where the second column gives their average age as $3\times 10^6$,
 twice the population size. Since \ty{epos2ages} follows the convention
 of measuring time in units of $2N$ generations, this is the correct
 result. The other two output columns of \ty{epos2ages} are the
@@ -537,27 +664,27 @@ the allele, which again agrees with the previous \ty{epos} result.
 \begin{verbatim}
 ms 30 1 -t 1000 | ms2sfs | tee test.sfs | epos -U -l 10000000 
 #InputFile:	stdin
-#Polymorphic sites surveyed:	2467
-#Monomorphic sites surveyed:	9997533
-#m = 1; maximum Log(Likelihood): 151151463.358135	{2}
-#m = 2; maximum Log(Likelihood): 151151519.931473	{2, 10}
-#m = 3; maximum Log(Likelihood): 151151602.167420	{2, 3, 10}
+#Polymorphic sites surveyed:	3426
+#Monomorphic sites surveyed:	9996574
+#m = 1; maximum Log(Likelihood): 22228278.424306	{2}
+#m = 2; maximum Log(Likelihood): 22228284.366534	{2, 3}
+#m = 3; maximum Log(Likelihood): 22228297.234301	{2, 3, 5}
 #m = 4; no improvement
-#Final        Log(Likelihood): 151151602.167420
+#Final Log(Likelihood):          151140950.774671
 #Level  T[Level]  N[Level]
-10      1.82e+03  5.84e+03
-3       2.75e+03  6.03e+02
-2       1.04e+04  3.80e+03
+5       3.15e+03  3.63e+03
+3       1.56e+04  1.25e+04
+2       1.56e+04  1.00e+00
 \end{verbatim}
 and the corresponding allele sizes
 \begin{verbatim}
 epos -U -l 10000000 test.sfs | epos2ages -n 30
-#r  A[r]     V(A[r])      P[r]
-1   938.084  4.72335e+06  5148.63
-2   1688.78  1.07603e+07  4867.1
-3   2491.19  1.8408e+07   4617.42
+#r  A[r]          V(A[r])      P[r]
+1   2536.52       2.18817e+07  7144.54
+2   4117.33       3.18966e+07  7362.61
+3   5237.88       3.73466e+07  7513.62
 ...
-29  10354.9  5.82315e+07  3868.34
+29  13928.7  5.54355e+07  8563.64
 \end{verbatim}
 \item Finally, we can estimate the average age of alleles for the Kap
   population:
