@@ -125,7 +125,7 @@ void printUsage(){
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);
-  printf("\t[-s NUM seed for random number generator; default: system, randomSeed.dat]\n");
+  printf("\t[-s NUM seed for random number generator; default: system]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-t exectute test routines for debuggin]\n");
   printf("\t[-h print this help message and exit]\n");
