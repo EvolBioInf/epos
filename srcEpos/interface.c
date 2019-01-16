@@ -19,7 +19,7 @@ Args *newArgs() {
   args->U = 0;
   args->t = 0;
   args->u = DEFAULT_U;
-  args->c = DEFAULT_C;
+  args->c = -1;
   args->l = 0;
   args->E = DEFAULT_E;
   args->x = DEFAULT_X;
@@ -79,6 +79,8 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'x':                           /* number of categories for cross validation */
       args->x = atoi(optarg);
+      if(args->x < 1)
+	args->x = 1;
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
@@ -91,6 +93,8 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'c':
       args->c = atof(optarg);           /* minimum logLik change for acceptance of new level */
+      if(args->c < 0)
+	args->c = 0.;
       break;
     case '?':                           /* fall-through is intentional */
     case 'h':                           /* print help */
@@ -110,6 +114,12 @@ Args *getArgs(int argc, char *argv[]){
   args->numInputFiles = argc - optind;
   if(args->L)
     extractLevels(args);
+  if(args->c < 0) {
+    if(args->x == 1)
+      args->c = DEFAULT_C;
+    else
+      args->c = 0.;
+  }
   return args;
 }
 
@@ -121,7 +131,7 @@ void printUsage(){
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
-  printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g]\n", DEFAULT_C);
+  printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g if -x 1, 0 otherwise]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);

@@ -5,8 +5,10 @@
 #m = 2; maximum Log(Likelihood): 267493.811891	{2, 25}
 #m = 3; maximum Log(Likelihood): 267502.036207	{2, 6, 7}
 #m = 4; maximum Log(Likelihood): 267502.294007	{2, 6, 7, 129}
-#Final Log(Likelihood):          2150281.018839
+#m = 5; no improvement
+#Final Log(Likelihood):          2150284.922739
 #Level	T[Level]	N[Level]
-7	2.83e+05	4.43e+05
-6	1.36e+06	8.06e+06
-2	3.47e+06	6.59e+05
+129	5.25e+01	1.51e+04
+7	3.05e+05	4.80e+05
+6	1.29e+06	7.37e+06
+2	3.50e+06	6.93e+05

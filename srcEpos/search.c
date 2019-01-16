@@ -91,15 +91,16 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld  = compPopSizes(kd, m, sfs, ps, args, ss);
       double ldd = ld;
-      if(args->x > 1)
+      if(args->x > 1) {
 	ldd = compPopSizes(kd, m, sfs, ps, args, NULL); /* ensure the full data set also gives a sensible result */
+      }
       if(ld > la && !isnan(ldd)) {
 	improved = 1;
 	la = ld;
 	cpK(kd, ka, m);
       }
     }
-    if(la < l + args->c) { /* no significant improvement, quit search */
+    if(la <= l + args->c) { /* no significant improvement, quit search */
       if(improved)
 	printConfig(ka, m, la);
       else
