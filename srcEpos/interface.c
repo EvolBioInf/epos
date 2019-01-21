@@ -66,7 +66,7 @@ Args *getArgs(int argc, char *argv[]){
     switch(c){
       break;
     case 'l':                           /* sequence length */
-      args->l = atol(optarg);
+      args->l = (long)atof(optarg);
       break;
     case 'L':                           /* preset levels */
       args->L = estrdup(optarg);
