@@ -1,7 +1,7 @@
 CC=gcc
 export VERSION = $(shell bash ../scripts/getVersion.sh) 
 export DATE    = $(shell bash ../scripts/getDate.sh) 
-CFLAGS = -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\" -O3 -Wall -Wshadow -pedantic -std=gnu99 -g -I../common/ -L../common/ #-pg
+CFLAGS = -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\" -O3 -Wall -Wshadow -pedantic -std=gnu99 -g -I../common/ -L../common/ -m64 #-pg
 # The source files, object files, libraries and executable name.
 SRCFILES= epos.c interface.c sfs.c util.c popSizes.c  \
 newton.c greedy.c exhaustive.c test.c search.c xval.c \

@@ -19,7 +19,7 @@
 double expGr(PopSizes *ps, Sfs *sfs, int r){
   int n     = sfs->n;
   int m     = ps->m;
-  int l     = sfs->l;
+  long l    = sfs->l;
   int *k    = ps->k;
   double u  = sfs->u;
   double *N = ps->N;
@@ -33,6 +33,7 @@ double expGr(PopSizes *ps, Sfs *sfs, int r){
     s += N[i] * (a - b);
   }
   s *= 4. * u * l / (double)r / binomial(n - 1, r);
+
   return s;
 }
 
@@ -81,14 +82,13 @@ PopSizes *newPopSizes(Sfs *sfs){
 
 double logLik(PopSizes *ps, Sfs *sfs) {
   double e, l = 0.;
-
   for(int r = 0; r <= sfs->a; r++) {
     if(sfs->f) {
       e = expF(ps, sfs, r);
     } else {
       e = expG(ps, sfs, r);
     }
-    l += sfs->G[r] * log(e) - e;
+    l += (double)sfs->G[r] * log(e) - e;
   }
 
   return l;

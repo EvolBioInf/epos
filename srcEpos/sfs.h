@@ -11,9 +11,9 @@
 #include "interface.h"
 
 typedef struct sfs {
-  int   *G; /* frequency spectrum          */
+  long  *G; /* frequency spectrum          */
   int    a; /* maximum index in G          */
-  int    l; /* sequence length             */
+  long   l; /* sequence length             */
   int    n; /* number of haplotypes        */
   double u; /* mutation rate               */
   int    p; /* number of polymorphic sites */

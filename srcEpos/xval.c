@@ -3,8 +3,10 @@
  * Author: Bernhard Haubold, haubold@evolbio.mpg.de
  * Date: Wed Dec 19 17:17:04 2018
  **************************************************/
+#include <time.h>
 #include "sfs.h"
 #include "eprintf.h"
+#include "util.h"
 
 SfsSet *newSfsSet(Sfs *sfs, Args *args) {
   int x = args->x;
@@ -49,19 +51,19 @@ void addSfs(Sfs *a, Sfs *b) {
  */
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   SfsSet *ss = newSfsSet(sfs, args);
-  int s = sfs->p + sfs->G[0]; /* number of sites in SFS */
+  long s = sfs->p + sfs->G[0]; /* number of sites in SFS */
   int *a = (int *)emalloc(s * sizeof(int));
-  int n = 0;
+  long n = 0;
   for(int i = 0; i <= sfs->a; i++) {
     for(int j = 0; j < sfs->G[i]; j++) {
       a[n++] = i;
     }
   }
-  gsl_ran_shuffle(r, a, n, sizeof(int));
+  shuffle(a, n, r);
   n /= args->x;
   for(int i = 0; i < args->x; i++) {
     Sfs *ns = ss->test[i];
-    for(int j = 0; j < n; j++) {
+    for(long j = 0; j < n; j++) {
       ns->G[a[j]]++;
       if(a[j])
 	ns->p++;

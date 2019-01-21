@@ -21,5 +21,7 @@ double watterson(Sfs *sfs);
 void iniBinom(int n);
 void freeBinom();
 int max(int a, int b);
+void shuffle(int *a, long n, gsl_rng *r);
+void testShuffle(int n, gsl_rng *r);
 
 #endif

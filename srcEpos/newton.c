@@ -39,7 +39,7 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
   int       n = s->n;
   int       m = p->m;
   int      *k = p->k;
-  int      *G = s->G;
+  long     *G = s->G;
   double   *N = p->N;
   
   double *y = (double *)emalloc((m + 1) * sizeof(double));
@@ -79,7 +79,7 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   int       n = s->n;
   int       m = p->m;
   int      *k = p->k;
-  int      *G = s->G;
+  long     *G = s->G;
   double   *N = p->N;
   double   *y = (double *)emalloc((m + 1) * sizeof(double));
   

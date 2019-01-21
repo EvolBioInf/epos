@@ -83,7 +83,7 @@ double hi(int i, int n, int r, int *k){
 
 void printSfsStats(Sfs *sfs){
   printf("#Polymorphic sites surveyed:\t%d\n", sfs->p);
-  printf("#Monomorphic sites surveyed:\t%d\n", sfs->G[0]);
+  printf("#Monomorphic sites surveyed:\t%ld\n", sfs->G[0]);
 }
 
 void printTimes(PopSizes *ps, Sfs *sfs){
@@ -125,4 +125,37 @@ int max(int a, int b) {
     return a;
   else
     return b;
+}
+
+/* shuffle shuffles the integers contained in array a */
+void shuffle(int *a, long n, gsl_rng *r) {
+  long x;
+  int t;
+
+  for(long i = n - 1; i > 0; i--) {
+    x = gsl_rng_uniform(r) * i;
+    t = a[x];
+    a[x] = a[i];
+    a[i] = t;
+  }
+}
+
+/* printArr prints the numbers in a in a single line */
+void printArr(int *a, int n) {
+  printf("%d", a[0]);
+  for(int i = 1; i < n; i++)
+    printf(" %d", a[i]);
+  printf("\n");
+}
+
+/* testShuffle tests the shuffling routine */
+void testShuffle(int n, gsl_rng *r) {
+  int *a = (int *)emalloc(n * sizeof(int));
+
+  for(int i = 0; i < n; i++)
+    a[i]  = i;
+  printArr(a, n);
+  shuffle(a, n, r);
+  printArr(a, n);
+  free(a);
 }

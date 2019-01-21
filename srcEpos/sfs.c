@@ -20,18 +20,18 @@ void printSfs(Sfs *sfs) {
   else
     printf("unfolded\n");
   printf("Haplotypes: %d\n", sfs->n);
-  printf("Sequence length: %d\n", sfs->l);
+  printf("Sequence length: %ld\n", sfs->l);
   printf("Mutation rate: %g\n", sfs->u);
   printf("# r\tG[r]\n");
   for(int i = 0; i <= sfs->a; i++)
-    printf("%d\t%d\n", i, sfs->G[i]);
+    printf("%d\t%ld\n", i, sfs->G[i]);
   printf("*****************\n");
 }
 
 Sfs *newSfs(int n, Args *args) {
   Sfs *sfs = (Sfs *)emalloc(sizeof(Sfs));
   sfs->n = n;
-  sfs->G = (int *)emalloc(n * sizeof(int));
+  sfs->G = (long *)emalloc(n * sizeof(long));
   sfs->l = -1;
   sfs->u = args->u;
   sfs->f = 1;
@@ -85,7 +85,7 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
     } 
     sfs->G[0] = args->l - numPol(sfs);
     if(sfs->G[0] <= 0) {
-      fprintf(stderr, "ERROR[epos]: The sequence length (%d) must be greater than the number of polymorphic sites (%d).\n", sfs->l, numPol(sfs));
+      fprintf(stderr, "ERROR[epos]: The sequence length (%ld) must be greater than the number of polymorphic sites (%d).\n", sfs->l, numPol(sfs));
       exit(-1);
     }
   } else
@@ -113,7 +113,7 @@ Sfs *readSfs(FILE *fp, Args *args){
     }
     r = atoi(tabField(0));       /* degree */
     f = atof(tabField(1));       /* frequency */
-    sfs->G = (int *)erealloc(sfs->G, (r + 1) * sizeof(int));
+    sfs->G = (long *)erealloc(sfs->G, (r + 1) * sizeof(long));
     sfs->G[r] = f;
   }
   if(line == NULL)

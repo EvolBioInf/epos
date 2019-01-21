@@ -14,7 +14,7 @@ typedef struct args{
   char e;      /* error message?                            */
   char U;      /* unfolded?                                 */
   char t;      /* execute test routines?                    */
-  int l;       /* sequence length                           */
+  long l;      /* sequence length                           */
   char *L;     /* preset levels                             */
   int nl;      /* number of levels                          */
   int *al;     /* array of nl levels                        */
