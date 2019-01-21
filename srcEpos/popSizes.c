@@ -83,6 +83,8 @@ PopSizes *newPopSizes(Sfs *sfs){
 double logLik(PopSizes *ps, Sfs *sfs) {
   double e, l = 0.;
   for(int r = 0; r <= sfs->a; r++) {
+    if(sfs->G[r] < 0)
+      continue;
     if(sfs->f) {
       e = expF(ps, sfs, r);
     } else {

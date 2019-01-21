@@ -90,6 +90,10 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
     }
   } else
     sfs->l = sfs->G[0] + numPol(sfs);
+  /* exclude sites */
+  sfs->x = args->nx;
+  for(int i = 0; i < sfs->x; i++)
+    sfs->G[args->ax[i]] = -1;
 }
 
 /* getSfs obtains the next SFS from an open file */

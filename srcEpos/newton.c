@@ -31,33 +31,40 @@ Rparams *newRparams(Sfs *sfs, PopSizes *ps) {
  * site frequency spectrum using equation (4b).
  */
 int folded(const gsl_vector *x, void *params, gsl_vector *f) {
-  double e, eg, bb;
+  double e, eg, bb, q;
   int a, b;
 
   Sfs      *s = ((Rparams *) params)->s;
   PopSizes *p = ((Rparams *) params)->p;
   int       n = s->n;
+  int      xx = s->x;
   int       m = p->m;
   int      *k = p->k;
   long     *G = s->G;
   double   *N = p->N;
-  
+
   double *y = (double *)emalloc((m + 1) * sizeof(double));
   for(int i = 1; i <= m; i++)
     N[i] = gsl_vector_get(x, i - 1);
   e = expF(p, s, 0);
+  if(xx > 0)
+    q = 1.;
+  else
+    q = G[0] / e;
   for(int i = 1; i <= m; i++) {
     y[i] = 0.;
     a = max(n - k[i]   + 1, 0);
     b = max(n - k[i+1] - 1, 0);
     for(int r = 1; r <= n/2 - 1; r++) {
+      if(G[r] < 0)
+	continue;
       eg = expF(p, s, r);
       bb = binomial(a, r) - binomial(b, r) + binomial(a, n-r) - binomial(b, n-r);
-      y[i] += (G[r] / eg - G[0]/e) / (double)r * bb / binomial(n-1, r);
+      y[i] += (G[r] / eg - q) / (double)r * bb / binomial(n-1, r);
     }
     eg = expF(p, s, n/2);
     bb = binomial(a, n/2) - binomial(b, n/2);
-    y[i] += 2./n * (G[n/2] / eg - G[0]/e) * bb / binomial(n-1, n/2);                                                                            
+    y[i] += 2./n * (G[n/2] / eg - q) * bb / binomial(n-1, n/2);                                                                            
   }
   for(int i = 1; i <= m; i++)
     gsl_vector_set(f, i-1, y[i]);
@@ -71,12 +78,13 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
  * The mathematics is listed in equation (S5).
  */
 int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
-  double e, eg, bb;
+  double e, eg, bb, q;
   int a, b;
 
   Sfs      *s = ((Rparams *) params)->s;
   PopSizes *p = ((Rparams *) params)->p;
   int       n = s->n;
+  int      xx = s->x;
   int       m = p->m;
   int      *k = p->k;
   long     *G = s->G;
@@ -86,14 +94,20 @@ int unfolded(const gsl_vector *x, void *params, gsl_vector *f) {
   for(int i = 1; i <= m; i++)
     N[i] = gsl_vector_get(x, i - 1);
   e = expG(p, s, 0);
+  if(xx > 0)
+    q = 1;
+  else
+    q = G[0] / e;
   for(int i = 1; i <= m; i++) {
     y[i] = 0.;
     a = max(n - k[i]   + 1, 0);
     b = max(n - k[i+1] - 1, 0);
     for(int r = 1; r <= n-1; r++) {
+      if(G[r] < 0)
+	continue;
       eg = expG(p, s, r);
       bb = binomial(a, r) - binomial(b, r);
-      y[i] += 1. / r * (G[r] / eg - G[0] / e) * bb / binomial(n - 1, r);
+      y[i] += 1. / r * (G[r] / eg - q) * bb / binomial(n - 1, r);
     }
   }
   for(int i = 1; i <= m; i++)

@@ -25,40 +25,78 @@ Args *newArgs() {
   args->x = DEFAULT_X;
   args->s = 0;
   args->L = NULL;
-  args->al = (int *)emalloc(3 * sizeof(int));
+  args->al = NULL;
   args->nl = 0;
+  args->X = NULL;
+  args->ax = NULL;
+  args->nx = 0;
   return args;
 }
 
 void freeArgs(Args *args) {
   if(args->L != NULL)
     free(args->L);
-  free(args->al);
+  if(args->al != NULL)
+    free(args->al);
+  if(args->X != NULL)
+    free(args->X);
+  if(args->ax != NULL)
+    free(args->ax);
   free(args);
 }
 
-void extractLevels(Args *args) {
-  char *c;
-  c = strtok(args->L, ",");
-
-  int i = atoi(c);
-  if(i != 2) {
-    args->nl++;
-    args->al[args->nl] = 2;
-  }
-  args->nl++;
-  args->al[args->nl] = i;
-  while((c = strtok(NULL, ",")) != NULL){
-    i = atoi(c);
-    args->nl++;
-    args->al = (int *)erealloc(args->al, (args->nl + 1) * sizeof(int));
-    args->al[args->nl] = i;
-  }
+void freeInts(Ints *in) {
+  free(in->a);
+  free(in);
 }
+
+Ints *newInts() {
+  Ints *in = emalloc(sizeof(Ints));
+  in->a = NULL;
+  in->n = 0;
+
+  return in;
+}
+
+Ints *extractInts(char *s) {
+  Ints *in =  newInts();
+  char *c = strtok(s, ",");
+  in->a = (int *)emalloc(sizeof(int));
+  in->a[in->n++] = atoi(c);
+  while((c = strtok(NULL, ",")) != NULL){
+    in->a = (int *)erealloc(in->a, (in->n + 1) * sizeof(int));
+    in->a[in->n++] = atoi(c);
+  }
+
+  return in;
+}
+
+void extractClasses(Args *args) {
+  Ints *in = extractInts(args->X);
+  args->ax = (int *)malloc((in->n + 1) * sizeof(int));
+  args->nx = in->n;
+
+  for(int i = 0; i < in->n; i++)
+    args->ax[i] = in->a[i];
+
+  freeInts(in);
+}
+
+void extractLevels(Args *args) {
+  Ints *in = extractInts(args->L);
+  args->al = (int *)malloc((in->n + 1) * sizeof(int));
+  args->nl = in->n;
+  
+  for(int i = 0; i < in->n; i++)
+    args->al[i + 1] = in->a[i];
+
+  freeInts(in);
+}
+
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtu:l:L:c:E:x:s:";
+  char *optString = "hvUtu:l:L:c:E:x:s:X:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -70,6 +108,7 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'L':                           /* preset levels */
       args->L = estrdup(optarg);
+      extractLevels(args);
       break;
     case 'E':                           /* levels of exhaustive search */
       args->E = atoi(optarg);
@@ -81,6 +120,10 @@ Args *getArgs(int argc, char *argv[]){
       args->x = atoi(optarg);
       if(args->x < 1)
 	args->x = 1;
+      break;
+    case 'X':                           /* excluded frequencies */
+      args->X = estrdup(optarg);
+      extractClasses(args);
       break;
     case 'U':                           /* unfolded */
       args->U = 1;
@@ -112,8 +155,7 @@ Args *getArgs(int argc, char *argv[]){
   }
   args->inputFiles = argv + optind;
   args->numInputFiles = argc - optind;
-  if(args->L)
-    extractLevels(args);
+
   if(args->c < 0) {
     if(args->x == 1)
       args->c = DEFAULT_C;
@@ -134,6 +176,7 @@ void printUsage(){
   printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g if -x 1, 0 otherwise]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
+  printf("\t[-X NUM1,NUM2,... exclude NUM1-ers, NUM2-ers; default: include all frequency classes]\n");
   printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);
   printf("\t[-s NUM seed for random number generator; default: system]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");

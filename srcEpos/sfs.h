@@ -15,6 +15,7 @@ typedef struct sfs {
   int    a; /* maximum index in G          */
   long   l; /* sequence length             */
   int    n; /* number of haplotypes        */
+  int    x; /* number of excluded freq.s   */
   double u; /* mutation rate               */
   int    p; /* number of polymorphic sites */
   short  f; /* folded?                     */

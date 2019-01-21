@@ -18,6 +18,9 @@ typedef struct args{
   char *L;     /* preset levels                             */
   int nl;      /* number of levels                          */
   int *al;     /* array of nl levels                        */
+  char *X;     /* excluded frequency classes                */
+  int nx;      /* number of excluded frequency classes      */
+  int *ax;     /* array of excluded frequency classes       */
   int E;       /* levels of exhaustive search               */
   int x;       /* number of categories for cross-validation */
   int s;       /* seed for random number generator          */
@@ -26,6 +29,11 @@ typedef struct args{
   double c;    /* minimum change */
   int numInputFiles;
 } Args;
+
+typedef struct ints {
+  int *a; /* array of integers */
+  int  n; /* length of array   */
+} Ints;
 
 Args *getArgs(int argc, char *argv[]);
 Args *newArgs();
