@@ -21,5 +21,5 @@ void freePopSizes(PopSizes *ps);
 double logLik(PopSizes *p, Sfs *s);
 double expF(PopSizes *p, Sfs *s, int r);
 double expG(PopSizes *p, Sfs *s, int r);
-
+double dSquared(PopSizes *ps, Sfs *sfs);
 #endif
