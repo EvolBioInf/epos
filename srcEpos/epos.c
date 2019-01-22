@@ -42,6 +42,8 @@ void analysis(Sfs *sfs, Args *args, char *fileName) {
     gsl_rng_free(r);
   }
   printTimes(ps, sfs);
+  if(args->o)
+    printObsExpSfs(sfs);
   freePopSizes(ps);
 }
 

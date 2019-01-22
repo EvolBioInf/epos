@@ -71,8 +71,8 @@ void freePopSizes(PopSizes *ps) {
 PopSizes *newPopSizes(Sfs *sfs){
   PopSizes *ps = (PopSizes *)emalloc(sizeof(PopSizes));
   ps->m = 1;
-  ps->N = (double *)emalloc(sfs->n * sizeof(double));
-  ps->k = (int *)emalloc((sfs->n + 1) * sizeof(int));
+  ps->N = (double *)emalloc(sfs->n       * sizeof(double));
+  ps->k = (int *)   emalloc((sfs->n + 1) * sizeof(int));
   ps->k[1] = 2;
   ps->k[2] = sfs->n + 1;
   ps->l = 0.;
@@ -83,12 +83,13 @@ PopSizes *newPopSizes(Sfs *sfs){
 /* dSquared computs the goodness of fit measure on p. 442 of 
  * Lapierre et al. (2017). Accuracy of demographic inferences from
  * the site frequency spectrum: The case of the Yoruba population.
- * Genetics, 206, 439-449.
+ * Genetics, 206, 439-449. In addition, it computes the expected
+ * site frequency spectrum.
  */
-double dSquared(PopSizes *ps, Sfs *sfs) {
+void dSquared(PopSizes *ps, Sfs *sfs) {
   double e, o;
-  double d2 = 0;
   double s = (double)(sfs->p + sfs->G[0]); /* number of sites in SFS */
+  sfs->d = 0.;
   for(int r = 0; r <= sfs->a; r++) {
     if(sfs->G[r] < 0)
       continue;
@@ -96,12 +97,12 @@ double dSquared(PopSizes *ps, Sfs *sfs) {
       e = expF(ps, sfs, r);
     else
       e = expG(ps, sfs, r);
+    sfs->E[r] = e;
     e /= s;
     o = sfs->G[r] / s;
     double x = e - o;
-    d2 += x * x / e;
+    sfs->d += x * x / e;
   }
-  return d2;
 }
 
 double logLik(PopSizes *ps, Sfs *sfs) {

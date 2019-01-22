@@ -11,14 +11,16 @@
 #include "interface.h"
 
 typedef struct sfs {
-  long  *G; /* frequency spectrum          */
-  int    a; /* maximum index in G          */
-  long   l; /* sequence length             */
-  int    n; /* number of haplotypes        */
-  int    x; /* number of excluded freq.s   */
-  double u; /* mutation rate               */
-  int    p; /* number of polymorphic sites */
-  short  f; /* folded?                     */
+  long   *G; /* obs. frequency spectrum     */
+  double *E; /* exp. frequency spectrum     */
+  double  d; /* d^2 goodness-of-fit         */
+  int     a; /* maximum index in G          */
+  long    l; /* sequence length             */
+  int     n; /* number of haplotypes        */
+  int     x; /* number of excluded freq.s   */
+  double  u; /* mutation rate               */
+  int     p; /* number of polymorphic sites */
+  short   f; /* folded?                     */
 } Sfs;
 
 typedef struct sfsSet {
@@ -31,6 +33,7 @@ Sfs *readSfs(FILE *fp, Args *args);
 void resetReadSfs();
 void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
+void printObsExpSfs(Sfs *sfs);
 Sfs *newSfs(int n, Args *args);
 SfsSet *newSfsSet(Sfs *sfs, Args *args);
 void freeSfsSet(SfsSet *ss);
