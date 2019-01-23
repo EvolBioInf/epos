@@ -51,6 +51,11 @@ void addSfs(Sfs *a, Sfs *b) {
  */
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   SfsSet *ss = newSfsSet(sfs, args);
+  if(args->x == 1) {
+    ss->train[0] = copySfs(sfs);
+    ss->test[0] = copySfs(sfs);
+    return ss;
+  }
   long s = sfs->p + sfs->G[0]; /* number of sites in SFS */
   int *a = (int *)emalloc(s * sizeof(int));
   long n = 0;
@@ -69,8 +74,6 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
 	ns->p++;
     }
   }
-  if(args->x == 1)
-    addSfs(ss->train[0], ss->test[0]);
   for(int i = 0; i < args->x; i++) {
     for(int j = 0; j < args->x; j++) {
       if(i != j)

@@ -39,5 +39,6 @@ Sfs *newSfs(int n, Args *args);
 SfsSet *newSfsSet(Sfs *sfs, Args *args);
 void freeSfsSet(SfsSet *ss);
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r);
+Sfs *copySfs(Sfs *os);
 
 #endif 

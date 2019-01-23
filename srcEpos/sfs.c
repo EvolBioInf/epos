@@ -48,18 +48,40 @@ Sfs *newSfs(int n, Args *args) {
   sfs->e  = 0.;
   sfs->d  = 0.;
   sfs->l  = -1;
-  sfs->u  = args->u;
+  if(args != NULL) {
+    sfs->u  = args->u;
+    if(args->U)
+      sfs->f = 0;
+  }
   sfs->f  = 1;
   sfs->p  = 0;
   sfs->x  = 0;
-  if(args->U)
-    sfs->f = 0;
   for(int i = 0; i < n; i++) {
     sfs->G[i]  = 0.;
     sfs->E[i]  = 0.;
   }
 
   return sfs;
+}
+
+/* copySfs copys the SFS os to a new SFS */
+Sfs *copySfs(Sfs *os) {
+  Sfs *ns = newSfs(os->a + 1, NULL);
+  for(int i = 0; i <= os->a; i++) {
+    ns->G[i] = os->G[i];
+    ns->E[i] = os->E[i];
+  }
+  ns->e = os->e;
+  ns->d = os->d;
+  ns->a = os->a;
+  ns->l = os->l;
+  ns->n = os->n;
+  ns->x = os->x;
+  ns->u = os->u;
+  ns->p = os->p;
+  ns->f = os->f;
+
+  return ns;
 }
 
 void freeSfs(Sfs *sfs){

@@ -7,7 +7,7 @@
 #m = 4; maximum Log(Likelihood): 151021041.969995	{2, 3, 8, 29}
 #m = 5; no improvement
 #Final Log(Likelihood):          151021041.969995
-#d^2:                              1.5466e-05
+#d^2:                              0.00945301
 #Level	T[Level]	N[Level]
 29	5.37e+02	5.64e+04
 8	3.18e+03	6.16e+03
