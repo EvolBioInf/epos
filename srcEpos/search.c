@@ -23,8 +23,12 @@ void cpK(int *k1, int *k2, int m) {
 int *nextConfig(int m, int n, int *start, Args *args, short setup) {
   if(m > args->E)
     return nextGreedy(m, n, start, setup);
-  else
-    return nextExhaustive(m, n, start, setup);
+  else {
+    if(args->m < 3 || args->m > n)
+      return nextExhaustive(m, n, start, setup);
+    else
+      return nextExhaustive(m, args->m, start, setup);
+  }
 }
 
 void printConfig(int *k, int m, double ll) {
@@ -90,6 +94,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     improved = 0;
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld  = compPopSizes(kd, m, sfs, ps, args, ss);
+      /* printConfig(kd, m, ld); */
       double ldd = ld;
       if(args->x > 1) {
 	ldd = compPopSizes(kd, m, sfs, ps, args, NULL); /* ensure the full data set also gives a sensible result */

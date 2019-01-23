@@ -13,22 +13,23 @@
 
 Args *newArgs() {
   Args *args = (Args *)emalloc(sizeof(Args));
-  args->h = 0;
-  args->v = 0;
-  args->e = 0;
-  args->U = 0;
-  args->t = 0;
-  args->u = DEFAULT_U;
-  args->c = -1;
-  args->l = 0;
-  args->E = DEFAULT_E;
-  args->x = DEFAULT_X;
-  args->s = 0;
-  args->o = 0;
-  args->L = NULL;
+  args->h  = 0;
+  args->v  = 0;
+  args->e  = 0;
+  args->U  = 0;
+  args->t  = 0;
+  args->u  = DEFAULT_U;
+  args->c  = -1;
+  args->l  = 0;
+  args->E  = DEFAULT_E;
+  args->m  = 0;
+  args->x  = DEFAULT_X;
+  args->s  = 0;
+  args->o  = 0;
+  args->L  = NULL;
   args->al = NULL;
   args->nl = 0;
-  args->X = NULL;
+  args->X  = NULL;
   args->ax = NULL;
   args->nx = 0;
   return args;
@@ -97,7 +98,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtou:l:L:c:E:x:s:X:";
+  char *optString = "hvUtou:l:L:c:E:x:s:X:m:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -106,6 +107,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'l':                           /* sequence length */
       args->l = (long)atof(optarg);
+      break;
+    case 'm':                           /* maximal level searched exhaustively */
+      args->m = atoi(optarg);
       break;
     case 'L':                           /* preset levels */
       args->L = estrdup(optarg);
@@ -179,6 +183,7 @@ void printUsage(){
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
   printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g if -x 1, 0 otherwise]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
+  printf("\t[-m NUM maximal level searched exhaustively; default sample size]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-X NUM1,NUM2,... exclude NUM1-ers, NUM2-ers; default: include all frequency classes]\n");
   printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);

@@ -23,6 +23,7 @@ typedef struct args{
   int nx;      /* number of excluded frequency classes      */
   int *ax;     /* array of excluded frequency classes       */
   int E;       /* levels of exhaustive search               */
+  int m;       /* maximum level searched exhaustively       */
   int x;       /* number of categories for cross-validation */
   int s;       /* seed for random number generator          */
   char **inputFiles;
