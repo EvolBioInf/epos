@@ -88,8 +88,8 @@ PopSizes *newPopSizes(Sfs *sfs){
  */
 void dSquared(PopSizes *ps, Sfs *sfs) {
   double e, o;
-  double s = (double)(sfs->p + sfs->G[0]); /* number of sites in SFS */
-  sfs->d = 0.;
+  double so = (double)(sfs->p + sfs->G[0]); /* number of sites in observed SFS */
+
   for(int r = 0; r <= sfs->a; r++) {
     if(sfs->G[r] < 0)
       continue;
@@ -98,8 +98,13 @@ void dSquared(PopSizes *ps, Sfs *sfs) {
     else
       e = expG(ps, sfs, r);
     sfs->E[r] = e;
-    e /= s;
-    o = sfs->G[r] / s;
+    sfs->e += e;
+  }
+  for(int r = 0; r <= sfs->a; r++) {
+    if(sfs->G[r] < 0)
+      continue;
+    e = sfs->E[r] / sfs->e;
+    o = sfs->G[r] / so;
     double x = e - o;
     sfs->d += x * x / e;
   }

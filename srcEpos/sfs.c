@@ -13,24 +13,14 @@ short first = 1;
 short last  = 0;
 
 void printObsExpSfs(Sfs *sfs) {
-  double x, p = 0.;
+  double p = 0.;
   for(int i = 0; i <= sfs->a; i++)
     if(sfs->G[i] > 0)
       p += sfs->G[i];
-  if(sfs->f)
-    printf("#r/2n");
-  else
-    printf("#r/n");
-  printf("\to\te\tnor(o)\tnor(e)\n");
+  printf("#r\to\te\tnor(o)\tnor(e)\n");
   for(int i = 0; i <= sfs->a; i++) {
-    double e = sfs->E[i];
-    double o = sfs->G[i];
-    if(sfs->f)
-      x = (double)i / (double)sfs->n;
-    else
-      x = (double) i / (double)(sfs->n - 1);
     if(sfs->G[i] >= 0)
-      printf("%.4g\t%.0f\t%.4g\t%.4g\t%.4g\n", x, o, e, o / p, e / p);
+      printf("%d\t%ld\t%.6f\n", i, sfs->G[i], sfs->E[i]);
   }
 }
 
@@ -55,6 +45,8 @@ Sfs *newSfs(int n, Args *args) {
   sfs->n  = n;
   sfs->G  = (long *)  emalloc(n * sizeof(long));
   sfs->E  = (double *)emalloc(n * sizeof(double));
+  sfs->e  = 0.;
+  sfs->d  = 0.;
   sfs->l  = -1;
   sfs->u  = args->u;
   sfs->f  = 1;

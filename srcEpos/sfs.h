@@ -13,6 +13,7 @@
 typedef struct sfs {
   long   *G; /* obs. frequency spectrum     */
   double *E; /* exp. frequency spectrum     */
+  double  e; /* sites in exp. freq. spec.   */
   double  d; /* d^2 goodness-of-fit         */
   int     a; /* maximum index in G          */
   long    l; /* sequence length             */
