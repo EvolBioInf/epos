@@ -87,7 +87,7 @@ PopSizes *newPopSizes(Sfs *sfs){
  * site frequency spectrum.
  */
 void dSquared(PopSizes *ps, Sfs *sfs) {
-  double e, o, so = 0.;
+  double e, o;
 
   for(int r = 1; r <= sfs->a; r++) {
     if(sfs->G[r] < 0)
@@ -98,13 +98,13 @@ void dSquared(PopSizes *ps, Sfs *sfs) {
       e = expG(ps, sfs, r);
     sfs->E[r] = e;
     sfs->e += e;
-    so += sfs->G[r];
+    sfs->o += sfs->G[r];
   }
   for(int r = 1; r <= sfs->a; r++) {
     if(sfs->G[r] < 0)
       continue;
     e = sfs->E[r] / sfs->e;
-    o = sfs->G[r] / so;
+    o = sfs->G[r] / sfs->o;
     double x = e - o;
     sfs->d += x * x / e;
   }
