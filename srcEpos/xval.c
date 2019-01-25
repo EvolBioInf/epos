@@ -66,18 +66,26 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   }
   shuffle(a, n, r);
   n /= args->x;
+  long x = 0;
   for(int i = 0; i < args->x; i++) {
     Sfs *ns = ss->test[i];
     for(long j = 0; j < n; j++) {
-      ns->G[a[j]]++;
-      if(a[j])
+      ns->G[a[x]]++;
+      if(a[x])
 	ns->p++;
+      x++;
     }
   }
   for(int i = 0; i < args->x; i++) {
     for(int j = 0; j < args->x; j++) {
       if(i != j)
 	addSfs(ss->train[i], ss->test[j]);
+    }
+  }
+  for(int i = 0; i < args->x; i++) {
+    for(int j = 0; j < args->nx; j++) {
+      ss->train[i]->G[args->ax[j]] = -1;
+      ss->test[i]->G[args->ax[j]]  = -1;
     }
   }
   free(a);
