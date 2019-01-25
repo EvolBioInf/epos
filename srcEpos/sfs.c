@@ -113,9 +113,10 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
   sfs->u = args->u;
   sfs->l = args->l;
   /* deal with sample size */
-  if(sfs->f)
+  if(sfs->f) {
     sfs->n = 2 * r;
-  else
+    sfs->G[sfs->n / 2] *= 2.;
+  } else
     sfs->n = r + 1;
   sfs->a = r;
   sfs->p = numPol(sfs);
