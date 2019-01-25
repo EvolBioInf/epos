@@ -1,4 +1,4 @@
-./epos -x 1 -l 10000000 -u 1.2e-8 -U ../data/testU.dat > tmp.out
+./epos -x 1 -l 1e7 -u 1.2e-8 -U ../data/testU.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testU.out)
 if [ "$DIFF" == "" ] 
 then
@@ -8,7 +8,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 -l 10000000 -u 1.2e-8 ../data/testF.dat > tmp.out
+./epos -x 1 -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testFg.out)
 if [ "$DIFF" == "" ] 
 then
@@ -18,7 +18,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 -E 10 -l 10000000 -u 1.2e-8 ../data/testF.dat > tmp.out
+./epos -x 1 -E 10 -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testFe.out)
 if [ "$DIFF" == "" ] 
 then
