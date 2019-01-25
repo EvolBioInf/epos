@@ -52,8 +52,9 @@ Sfs *newSfs(int n, Args *args) {
     sfs->u  = args->u;
     if(args->U)
       sfs->f = 0;
+    else
+      sfs->f = 1;
   }
-  sfs->f  = 1;
   sfs->p  = 0;
   sfs->x  = 0;
   for(int i = 0; i < n; i++) {
@@ -110,7 +111,6 @@ void resetReadSfs() {
 
 /* prepSfs prepares the raw data read by readSfs for further analysis */
 void prepSfs(Sfs *sfs, int r, Args *args) {
-  sfs->u = args->u;
   sfs->l = args->l;
   /* deal with sample size */
   if(sfs->f) {
