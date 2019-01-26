@@ -138,8 +138,12 @@ void prepSfs(Sfs *sfs, int r, Args *args) {
     sfs->l = sfs->G[0] + numPol(sfs);
   /* exclude sites */
   sfs->x = args->nx;
-  for(int i = 0; i < sfs->x; i++)
+  for(int i = 0; i < sfs->x; i++) {
+    if(args->ax[i] > 0)
+      sfs->p -= sfs->G[args->ax[i]];
+    sfs->l -= sfs->G[args->ax[i]];
     sfs->G[args->ax[i]] = -1;
+  }
 }
 
 /* getSfs obtains the next SFS from an open file */

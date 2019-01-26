@@ -51,7 +51,7 @@ void addSfs(Sfs *a, Sfs *b) {
  */
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   SfsSet *ss = newSfsSet(sfs, args);
-  if(args->x == 1) {
+  if(args->x == 1) { /* no cross-validation */
     ss->train[0] = copySfs(sfs);
     ss->test[0] = copySfs(sfs);
     return ss;
@@ -71,8 +71,10 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     Sfs *ns = ss->test[i];
     for(long j = 0; j < n; j++) {
       ns->G[a[x]]++;
-      if(a[x])
+      if(a[x] > 0)
 	ns->p++;
+      else
+	ns->G[0]++;
       x++;
     }
   }
@@ -83,6 +85,8 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     }
   }
   for(int i = 0; i < args->x; i++) {
+    ss->train[i]->l = ss->train[i]->G[0] + ss->train[i]->p;
+    ss->test[i]->l  = ss->test[i]->G[0]  + ss->test[i]->p;
     for(int j = 0; j < args->nx; j++) {
       ss->train[i]->G[args->ax[j]] = -1;
       ss->test[i]->G[args->ax[j]]  = -1;

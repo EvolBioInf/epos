@@ -5,5 +5,5 @@
 
 # valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="testNewton.val" --dsymutil=yes ./testNewton -l 10000000 -U data/testNewtonU.dat
 # valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="test.val" --dsymutil=yes ./epos -t
-# valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="epos.val" --dsymutil=yes ./epos -l 10000000 ../data/testF.dat
-valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="epos.val" --dsymutil=yes ./epos -u 1.2e-8 -l 3000000000 ../data/FoldSFS_YRI.txt
+valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="epos.val" --dsymutil=yes ./epos -X 1 -u 1.2e-8 -l 1e7 ../data/testF.dat
+# valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all --log-file="epos.val" --dsymutil=yes ./epos -u 1.2e-8 -l 3000000000 ../data/FoldSFS_YRI.txt
