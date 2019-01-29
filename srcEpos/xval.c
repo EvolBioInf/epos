@@ -52,6 +52,8 @@ void addSfs(Sfs *a, Sfs *b) {
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   SfsSet *ss = newSfsSet(sfs, args);
   if(args->x == 1) { /* no cross-validation */
+    freeSfs(ss->train[0]);
+    freeSfs(ss->test[0]);
     ss->train[0] = copySfs(sfs);
     ss->test[0] = copySfs(sfs);
     return ss;

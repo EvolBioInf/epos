@@ -72,6 +72,8 @@ PopSizes *newPopSizes(Sfs *sfs){
   PopSizes *ps = (PopSizes *)emalloc(sizeof(PopSizes));
   ps->m = 1;
   ps->N = (double *)emalloc(sfs->n       * sizeof(double));
+  for(int i = 0; i < sfs->n; i++)
+    ps->N[i] = 0.;
   ps->k = (int *)   emalloc((sfs->n + 1) * sizeof(int));
   ps->k[1] = 2;
   ps->k[2] = sfs->n + 1;

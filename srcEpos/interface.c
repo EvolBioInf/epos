@@ -32,6 +32,7 @@ Args *newArgs() {
   args->X  = NULL;
   args->ax = NULL;
   args->nx = 0;
+
   return args;
 }
 
@@ -132,6 +133,9 @@ Args *getArgs(int argc, char *argv[]){
     case 'X':                           /* excluded frequencies */
       args->X = estrdup(optarg);
       extractClasses(args);
+      for(int i = 0; i < args->nx; i++)
+	if(args->ax[i] < 0)
+	  printf("getArgs - 1\n");
       break;
     case 'U':                           /* unfolded */
       args->U = 1;

@@ -108,13 +108,13 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   }
 }
 
-/* watterson: Using Watterson's estimator of N */
+/* watterson computes Watterson's estimator of the population size */
 double watterson(Sfs *sfs){
   int i;
   double s, l, w;
 
   s = 0.;
-  for(i=1; i<sfs->n; i++)
+  for(i = 1; i < sfs->n; i++)
     s += 1./i;
   l = sfs->G[0] + sfs->p;
   w = sfs->p / s / 4. / sfs->u / l;

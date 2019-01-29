@@ -60,7 +60,6 @@ double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args, SfsSet *
     l += x;
   }
   l /= (double)args->x;
-
   return l;
 }
 
@@ -94,7 +93,6 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     improved = 0;
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld  = compPopSizes(kd, m, sfs, ps, args, ss);
-      /* printConfig(kd, m, ld); */
       double ldd = ld;
       if(args->x > 1) {
 	ldd = compPopSizes(kd, m, sfs, ps, args, NULL); /* ensure the full data set also gives a sensible result */

@@ -22,4 +22,5 @@ double logLik(PopSizes *p, Sfs *s);
 double expF(PopSizes *p, Sfs *s, int r);
 double expG(PopSizes *p, Sfs *s, int r);
 void dSquared(PopSizes *ps, Sfs *sfs);
+
 #endif

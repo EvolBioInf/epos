@@ -66,10 +66,11 @@ int folded(const gsl_vector *x, void *params, gsl_vector *f) {
     bb = binomial(a, n/2) - binomial(b, n/2);
     y[i] += 2./n * (G[n/2] / eg - q) * bb / binomial(n-1, n/2);                                                                            
   }
+
   for(int i = 1; i <= m; i++)
     gsl_vector_set(f, i-1, y[i]);
-
   free(y);
+
   return GSL_SUCCESS;
 }
 
@@ -131,13 +132,25 @@ void printState(int iter, gsl_multiroot_fsolver *s, int n) {
   fprintf(stderr, "\n");
 }
 
+/* finishNewton cleans up memory & results after a run of newton, and returns the unchanged status */
+int  finishNewton(gsl_multiroot_fsolver *s, gsl_vector *x, Rparams *p, PopSizes *ps, Sfs *sfs, int status) {
+  gsl_vector_free(x);
+  gsl_multiroot_fsolver_free(s);
+  free(p);
+  for(int i = 1; i <= ps->m; i++) {
+    if(ps->N[i] < 1)
+      ps->N[i] = 1;
+  }
+  ps->l = logLik(ps, sfs);
+  return status;
+}
+
 int newton(Sfs *sfs, PopSizes *ps, Args *args) {
   const gsl_multiroot_fsolver_type *T;
   gsl_multiroot_fsolver *s;
-  int status;
   size_t iter = 0;
   Rparams *p = newRparams(sfs, ps);
-  gsl_multiroot_function f; 
+  gsl_multiroot_function f;
   gsl_vector *x = gsl_vector_alloc(ps->m);
 
   if(sfs->f)
@@ -151,35 +164,18 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
     gsl_vector_set(x, i-1, w);
   T = gsl_multiroot_fsolver_hybrids;
   s = gsl_multiroot_fsolver_alloc(T, ps->m);
-  gsl_multiroot_fsolver_set(s, &f, x);
-  status = 0;
+  int status = gsl_multiroot_fsolver_set(s, &f, x);
+  if(status)
+    return finishNewton(s, x, p, ps, sfs, status);
   do {
     iter++;
     status = gsl_multiroot_fsolver_iterate(s);
-    if(status) {
-      gsl_multiroot_fsolver_free(s);
-      gsl_vector_free(x);
-      free(p);
-      for(int i = 1; i <= ps->m; i++) {
-	if(ps->N[i] < 1)
-	  ps->N[i] = 1;
-      }
-      ps->l = logLik(ps, sfs);
-      return status;
-    }
+    if(status)
+      return finishNewton(s, x, p, ps, sfs, status);
     status = gsl_multiroot_test_residual(s->f, 1e-7);
   } while (status == GSL_CONTINUE && iter < 1000);
-  for(int i = 1; i <= ps->m; i++) {
-    ps->N[i] = gsl_vector_get(s->x, i - 1);
-    if(ps->N[i] < 1)
-      ps->N[i] = 1.; /* smallest population size possible: 1 individual */
-  }
-  ps->l = logLik(ps, sfs);
-  gsl_multiroot_fsolver_free(s);
-  gsl_vector_free(x);
-  free(p);
 
-  return status;
+  return finishNewton(s, x, p, ps, sfs, status);
 }
 
 void testNewton() {
