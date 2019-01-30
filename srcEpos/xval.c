@@ -44,6 +44,7 @@ void addSfs(Sfs *a, Sfs *b) {
     a->G[i] += b->G[i];
   }
   a->p += b->p;
+  a->l += b->l;
 }
 
 /* splitSfs splits the site frequency spectrum sfs into x parts
@@ -58,10 +59,9 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     ss->test[0] = copySfs(sfs);
     return ss;
   }
-  long s = sfs->p + sfs->G[0]; /* number of sites in SFS */
-  int *a = (int *)emalloc(s * sizeof(int));
+  int *a = (int *)emalloc(sfs->p * sizeof(int));
   long n = 0;
-  for(int i = 0; i <= sfs->a; i++) {
+  for(int i = 1; i <= sfs->a; i++) {
     for(int j = 0; j < sfs->G[i]; j++) {
       a[n++] = i;
     }
@@ -69,26 +69,26 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   shuffle(a, n, r);
   n /= args->x;
   long x = 0;
+  long l = sfs->l / args->x;
   for(int i = 0; i < args->x; i++) {
     Sfs *ns = ss->test[i];
     for(long j = 0; j < n; j++) {
       ns->G[a[x]]++;
-      if(a[x] > 0)
-	ns->p++;
-      else
-	ns->G[0]++;
+      ns->p++;
       x++;
     }
+    ns->G[0] = l - ns->p;
+    ns->l = l;
   }
   for(int i = 0; i < args->x; i++) {
+    freeSfs(ss->train[i]);
+    ss->train[i] = copySfs(ss->test[i]);
     for(int j = 0; j < args->x; j++) {
       if(i != j)
 	addSfs(ss->train[i], ss->test[j]);
     }
   }
   for(int i = 0; i < args->x; i++) {
-    ss->train[i]->l = ss->train[i]->G[0] + ss->train[i]->p;
-    ss->test[i]->l  = ss->test[i]->G[0]  + ss->test[i]->p;
     for(int j = 0; j < args->nx; j++) {
       ss->train[i]->G[args->ax[j]] = -1;
       ss->test[i]->G[args->ax[j]]  = -1;
