@@ -9,6 +9,7 @@ epos2ages
 *.bbl
 *.blg
 *.a
+*.org
 doc/*.pdf
 doc/*.sh
 doc/*.gp
