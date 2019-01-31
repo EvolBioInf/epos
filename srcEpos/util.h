@@ -8,6 +8,7 @@
 
 #include "popSizes.h"
 #include "sfs.h"
+#include "interface.h"
 
 double binomial(int n, int k);
 double fi(int i, int n, int r, int *k);
@@ -17,7 +18,7 @@ int delta(int j, int k);
 void printTimes(PopSizes *ps, Sfs *sfs);
 void printAaa(PopSizes *ps, Sfs *sfs);
 void printSfsStats(Sfs *sfs);
-double watterson(Sfs *sfs);
+double watterson(Sfs *sfs, Args *args);
 void iniBinom(int n);
 void freeBinom();
 int max(int a, int b);
