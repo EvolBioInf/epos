@@ -108,14 +108,22 @@ void printTimes(PopSizes *ps, Sfs *sfs){
   }
 }
 
-/* watterson computes Watterson's estimator of the population size */
-double watterson(Sfs *sfs){
+/* watterson computes Watterson's estimator of the population size;
+ * it excludes excluded categories from the harmonic sum
+ */
+double watterson(Sfs *sfs, Args *args){
   int i;
   double s, l, w;
 
   s = 0.;
-  for(i = 1; i < sfs->n; i++)
-    s += 1./i;
+  for(i = 1; i < sfs->n; i++) {
+    if(args->nx > 0) {
+      if(!args->ax[i])
+    	s += 1./i;
+    } else {
+      s += 1./i;
+    }
+  }
   l = sfs->G[0] + sfs->p;
   w = sfs->p / s / 4. / sfs->u / l;
 

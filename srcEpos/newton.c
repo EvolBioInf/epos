@@ -159,7 +159,7 @@ int newton(Sfs *sfs, PopSizes *ps, Args *args) {
     f.f = &unfolded;
   f.n = ps->m;
   f.params = p;
-  double w = watterson(sfs);
+  double w = watterson(sfs, args);
   for(int i = 1; i <= ps->m; i++)
     gsl_vector_set(x, i-1, w);
   T = gsl_multiroot_fsolver_hybrids;
