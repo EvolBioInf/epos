@@ -1,17 +1,15 @@
 #InputFile:	../data/kap144i.dat
 #Polymorphic sites surveyed:	18098
 #Monomorphic sites surveyed:	185297
-#m = 1; maximum Log(Likelihood): 364512.842532	{2}
-#m = 2; maximum Log(Likelihood): 364646.038765	{2, 24}
-#m = 3; maximum Log(Likelihood): 364646.614751	{2, 3, 24}
-#m = 4; maximum Log(Likelihood): 364647.975853	{2, 3, 8, 24}
-#m = 5; maximum Log(Likelihood): 364647.997537	{2, 3, 8, 24, 53}
-#m = 6; no improvement
-#Final Log(Likelihood):          2150572.195640
-#d^2:                              0.00388161
+#m = 1; maximum Log(Likelihood): 364512.842523	{2}
+#m = 2; maximum Log(Likelihood): 364645.689884	{2, 24}
+#m = 3; maximum Log(Likelihood): 364646.051867	{2, 3, 24}
+#m = 4; maximum Log(Likelihood): 364647.165532	{2, 3, 9, 24}
+#m = 5; no improvement
+#Final Log(Likelihood):          2150571.979077
+#d^2:                              0.00391788
 #Level	T[Level]	N[Level]
-53	1.88e+04	3.82e+05
-24	6.16e+04	4.42e+05
-8	3.55e+05	7.39e+05
-3	3.09e+06	1.91e+06
-2	3.09e+06	1.00e+00
+24	5.76e+04	3.94e+05
+9	3.10e+05	7.74e+05
+3	2.76e+06	1.64e+06
+2	3.26e+06	2.49e+05
