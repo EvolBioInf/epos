@@ -44,13 +44,14 @@ void printSfs(Sfs *sfs) {
 
 Sfs *newSfs(int n, Args *args) {
   Sfs *sfs = (Sfs *)emalloc(sizeof(Sfs));
-  sfs->n  = n;
-  sfs->G  = (long *)  emalloc(n * sizeof(long));
-  sfs->E  = (double *)emalloc(n * sizeof(double));
-  sfs->e  = 0.;
-  sfs->o  = 0.;
-  sfs->d  = 0.;
-  sfs->l  = -1;
+  sfs->n = n;
+  sfs->G = (long *)  emalloc(n * sizeof(long));
+  sfs->E = (double *)emalloc(n * sizeof(double));
+  sfs->e = 0.;
+  sfs->o = 0.;
+  sfs->d = 0.;
+  sfs->l = 0;
+  sfs->a = 0;
   if(args != NULL) {
     sfs->u  = args->u;
     if(args->U)
