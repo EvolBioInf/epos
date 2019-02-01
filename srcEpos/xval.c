@@ -90,6 +90,9 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
       ss->test[i]->G[args->ax[j]]  = -1;
     }
   }
+  if(args->d)
+    printSfsSet(sfs, ss);
+
   free(a);
 
   return ss;

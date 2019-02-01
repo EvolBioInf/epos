@@ -26,6 +26,7 @@ Args *newArgs() {
   args->x  = DEFAULT_X;
   args->s  = 0;
   args->o  = 0;
+  args->d  = 0;
   args->L  = NULL;
   args->al = NULL;
   args->nl = 0;
@@ -99,7 +100,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtou:l:L:c:E:x:s:X:m:";
+  char *optString = "hvUtdou:l:L:c:E:x:s:X:m:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -118,6 +119,9 @@ Args *getArgs(int argc, char *argv[]){
       break;
     case 'o':                           /* print obs./exp. freq. spec? */
       args->o = 1;
+      break;
+    case 'd':                           /* print debug information */
+      args->d = 1;
       break;
     case 'E':                           /* levels of exhaustive search */
       args->E = atoi(optarg);
@@ -194,6 +198,7 @@ void printUsage(){
   printf("\t[-s NUM seed for random number generator; default: system]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-o print observed and expected site frequency spectrum]\n");
+  printf("\t[-d print debug information: split site frequency spectra]\n");
   printf("\t[-t exectute test routines for debuggin]\n");
   printf("\t[-h print this help message and exit]\n");
   printf("\t[-v print program information and exit]\n");

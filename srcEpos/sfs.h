@@ -35,6 +35,7 @@ Sfs *readSfs(FILE *fp, Args *args);
 void resetReadSfs();
 void freeSfs(Sfs *sfs);
 void printSfs(Sfs *sfs);
+void printSfsSet(Sfs *s, SfsSet *ss);
 void printObsExpSfs(Sfs *sfs);
 Sfs *newSfs(int n, Args *args);
 SfsSet *newSfsSet(Sfs *sfs, Args *args);

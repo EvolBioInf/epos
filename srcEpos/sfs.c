@@ -26,6 +26,24 @@ void printObsExpSfs(Sfs *sfs) {
   }
 }
 
+void printSfsSet(Sfs *s, SfsSet *ss) {
+  /* Print header. */
+  printf("#r\torig");
+  for(int i = 0; i < ss->n; i++)
+    printf("\ttain[%d] test[%d]", i + 1, i + 1);
+  printf("\n");
+  /* Print site frequency spectra */
+  Sfs *r = ss->train[0];
+  int a = r->a;
+  for(int i = 0; i <= a; i++) {
+    printf("%d\t%ld", i, s->G[i]);
+    for(int j = 0; j < ss->n; j++) {
+      printf("\t%ld %ld", ss->train[j]->G[i], ss->test[j]->G[i]);
+    }
+    printf("\n");
+  }
+}
+
 void printSfs(Sfs *sfs) {
   printf("****** SFS ******\n");
   printf("Type: ");

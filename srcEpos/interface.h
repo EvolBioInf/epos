@@ -15,6 +15,7 @@ typedef struct args{
   char U;      /* unfolded?                                 */
   char t;      /* execute test routines?                    */
   char o;      /* print observed/expected freq. spec?       */
+  char d;      /* print debug information?                  */
   long l;      /* sequence length                           */
   char *L;     /* preset levels                             */
   int nl;      /* number of levels                          */
