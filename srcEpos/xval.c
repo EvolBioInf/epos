@@ -18,11 +18,9 @@ SfsSet *newSfsSet(Sfs *sfs, Args *args) {
   for(int i = 0; i < x; i++) {
     Sfs *s = newSfs(n, args);
     s->a = sfs->a;
-    s->l = sfs->l;
     ss->train[i] = s;
     s = newSfs(n, args);
     s->a = sfs->a;
-    s->l = sfs->l;
     ss->test[i]  = s;
   }
   return ss;
@@ -81,8 +79,6 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     ns->l = l;
   }
   for(int i = 0; i < args->x; i++) {
-    freeSfs(ss->train[i]);
-    ss->train[i] = copySfs(ss->test[i]);
     for(int j = 0; j < args->x; j++) {
       if(i != j)
 	addSfs(ss->train[i], ss->test[j]);
