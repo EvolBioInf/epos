@@ -112,17 +112,15 @@ void printTimes(PopSizes *ps, Sfs *sfs){
  * it excludes excluded categories from the harmonic sum
  */
 double watterson(Sfs *sfs, Args *args){
-  int i;
   double s, l, w;
 
   s = 0.;
-  for(i = 1; i < sfs->n; i++) {
-    if(args->nx > 0) {
-      if(!args->ax[i])
-    	s += 1./i;
-    } else {
-      s += 1./i;
+  for(int i = 1; i < sfs->n; i++) {
+    for(int j = 0; j < args->nx; j++) {
+      if(args->ax[i] == i)
+	continue;
     }
+    s += 1./i;
   }
   l = sfs->G[0] + sfs->p;
   w = sfs->p / s / 4. / sfs->u / l;
