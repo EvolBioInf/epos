@@ -523,9 +523,9 @@ large, especially close to the present.
   replace \ty{ms} by its fast re-implementation, \ty{mspms}
   \citep{kel16:eff}:
 \begin{verbatim}
-mspms 30 1000 -t 12310 -r 9750 10000000 -eN 0.066 0.3 |
-ms2sfs                                                |
-epos -u 1.2e-8 -l 10000000 -U                         |
+mspms 30 1000 -t 12310 -r 9750 1e7 -eN 0.066 0.3 |
+ms2sfs                                           |
+epos -u 1.2e-8 -l 1e7 -U                         |
 epos2plot > epos2.dat
 \end{verbatim}
 This takes about 11 minutes. Notice the \ty{-u} option for \ty{epos},
@@ -550,9 +550,9 @@ variation in estimates is again large, particularly toward the present.
   Figure 2e:
     \small
 \begin{verbatim}
-mspms 30 1000 -t 432000 -r 340000 10000000 -G 46368 -eN 0.0001027 0.008889 |
-ms2sfs                                                                     |
-epos -u 1.2e-8 -l 10000000 -U                                              |
+mspms 30 1000 -t 432000 -r 340000 1e7 -G 46368 -eN 0.0001027 0.008889 |
+ms2sfs                                                                |
+epos -u 1.2e-8 -l 1e7 -U                                              |
 epos2plot > epos3.dat
 \end{verbatim}
 \normalsize
