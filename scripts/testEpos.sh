@@ -1,4 +1,4 @@
-./epos -x 1 -l 1e7 -u 1.2e-8 -U ../data/testU.dat > tmp.out
+./epos -l 1e7 -u 1.2e-8 -U ../data/testU.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testU.out)
 if [ "$DIFF" == "" ] 
 then
@@ -8,7 +8,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
+./epos -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testFg.out)
 if [ "$DIFF" == "" ] 
 then
@@ -18,7 +18,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 -E 10 -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
+./epos -E 10 -l 1e7 -u 1.2e-8 ../data/testF.dat > tmp.out
 DIFF=$(diff tmp.out ../data/testFe.out)
 if [ "$DIFF" == "" ] 
 then
@@ -28,7 +28,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 ../data/kap144i.dat > tmp.out
+./epos ../data/kap144i.dat > tmp.out
 DIFF=$(diff tmp.out ../data/kap144i.out)
 if [ "$DIFF" == "" ] 
 then
@@ -38,7 +38,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -x 1 -E 3 ../data/kap144i.dat > tmp.out
+./epos -E 3 ../data/kap144i.dat > tmp.out
 DIFF=$(diff tmp.out ../data/kap144ie.out)
 if [ "$DIFF" == "" ] 
 then
@@ -48,7 +48,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -s 13 ../data/kap144i.dat > tmp.out
+./epos -s 13 -k 5 ../data/kap144i.dat > tmp.out
 DIFF=$(diff tmp.out ../data/kap144ix.out)
 if [ "$DIFF" == "" ] 
 then
@@ -58,7 +58,7 @@ else
     echo ${DIFF}
 fi
 
-./epos -s 13 -E 3 ../data/kap144i.dat > tmp.out
+./epos -s 13 -E 3 -k 5 ../data/kap144i.dat > tmp.out
 DIFF=$(diff tmp.out ../data/kap144iex.out)
 if [ "$DIFF" == "" ] 
 then
