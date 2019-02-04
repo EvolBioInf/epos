@@ -54,12 +54,12 @@ double compPopSizes(int *kd, int m, Sfs *sfs, PopSizes *ps, Args *args, SfsSet *
     return ps->l;
   /* obtain likelihood from cross-validation */
   double l = 0.;
-  for(int i = 0; i < args->x; i++) {
+  for(int i = 0; i < args->k; i++) {
     newton(ss->train[i], ps, args);
     double x = logLik(ps, ss->test[i]);
     l += x;
   }
-  l /= (double)args->x;
+  l /= (double)args->k;
   return l;
 }
 
@@ -94,7 +94,7 @@ PopSizes *searchLevels(Sfs *sfs, Args *args, gsl_rng *r) {
     while((kd = nextConfig(m, sfs->n, k, args, 0)) != NULL) {
       double ld  = compPopSizes(kd, m, sfs, ps, args, ss);
       double ldd = ld;
-      if(args->x > 1) {
+      if(args->k > 1) {
 	ldd = compPopSizes(kd, m, sfs, ps, args, NULL); /* ensure the full data set also gives a sensible result */
       }
       if(ld > la && !isnan(ldd)) {

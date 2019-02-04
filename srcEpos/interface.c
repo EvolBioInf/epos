@@ -23,14 +23,14 @@ Args *newArgs() {
   args->l  = 0;
   args->E  = DEFAULT_E;
   args->m  = 0;
-  args->x  = DEFAULT_X;
+  args->k  = DEFAULT_K;
   args->s  = 0;
   args->o  = 0;
   args->d  = 0;
   args->L  = NULL;
   args->al = NULL;
   args->nl = 0;
-  args->X  = NULL;
+  args->x  = NULL;
   args->ax = NULL;
   args->nx = 0;
 
@@ -42,8 +42,8 @@ void freeArgs(Args *args) {
     free(args->L);
   if(args->al != NULL)
     free(args->al);
-  if(args->X != NULL)
-    free(args->X);
+  if(args->x != NULL)
+    free(args->x);
   if(args->ax != NULL)
     free(args->ax);
   free(args);
@@ -76,7 +76,7 @@ Ints *extractInts(char *s) {
 }
 
 void extractClasses(Args *args) {
-  Ints *in = extractInts(args->X);
+  Ints *in = extractInts(args->x);
   args->ax = (int *)malloc((in->n + 1) * sizeof(int));
   args->nx = in->n;
 
@@ -100,7 +100,7 @@ void extractLevels(Args *args) {
 
 Args *getArgs(int argc, char *argv[]){
   int c;
-  char *optString = "hvUtdou:l:L:c:E:x:s:X:m:";
+  char *optString = "hvUtdou:l:L:c:E:x:s:k:m:";
 
   Args *args = newArgs();
   c = getopt(argc, argv, optString);
@@ -129,13 +129,13 @@ Args *getArgs(int argc, char *argv[]){
     case 's':                           /* seed for random number generator */
       args->s = atoi(optarg);
       break;
-    case 'x':                           /* number of categories for cross validation */
-      args->x = atoi(optarg);
-      if(args->x < 1)
-	args->x = 1;
+    case 'k':                           /* number of categories for cross validation */
+      args->k = atoi(optarg);
+      if(args->k < 1)
+	args->k = 1;
       break;
-    case 'X':                           /* excluded frequencies */
-      args->X = estrdup(optarg);
+    case 'x':                           /* excluded frequencies */
+      args->x = estrdup(optarg);
       extractClasses(args);
       for(int i = 0; i < args->nx; i++)
 	if(args->ax[i] < 0)
@@ -173,7 +173,7 @@ Args *getArgs(int argc, char *argv[]){
   args->numInputFiles = argc - optind;
 
   if(args->c < 0) {
-    if(args->x == 1)
+    if(args->k == 1)
       args->c = DEFAULT_C;
     else
       args->c = 0.;
@@ -194,7 +194,7 @@ void printUsage(){
   printf("\t[-m NUM maximal level searched exhaustively; default sample size]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
   printf("\t[-X NUM1,NUM2,... exclude NUM1-ers, NUM2-ers; default: include all frequency classes]\n");
-  printf("\t[-x NUM categories for cross validation; default: %d]\n", DEFAULT_X);
+  printf("\t[-k NUM cross validation with NUM categories: no cross-validation]\n");
   printf("\t[-s NUM seed for random number generator; default: system]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
   printf("\t[-o print observed and expected site frequency spectrum]\n");

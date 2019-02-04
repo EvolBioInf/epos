@@ -9,13 +9,13 @@
 #include "util.h"
 
 SfsSet *newSfsSet(Sfs *sfs, Args *args) {
-  int x = args->x;
+  int k = args->k;
   int n = sfs->n;
   SfsSet *ss = (SfsSet *)emalloc(sizeof(SfsSet));
-  ss->n = x;
-  ss->train = (Sfs **)emalloc(x * sizeof(SfsSet *));
-  ss->test  = (Sfs **)emalloc(x * sizeof(SfsSet *));
-  for(int i = 0; i < x; i++) {
+  ss->n = k;
+  ss->train = (Sfs **)emalloc(k * sizeof(SfsSet *));
+  ss->test  = (Sfs **)emalloc(k * sizeof(SfsSet *));
+  for(int i = 0; i < k; i++) {
     Sfs *s = newSfs(n, args);
     s->a = sfs->a;
     ss->train[i] = s;
@@ -50,7 +50,7 @@ void addSfs(Sfs *a, Sfs *b) {
  */
 SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
   SfsSet *ss = newSfsSet(sfs, args);
-  if(args->x == 1) { /* no cross-validation */
+  if(args->k == 1) { /* no cross-validation */
     freeSfs(ss->train[0]);
     freeSfs(ss->test[0]);
     ss->train[0] = copySfs(sfs);
@@ -65,10 +65,10 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     }
   }
   shuffle(a, n, r);
-  n /= args->x;
+  n /= args->k;
   long x = 0;
-  long l = sfs->l / args->x;
-  for(int i = 0; i < args->x; i++) {
+  long l = sfs->l / args->k;
+  for(int i = 0; i < args->k; i++) {
     Sfs *ns = ss->test[i];
     for(long j = 0; j < n; j++) {
       ns->G[a[x]]++;
@@ -78,13 +78,13 @@ SfsSet *splitSfs(Sfs *sfs, Args *args, gsl_rng *r) {
     ns->G[0] = l - ns->p;
     ns->l = l;
   }
-  for(int i = 0; i < args->x; i++) {
-    for(int j = 0; j < args->x; j++) {
+  for(int i = 0; i < args->k; i++) {
+    for(int j = 0; j < args->k; j++) {
       if(i != j)
 	addSfs(ss->train[i], ss->test[j]);
     }
   }
-  for(int i = 0; i < args->x; i++) {
+  for(int i = 0; i < args->k; i++) {
     for(int j = 0; j < args->nx; j++) {
       ss->train[i]->G[args->ax[j]] = -1;
       ss->test[i]->G[args->ax[j]]  = -1;
