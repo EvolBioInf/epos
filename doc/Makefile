@@ -4,6 +4,10 @@ VERSION := $(shell git describe | sed 's/^[vV]//; s/-.*//')
 all:
 	echo $(VERSION) > version.tex
 	echo $(DATE)    > date.tex
+	gnuplot fig1b.gp
+	gnuplot fig2b.gp
+	gnuplot fig3b.gp
+	gnuplot fig4b.gp
 	latex epos
 	bibtex epos
 	latex epos

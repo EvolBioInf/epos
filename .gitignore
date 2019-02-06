@@ -15,8 +15,10 @@ doc/*.sh
 doc/*.gp
 doc/*.dat
 doc/version.tex
+.gitignore
 doc/date.tex
 randomSeed.dat
 seedms
 build
 scripts/genTestEpos.sh
+
