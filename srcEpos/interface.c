@@ -185,7 +185,7 @@ Args *getArgs(int argc, char *argv[]){
 void printUsage(){
   printf("Usage: %s [options] [inputFiles]\n",progname());
   printf("Estimate population size from site frequency data\n");
-  printf("Example: ./epos -l 10000000 -u 1.2e-8 data/testNewtonF.dat\n");
+  printf("Example: ./epos -l 1e7 -u 1.2e-8 data/testNewtonF.dat\n");
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);

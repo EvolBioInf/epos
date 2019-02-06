@@ -22,3 +22,11 @@ seedms
 build
 scripts/genTestEpos.sh
 
+doc/yriNoSi.eps
+doc/yriNoSi.tex
+doc/yriSi.tex
+doc/yriSi.eps
+doc/con.eps
+doc/fig2e.eps
+doc/kap.eps
+doc/fig2b.eps

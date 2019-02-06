@@ -8,6 +8,7 @@ all:
 	gnuplot fig2b.gp
 	gnuplot fig3b.gp
 	gnuplot fig4b.gp
+	gnuplot yri.gp
 	latex epos
 	bibtex epos
 	latex epos
