@@ -12,7 +12,6 @@ epos2ages
 *.org
 doc/*.pdf
 doc/*.sh
-doc/*.gp
 doc/*.dat
 doc/version.tex
 .gitignore
