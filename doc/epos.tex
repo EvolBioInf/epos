@@ -219,21 +219,22 @@ cat data/testF.dat
 It is a folded data set, so the sample size $n=30$.
 \item Let's analyze it using the command
 \begin{verbatim}
-epos -l 1e6 data/testF.dat 
+epos -l 1e7 -u 1.2e-8 data/testF.dat 
 \end{verbatim}
-where \ty{-l 1e6} indicates that 1 Mb of sequence were surveyed. The result of this command is
+where \ty{-l 1e6} indicates that 10 Mb of sequence were surveyed and
+$\mu=1.2\times 10^{-8}$ is the mutation rate. The result of this command is
 \begin{verbatim}
 #InputFile:	data/testF.dat
-#Polymorphic sites surveyed:	16626
-#Monomorphic sites surveyed:	983374
-#m = 1; maximum Log(Likelihood): 12691529.677499	{2}
-#m = 2; maximum Log(Likelihood): 12691651.173255	{2, 30}
-#m = 3; maximum Log(Likelihood): 12691651.420208	{2, 20, 30}
-#Final Log(Likelihood):          12691651.173255
-#d^2:                              0.00229438
-#Level  T[Level]        N[Level]
-30      8.88e+03        1.93e+06
-2       7.49e+05        1.92e+05
+#Polymorphic sites surveyed:	24384
+#Monomorphic sites surveyed:	9975616
+#m = 1; maximum Log(Likelihood): 150957021.040082	{2}
+#m = 2; maximum Log(Likelihood): 150958634.054573	{2, 11}
+#m = 3; maximum Log(Likelihood): 150958635.438422	{2, 4, 11}
+#Final Log(Likelihood):          150958634.054573
+#d^2:                              0.00262777
+#Level	T[Level]	N[Level]
+11	6.69e+03	2.51e+04
+2	3.45e+04	7.73e+03
 \end{verbatim}
 \ty{Epos} prints intermediate configurations of $m$ breakpoints: As
 already described in Section~\ref{sec:alg}, it starts with a single
@@ -242,16 +243,25 @@ be present and the population size starting there extends to the next
 breakpoint printed, or, if there is none as in this case, the leaves
 of the coalescent. The log-likelihood of the input site frequency
 spectrum given the best-fitting constant population size is
-12691529.7. In the next round, $m=2$, one new breakpoint is added at
-level 30. The log-likelihood increases to 12691651.2, which is roughly
-120 log-units greater than the previous log-likelihood. As the minimum
+150,957,021. In the next round, $m=2$, one new breakpoint is added at
+level 11. The log-likelihood increases to 150,958,634, which is 
+1613 log-units greater than the previous log-likelihood. As the minimum
 improvement is 2 log-units, the search is continued in round
-$m=3$. The breakpoint at level 30 from the previous round is retained
-and the next best breakpoint, level 20, is added. The log-likelihood
-grows by roughly 0.2 units, so the search is abandoned and the
-population sizes for the levels 2, 20, and 30 are printed. This
+$m=3$. The breakpoint at level 11 from the previous round is retained
+and the next best breakpoint, level 4, is added. The log-likelihood
+grows by roughly one units, so the search is abandoned and the
+population sizes for the levels 2 and 11 are printed, \ty{N[Level]}. This
 search strategy is \emph{greedy}, because it cannot revise the level
 configurations found in previous rounds.
+\item In addition to the population size at each level added to the model, \ty{epos}
+  prints the time of the levels, \ty{T[Level]}. If we call $T_k$ the
+  time the coalescent spends with $k$ lines, then
+  \[
+  T_k\sim \mbox{exp}\left(2N_k{k\choose 2}\right),
+  \]
+  where $N_k$ is the population size during $T_k$. This relationship
+  allows the computation of \ty{T[Level]} as a simple function of the
+  population size.
 \item In addition to the log-likelihood, a goodness-of-fit measure is
   printed, $d^2$, as suggested by \cite{lap17:acc}. This is the sum of
   squared differences between the observed site frequency spectrum and
@@ -259,23 +269,23 @@ configurations found in previous rounds.
   and expected site frequency spectra can be printed using the \ty{-o}
   option
 \begin{verbatim}
-epos -l 1e6 -o data/testF.dat 
+epos -l 1e7 -u 1.2e-8 -o data/testF.dat 
 ...
-#mark   r   o     e            nor(o)    nor(e)
-#sfs    1   5166  5167.219465  0.310718  0.310352
-#sfs    2   2030  2054.637885  0.122098  0.123405
+#mark  r   o     e            nor(o)    nor(e)
+#sfs   1   9526  9589.046040  0.390666  0.393057
+#sfs   2   3998  3939.189168  0.163960  0.161468
 ...
-#sfs    15  472   511.376540   0.028389  0.030714
+#sfs   15  472   495.190548   0.019357  0.020298
 \end{verbatim}
 where \ty{o} and \ty{e} are the observed and expected values, and
 \ty{nor(.)} their normalized versions.
 \item $d^2$ is computed from the normalized observed and expected
   spectra
 \begin{verbatim}
-epos -l 1e6 -o data/testF.dat | 
-grep '^#sfs'                  | 
+epos -l 1e7 -u 1.2e-8 -o data/testF.dat | 
+grep '^#sfs'                            | 
 awk '{d=$5-$6;d2+=d*d/$6}END{print d2}'
-0.00229446
+0.002628
 \end{verbatim}
 \item Under the exhaustive search all possible combinations are tested in each
 round. This mode is switched on using $\ty{-E}\ n$, meaning up to $n$
@@ -283,27 +293,42 @@ rounds of exhaustive search are conducted before the program reverts
 to the greedy strategy, or quits. Apply the exhaustive strategy to the
 data set just analyzed:
 \begin{verbatim}
-epos -l 1e6 -E 30 data/testF.dat 
+epos -l 1e7 -u 1.2e-8 -E 30 data/testF.dat 
 #InputFile:	data/testF.dat
-#Polymorphic sites surveyed:	16626
-#Monomorphic sites surveyed:	983374
-#m = 1; maximum Log(Likelihood): 12691529.677499	{2}
-#m = 2; maximum Log(Likelihood): 12691651.173255	{2, 30}
-#m = 3; maximum Log(Likelihood): 12691651.627046	{2, 22, 27}
-#Final Log(Likelihood):          12691651.173255
-#d^2:                              0.00229438
-#Level  T[Level]        N[Level]
-30      8.88e+03        1.93e+06
-2       7.49e+05        1.92e+05
+#Polymorphic sites surveyed:	24384
+#Monomorphic sites surveyed:	9975616
+#m = 1; maximum Log(Likelihood): 150957021.040082	{2}
+#m = 2; maximum Log(Likelihood): 150958634.054573	{2, 11}
+#m = 3; maximum Log(Likelihood): 150958640.686629	{2, 4, 9}
+#m = 4; maximum Log(Likelihood): 150958643.053014	{2, 5, 12, 13}
+#m = 5; maximum Log(Likelihood): 150958643.831798	{2, 6, 14, 15, 24}
+#Final Log(Likelihood):          150958643.053014
+#d^2:                              0.00185004
+#Level	T[Level]	N[Level]
+13	4.51e+03	2.26e+04
+12	8.35e+03	1.27e+05
+5	8.80e+03	7.01e+02
+2	3.62e+04	9.15e+03
 \end{verbatim}
 The option \ty{-E 30} indicates that up to 30 levels, that is all
 possible levels in the coalescent, can be added by exhaustive
-search. The first two rounds are the same as under the greedy
-regime. However, at $m=3$ level 30 from the previous round is dropped
-and levels 22 and 27 are added. The increase is roughly 0.4 units,
-which is less than the 2 units required for the acceptance of a new
-level. So the search is abandoned and the same final result printed as
-for the greedy search.
+search. The first two rounds are always the same as under the greedy
+regime. However, at $m=3$ level 11 from the previous round is dropped
+and levels 4 and 9 are added. The increase is roughly 6.7 units,
+which is more than the 2 units required for the acceptance of a new
+level, the search continues to $m=4$. Here levels 4 and 9 from the
+previous round are replaced by levels 5, 12, and 13 leading to a
+likelihood increase by 2.3 a fifth and final round of, $m=5$. Here
+levels 5, 12, and 13 are replaced by 6, 14, 15, and 24, but the
+likelihood increase is less than one and, the search is stopped, and
+we get the result for $m=4$.
+\item You will have noticed the markedly longer run time of the
+  exhaustive search compared to its greedy version. The likelihood
+  increase purchaesd by this increased effort is roighly 9 units,
+  which we deem significant. So exhaustive searching can lead to
+  better results, but in practice this strategy is so time consuming
+  that we only use the greedy search for the remainder of this
+  Tutorial. 
 \item So far, we do not know what the true result of our analysis
   should be, so we cannot assess its quality. To do this, we need to
   simulate haplotypes under a given scenario. First, we simulate one
@@ -407,35 +432,26 @@ As before, this is similar to the expected 500,000.
   \item For estimating variable population sizes, we need to
     plot size as a function of time. This is implemented in the
     program \ty{epos2plot}\footnote{\ty{https://www.github.com/evolbioinf/epos2plot}}. Begin again by simulating samples under constant 
-    size, but this time add plotting
+    size, but this time add more polymorphisms and include, for
+    increased realism, recombination. Since recombination slows down
+    \ty{ms}, we replace it by its faster re-implementation, \ty{mspms}
+    \citep{kel16:eff}. The parameters for this \ty{mspms} run are
+    taken from \citep[Figure 2a]{liu15:exp}.
 \begin{verbatim}
-ms 30 1000 -t 10 | 
-ms2sfs           | 
-epos -U -l 1000  | 
+mspms 30 1000 -t 4800 -r 3800 10000000 |
+ms2sfs                                 |
+epos -l 1e7 -U -u 1.2e-8               |
 epos2plot > epos1.dat # generate data ready for plotting
 \end{verbatim}
-Draw the graph by applying the program
+This takes a few minutes. Draw the graph by applying the program
 \ty{gnuplot}\footnote{\ty{http://www.gnuplot.info/}} to the file
 \ty{fig1.gp}, which is part of the \ty{epos} package:
 \begin{verbatim}
 gnuplot -p fig1.gp
 \end{verbatim}
 to get Figure~\ref{fig:con}. The fit between the estimated median size
-and the true size is good for most of the plot, though it drifts
-upward as we get to the more distant past. For a sample of size $n$,
-the expected time to its most recent common ancestor is proportional
-to the population size \citep[p. 76]{wak09:coa}:
-\[
-E[T_{\rm MRCA}] - 4N\left(1-\frac{1}{n}\right).
-\]
-This means that as we go back in time only samples with large
-population sizes are not completely coalesced yet, leading to an
-upward drift in population size into the past. To counter this,
-\ty{epos} only reports population sizes as long as more than one half
-of the input samples have not reached their most recent common
-ancestor. This fraction of uncoalesced samples can be changed using
-the \ty{-f} option. Also, the variation in Figure~\ref{fig:con} is
-large, especially close to the present.
+and the true size is good for most of the plot, except for the very
+recent past.
 \begin{figure}
   \begin{center}
     \scalebox{0.6}{\input{con}}
@@ -445,18 +461,14 @@ large, especially close to the present.
 \end{figure}
 \item Next, we simulate under the scenario used in Figure 2b of \cite{liu15:exp}
   with a single, approximately threefold change in population size
-  from 7778 to 25636, which occurred 6809 generations ago. Since this simulation includes substantial recombination, we
-  replace \ty{ms} by its fast re-implementation, \ty{mspms}
-  \citep{kel16:eff}:
+  from 7778 to 25636, which occurred 6809 generations ago:
 \begin{verbatim}
 mspms 30 1000 -t 12310 -r 9750 1e7 -eN 0.066 0.3 |
 ms2sfs                                           |
 epos -u 1.2e-8 -l 1e7 -U                         |
 epos2plot > epos2.dat
 \end{verbatim}
-This takes a few minutes. Notice the \ty{-u} option for \ty{epos},
-which specifies the mutation rate per generation used by \cite{liu15:exp}, $\mu=1.2\times
-10^{-8}$.
+This again takes a few minutes.
 \item Plot the result
 \begin{verbatim}
 gnuplot -p fig2.gp

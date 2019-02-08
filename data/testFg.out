@@ -1,11 +1,11 @@
 #InputFile:	../data/testF.dat
-#Polymorphic sites surveyed:	16626
-#Monomorphic sites surveyed:	9983374
-#m = 1; maximum Log(Likelihood): 151018567.727412	{2}
-#m = 2; maximum Log(Likelihood): 151018689.218880	{2, 30}
-#m = 3; maximum Log(Likelihood): 151018689.466100	{2, 20, 30}
-#Final Log(Likelihood):          151018689.218880
-#d^2:                              0.00229438
+#Polymorphic sites surveyed:	24384
+#Monomorphic sites surveyed:	9975616
+#m = 1; maximum Log(Likelihood): 150957021.040082	{2}
+#m = 2; maximum Log(Likelihood): 150958634.054573	{2, 11}
+#m = 3; maximum Log(Likelihood): 150958635.438422	{2, 4, 11}
+#Final Log(Likelihood):          150958634.054573
+#d^2:                              0.00262777
 #Level	T[Level]	N[Level]
-30	3.70e+02	8.05e+04
-2	3.12e+04	7.99e+03
+11	6.69e+03	2.51e+04
+2	3.45e+04	7.73e+03
