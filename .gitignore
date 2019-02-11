@@ -2,6 +2,7 @@
 *.val
 epos
 epos2ages
+epos2plot
 *.aux
 *.log
 *.ps

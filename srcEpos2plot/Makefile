@@ -1,7 +1,7 @@
 export VERSION = $(shell bash ./scripts/version.sh)
 export DATE    = $(shell bash ./scripts/date.sh)
 all:
-	go build -ldflags "-X main.VERSION=${VERSION} -X main.DATE=${DATE}"
+	go build -ldflags "-X main.VERSION=${VERSION} -X main.DATE=${DATE}" -o epos2plot
 install:
 	go install -ldflags "-X main.VERSION=${VERSION} -X main.DATE=${DATE}"
 test:

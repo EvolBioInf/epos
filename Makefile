@@ -6,6 +6,7 @@ all:
 	make -C srcEpos2ages
 	cp srcEpos2ages/epos2ages build
 	make -C srcEpos2plot
+	cp srcEpos2plot/epos2plot build
 test:
 	make -s -C srcEpos test
 	make -s -C srcEpos2ages test
