@@ -26,14 +26,22 @@
   Biology, Pl\"on, Germany}
 \date{\input{date}}
 \maketitle
+
+\tableofcontents
+
 \section{Introduction} 
-The software package \ty{epos} contains two programs, \ty{epos}
-itself and \ty{epos2ages}. \ty{Epos} estimates historical population
-sizes, and \ty{epos2ages} transforms them into allele ages. \ty{Epos} takes site frequency spectra as input. A site frequency
+The software package \ty{epos} contains three programs, \ty{epos}
+itself and the auxiliary programs \ty{epos2ages} and \ty{epos2plot}. \ty{Epos} estimates historical population
+sizes, \ty{epos2ages} transforms them into allele ages, and
+\ty{epos2plot} into data ready for plotting. In this document I first
+explain \ty{epos} and how to build the programs of the package. Then I
+give a tutorial-style introduction to their usage.
+
+\ty{Epos} takes site frequency spectra as input. A site frequency
 spectrum is computed from a haplotype sample. For example, Table~\ref{tab:hap}
 shows a sample of $n=4$ haplotypes, $h_1, h_2,...,h_4$, with $S=8$
 segregating (polymorphic) sites, $s_1, s_2,...,s_8$. Each segregating
-site consists of a column of four zeros and ones, where zero indicate
+site consists of a column of four zeros and ones, where zero indicates
 the ancestral state and one a mutation. We can count the number of
 sites where one, two, or three haplotypes are mutated. This is called
 the site frequency spectrum (SFS) of the sample, and
@@ -90,16 +98,16 @@ remains unchanged.
   \end{center}
 \end{table}
 
-\section{Theory \& Algorithm}\label{sec:alg}
-\ty{Epos} implements theory by \cite{lyn18:inf}, which I briefly
+\ty{Epos} implements theory by \cite{lyn19:inf}, which I briefly
 summarize here. Consider the coalescent for $n$ haplotypes,
 Figure~\ref{fig:coa} shows an example for $n=4$ haplotypes. Any such
 coalescent can be divided into levels $2, 3,...,n$, where a level,
 $\ell$, is marked by the coalescence event that reduces the number of
 lineages from $\ell+1$ to $\ell$. The time intervals $T_i, 2\le i\le
 n-1$, denote the segments of the coalescent with $i$ lineages. For each $T_i$ \ty{epos}
-can calculate a corresponding population size, $N_i$. Unfortunately,
-for larger samples the computation of all $N_i$ invariable
+can calculate a corresponding number of diploid individuals making up
+the population, $N_i$. Unfortunately,
+for larger samples the computation of all $N_i$ invariably
 returns negative population sizes. So instead of allowing the
 population size to change at every coalescence event, we pick a subset
 of levels encapsulating the most important size changes.
@@ -123,7 +131,7 @@ So, given a combination of levels, the population sizes are computed
 with the proviso that negative values are set to the smallest possible
 population size, $N=1$. For each combination of levels and population
 sizes, the log-likelihood of observing the input site frequency
-spectrum is calculated. We now need an efficient a method
+spectrum is calculated \citep{lyn19:inf}. We now need an efficient a method
 for maximizing this likelihood.
 
 The starting point is always a single level, $m=1$, the root at level
@@ -141,7 +149,8 @@ are investigated in each round. Unfortunately, for large samples, this
 number quickly leads to unacceptable run times and hence greedy is the
 default. The greedy and exhaustive search strategies are explained
 further in the Tutorial in Section~\ref{sec:tut}, where I also apply
-\ty{epos} to real site frequency spectra.
+\ty{epos} to real site frequency spectra before also explaining
+\ty{epos2ages} and \ty{epos2plot}.
 
 \begin{algorithm}
   \caption{Searching for break points in the coalescent}\label{alg:epo}
@@ -149,7 +158,8 @@ further in the Tutorial in Section~\ref{sec:tut}, where I also apply
 \end{algorithm}
 
 \section{Getting Started}
-\ty{Epos} was written in C on a computer running Linux. It depends on
+The \ty{epos} package was written in C and Go on a computer running
+Linux. It depends on
 two libraries, the Gnu Scientific Library
 (\ty{lgsl}), and the Basic Linear Algebra Subprograms (\ty{lblas}). 
 Please contact \ty{haubold@evolbio.mpg.de} if there are any problems with the program.
@@ -162,16 +172,16 @@ git clone https://www.github.com/evolbioinf/epos
 \begin{verbatim}
 cd epos
 \end{verbatim}
-and make the programs \ty{epos} and \ty{epos2ages}
+and make the programs
 \begin{verbatim}
 make
 \end{verbatim}
-\I Test both programs
+\I Test the programs
 \begin{verbatim}
 make test
 \end{verbatim}
 which takes approximately one minute.
-\I The executables \ty{epos} and \ty{epos2ages} are located in the
+\I The executables are located in the
 directory \ty{build}. Place them in your \ty{PATH}.
 \I  Make the documentation
 \begin{verbatim}
@@ -186,14 +196,15 @@ doc/epos.pdf
 \ei
 
 \section{Tutorial}\label{sec:tut}
+\subsection{\ty{Epos}}
 I first explain how to test \ty{epos} using simulated data, and then
 analyze real data.
-\subsection{Simulated Data}
+\subsubsection*{Simulated Data}
 \ty{Epos} was developed for estimating variable population
 sizes. Nevertheless, we begin with simulated constant-size
 scenarios before generating samples under models with varying population
 sizes.
-\subsubsection{Constant Population Size}
+\paragraph{Constant Population Size}
 \begin{itemize}
 \item First, take a look at one of the simulated data sets supplied
   with \ty{epos}:
@@ -221,8 +232,8 @@ It is a folded data set, so the sample size $n=30$.
 \begin{verbatim}
 epos -l 1e7 -u 1.2e-8 data/testF.dat 
 \end{verbatim}
-where \ty{-l 1e6} indicates that 10 Mb of sequence were surveyed and
-$\mu=1.2\times 10^{-8}$ is the mutation rate. The result of this command is
+where \ty{-l 1e7} indicates that 10 Mb of sequence were surveyed and
+$\mu=1.2\times 10^{-8}$ is the mutation rate per site per generation. The result of this command is
 \begin{verbatim}
 #InputFile:	data/testF.dat
 #Polymorphic sites surveyed:	24384
@@ -232,12 +243,12 @@ $\mu=1.2\times 10^{-8}$ is the mutation rate. The result of this command is
 #m = 3; maximum Log(Likelihood): 150958635.438422	{2, 4, 11}
 #Final Log(Likelihood):          150958634.054573
 #d^2:                              0.00262777
-#Level	T[Level]	N[Level]
-11	6.69e+03	2.51e+04
-2	3.45e+04	7.73e+03
+#Level  T[Level]        N[Level]
+11      6.69e+03        2.51e+04
+2       3.45e+04        7.73e+03
 \end{verbatim}
 \ty{Epos} prints intermediate configurations of $m$ breakpoints: As
-already described in Section~\ref{sec:alg}, it starts with a single
+already described in Algorithm~\ref{alg:epo}, it starts with a single
 breakpoint, $m=1$, the root at at level 2. The root level must always
 be present and the population size starting there extends to the next
 breakpoint printed, or, if there is none as in this case, the leaves
@@ -254,12 +265,12 @@ population sizes for the levels 2 and 11 are printed, \ty{N[Level]}. This
 search strategy is \emph{greedy}, because it cannot revise the level
 configurations found in previous rounds.
 \item In addition to the population size at each level added to the model, \ty{epos}
-  prints the time of the levels, \ty{T[Level]}. If we call $T_k$ the
+  prints the time of the levels in generations, \ty{T[Level]}. If we call $T_k$ the
   time the coalescent spends with $k$ lines, then
   \[
-  T_k\sim \mbox{exp}\left(2N_k{k\choose 2}\right),
-  \]
-  where $N_k$ is the population size during $T_k$. This relationship
+  \ty{T[Level]} = \sum_{k=\ty{Level}}^n E[T_k],
+    \]
+  where $N_k$ is the population size during $T_k$,
   allows the computation of \ty{T[Level]} as a simple function of the
   population size.
 \item In addition to the log-likelihood, a goodness-of-fit measure is
@@ -287,7 +298,7 @@ grep '^#sfs'                            |
 awk '{d=$5-$6;d2+=d*d/$6}END{print d2}'
 0.002628
 \end{verbatim}
-\item Under the exhaustive search all possible combinations are tested in each
+\item Under the exhaustive search all possible combinations of levels are tested in each
 round. This mode is switched on using $\ty{-E}\ n$, meaning up to $n$
 rounds of exhaustive search are conducted before the program reverts
 to the greedy strategy, or quits. Apply the exhaustive strategy to the
@@ -304,11 +315,11 @@ epos -l 1e7 -u 1.2e-8 -E 30 data/testF.dat
 #m = 5; maximum Log(Likelihood): 150958643.831798	{2, 6, 14, 15, 24}
 #Final Log(Likelihood):          150958643.053014
 #d^2:                              0.00185004
-#Level	T[Level]	N[Level]
-13	4.51e+03	2.26e+04
-12	8.35e+03	1.27e+05
-5	8.80e+03	7.01e+02
-2	3.62e+04	9.15e+03
+#Level  T[Level]        N[Level]
+13      4.51e+03        2.26e+04
+12      8.35e+03        1.27e+05
+5       8.80e+03        7.01e+02
+2       3.62e+04        9.15e+03
 \end{verbatim}
 The option \ty{-E 30} indicates that up to 30 levels, that is all
 possible levels in the coalescent, can be added by exhaustive
@@ -324,7 +335,7 @@ likelihood increase is less than one and, the search is stopped, and
 we get the result for $m=4$.
 \item You will have noticed the markedly longer run time of the
   exhaustive search compared to its greedy version. The likelihood
-  increase purchaesd by this increased effort is roighly 9 units,
+  increase purchaesd by this increased effort is roughly 9 units,
   which we deem significant. So exhaustive searching can lead to
   better results, but in practice this strategy is so time consuming
   that we only use the greedy search for the remainder of this
@@ -427,7 +438,7 @@ head -n 781 tmp.txt | tail -n 1
 \end{verbatim}
 As before, this is similar to the expected 500,000. 
 \end{itemize}
-\subsubsection{Variable Population Size}
+\paragraph{Variable Population Size}\label{sec:var}
 \begin{itemize}
   \item For estimating variable population sizes, we need to
     plot size as a function of time. This is implemented in the
@@ -511,14 +522,14 @@ in the recent past.
 \end{figure}
 \end{itemize}
 
-\subsection{Real Data}
+\subsubsection*{Real Data}
 I analyze the two site frequency spectra distributed with
 \ty{epos}. On the from a population of water flea, \textit{Daphnia
   pulex}, the other from the Yoruba population, who live in
 south-western Nigeria. The \textit{Daphnia} data is provided by Mike
 Lynch (Arizona State University), the Yoruba spectrum was computed by
 \cite{lap17:acc} from the 1000 human genomes project data.
-\subsubsection{\textit{Daphnia pulex}}
+\paragraph{\textit{Daphnia pulex}}
 \begin{itemize}
 \item As an example for real data, we use a site frequency spectrum obtained from
   the Kap population of \textit{Daphnia pulex}:
@@ -632,7 +643,7 @@ to get Figure~\ref{fig:kap}.
 \end{figure}
 \end{itemize}
 
-\subsubsection{The Yoruba Population}
+\paragraph{The Yoruba Population}
 \begin{itemize}
 \item Analyze the full spectrum:
 \begin{verbatim}
@@ -703,7 +714,9 @@ epos -x 1 -u 1.2e-8 -l 2.9e9 data/FoldSFS_YRI.txt
 \end{figure}
 
 
-\section{The Averge Age of an Allele}
+\subsection{\ty{Epos2ages}}
+The program \ty{epos2ages} converts population sizes computed by
+\ty{epos} to average ages of alleles \citep{lyn19:inf}.
 \begin{itemize}
   \item To start with a simple example, simulate a site frequency spectrum with $n=2$,
 \begin{verbatim}
@@ -770,6 +783,160 @@ epos2ages -n 144 data/kap144i.out
 143     3.13086e+06  2.09611e+12  1.60264e+06
 \end{verbatim}  
 \end{itemize}
+
+\subsection{\ty{Epos2plot}}
+\ty{Epos2plot} summarizes multiple
+\ty{epos} results into
+quantile plots. Figure~\ref{fig:con} shows such a quantile plot 
+computed from 1000 \ty{epos} \citep{lyn19:inf} results, which in turn
+were computed from 1000 haplotype samples simulated
+from the simplest population model, constant size. In the following
+sections I first explain how to set up \ty{epos2plot} and then give a
+tutorial-style introduction to its usage.
+
+\begin{itemize}
+\item The example data displayed in Figure~\ref{fig:con} is based on a
+scenario taken from \citep[Figure 2a]{liu15:exp}, which we already
+encountered in Section~\ref{sec:var}:
+\begin{verbatim}
+mspms 30 1000 -t 4800 -r 3800 1e7 |
+ms2sfs                            |
+epos -l 1e7 -U -u 1.2e-8 > example.epos
+\end{verbatim}
+\item Uncompress the data
+\begin{verbatim}
+bunzip2 data/example.epos.bz2
+\end{verbatim}
+\item Look at the first sample, which happens to occupy 11 lines in
+  the uncompressed data file:
+\begin{verbatim}
+head -n 11 data/example.epos 
+#InputFile:	stdin
+#Polymorphic sites surveyed:	19114
+#Monomorphic sites surveyed:	9980886
+#m = 1; maximum Log(Likelihood): 150988352.649665	{2}
+#m = 2; maximum Log(Likelihood): 150988355.097023	{2, 3}
+#m = 3; maximum Log(Likelihood): 150988356.149583	{2, 3, 30}
+#Final Log(Likelihood):          150988355.097023
+#d^2:                              0.00524357
+#Level  T[Level]        N[Level]
+3       1.85e+04        9.90e+03
+2       3.94e+04        1.05e+04
+\end{verbatim}
+The part that concerns us here are the two lines without
+leading hashes at the bottom. We read them from the bottom up, which means going
+from the past toward the present. ``Level'' 2, the root of the
+coalescent, is located 39,400 generations in the past, at
+which point the population size, $N$, was 10,500 individuals. This
+size stayed constant until generation 18,500 in the past,
+when $N=9900$, which remained unchanged until the present.
+
+\item Instead of reading the data upside down, as we have just done,
+  it is easier to extract it automatically into two columns, time and size
+\begin{verbatim}
+head -n 11 data/example.epos | epos2plot -r
+0       9900
+18500   9900
+18500   10500
+39400   10500
+\end{verbatim}
+\item and plot it using \ty{pipePlot}\footnote{\ty{http://github.com/evolbioinf/pipeplot}}
+\begin{verbatim}
+head -n 11 data/example.epos | 
+epos2plot -r            | 
+pipePlot -x "Time (generations)" -y N -X 0:45000 -Y 9000:11000
+\end{verbatim}
+to get Figure~\ref{fig:sin}.
+
+\begin{figure}
+\begin{center}
+\scalebox{0.6}{\includegraphics{single.ps}}
+\end{center}
+\caption{Plot of single demography.}\label{fig:sin}
+\end{figure}
+
+\item Plot all 1000 demographies in the example data set
+\begin{verbatim}
+epos2plot -r data/example.epos |
+pipePlot -x "Time (generations)" -y N
+\end{verbatim}
+to get Figure~\ref{fig:all}.
+
+\item Notice the ragged right hand side of Figure~\ref{fig:all} due to
+  samples coalescing at different points in time. This leads to a
+  fundamental problem with our analysis: The expected time for a
+  sample of $n$ haplotypes to reach its most recent common ancestor,
+  $E[T_{\rm MRCA}]$,  is
+  proportional to the population size \cite[p. 76]{wak09:coa}:
+\[
+E[T_{\rm MRCA}]=4N\left(1-\frac{1}{n}\right).
+\]
+As we move from the present into the past, samples successively find
+their most recent common ancestor, and might be expected to drop out
+of the quantile computation. However, this would lead to a strong
+upward bias in the results, as only samples that induce large
+population size estimates endure into the more distant past. To avoid this
+bias, \ty{epos} by default, i. e. without \ty{-r}, extends the
+population size measured at the most recent common ancestor of each
+sample into the past until the last sample has coalesced.
+
+
+\begin{figure}
+\begin{center}
+\scalebox{0.6}{\includegraphics{all.ps}}
+\end{center}
+\caption{Plot of all demographies in the example data.}\label{fig:all}
+\end{figure}
+
+\item  Instead of plotting raw demographies, \ty{epos2plot} by default
+  summarizes them by computing 2.5\% and 97.5\% quantiles around the
+  median:
+\begin{verbatim}
+epos2plot data/example.epos | head
+#Time   LowerQ  Median  UpperQ
+0       1       10000   83900
+0.0046  1       10000   83900
+0.00952 1       10000   83900
+0.0148  283     10100   83900
+0.0205  469     10100   83900
+0.0267  558     10100   83900
+0.0485  574     10100   83900
+0.166   577     10100   84300
+1.04    639     10100   84300
+\end{verbatim}
+where \ty{Time} contains the time in generations, \ty{LowerQ} the
+lower quantile of the population size, \ty{Median} its median, and
+\ty{UpperQ} its upper quantile.
+
+\item In case you are wondering about time points like 0.0046
+  generations, they result from very early coalescent events and make
+  little biological sense. \ty{Epos2plot} allows the user to choose a
+  minimum step length between the data points it prints using the
+  \ty{-t} option. By default this is 0, but if we now set it to 1, we
+  get
+\begin{verbatim}
+epos2plot -t 1 | head
+#Time   LowerQ  Median  UpperQ
+0       1       10000   83900
+1.04    639     10100   84300
+2.08    917     10100   85400
+3.22    1270    10100   85400
+4.47    1510    10100   85400
+6.09    1680    10100   85400
+7.72    1720    10100   85400
+8.91    2040    10100   85400
+10.2    2320    10100   85400
+\end{verbatim}
+Notice how the last time point printed in the previous example is now
+the fist time point after zero. The \ty{-t} option is particularly
+useful with very large samples of \ty{epos} results, where the number
+of data points close to the zero line can be so large as to bog down
+the \ty{epos2plot} run.  In any case, the plot of these values is
+Figure~\ref{fig:con}, which we have already looked at. It illustrates
+the excellent fit between the predicted and the expected population
+size.
+\end{itemize}
+
 
 \section{Change Log}
 The change log can be accessed via the repository web page
