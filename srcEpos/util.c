@@ -40,15 +40,6 @@ void freeBinom() {
   bin = NULL;
 }
 
-double binomial(int n, int k){
-
-  if(n < k)
-    return 0;
-  else
-    return bin[n][k];
-  
-}
-
 /* fi: Equation (5) */
 double fi(int i, int n, int r, int *k){
   double a, b;
@@ -126,13 +117,6 @@ double watterson(Sfs *sfs, Args *args){
   w = sfs->p / s / 4. / sfs->u / l;
 
   return w;
-}
-
-int max(int a, int b) {
-  if(a > b)
-    return a;
-  else
-    return b;
 }
 
 /* shuffle shuffles the integers contained in array a */
