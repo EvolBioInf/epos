@@ -189,11 +189,11 @@ void printUsage(){
   printf("Options:\n");
   printf("\t[-l NUM sequence length; default: include zero-class in SFS]\n");
   printf("\t[-u NUM per nucleotide mutation rate; default: %g]\n", DEFAULT_U);
-  printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g if -x 1, 0 otherwise]\n", DEFAULT_C);
+  printf("\t[-c NUM minimum change in log-likelihood for acceptance of new level; default: %g if -k 1, 0 otherwise]\n", DEFAULT_C);
   printf("\t[-E NUM levels searched exhaustively; default: greedy search; -E > 2 differs from greedy]\n");
   printf("\t[-m NUM maximal level searched exhaustively; default sample size]\n");
   printf("\t[-L NUM1,NUM2,... use preset levels NUM1,NUM2,...; default: search for optimal levels]\n");
-  printf("\t[-X NUM1,NUM2,... exclude NUM1-ers, NUM2-ers; default: include all frequency classes]\n");
+  printf("\t[-x NUM1,NUM2,... exclude NUM1-ers, NUM2-ers; default: include all frequency classes]\n");
   printf("\t[-k NUM cross validation with NUM categories: no cross-validation]\n");
   printf("\t[-s NUM seed for random number generator; default: system]\n");
   printf("\t[-U unfolded site frequency spectrum; default: folded]\n");
