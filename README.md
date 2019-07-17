@@ -7,6 +7,10 @@ The package epos contains two programs, `epos` itself and
 frequency data, and `epos2ages` converts these estimates to allele
 ages. The data file `FoldSFS_YRI.txt` is taken from Lapierre, Lambert,
 and Achaz (2017, Genetics, 206:439).
+## Dependencies
+- GNU scientific library
+- gnuplot
+- latex
 ## Compilation
 The sources are compiled using
 `make`
