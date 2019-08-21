@@ -83,10 +83,7 @@ void printTimes(PopSizes *ps, Sfs *sfs){
 
   k = sfs->n;
   dSquared(ps, sfs);
-  if(ps->l > 0)
-    printf("#Final Log(Likelihood):          %f\n", ps->l);
-  else
-    printf("#Final Log(Likelihood):          %f\n", 0.0);
+  printf("#Final Log(Likelihood):          %f\n", ps->l);
   printf("#d^2:                              %g\n", sfs->d);
   printf("#Level\tT[Level]\tN[Level]\n");
   t = 0.;

@@ -7,6 +7,7 @@
  **************************************************/
 #include <stdlib.h>
 #include <math.h>
+#include <gsl/gsl_sf.h>
 #include "eprintf.h"
 #include "popSizes.h"
 #include "util.h"
@@ -113,8 +114,10 @@ void dSquared(PopSizes *ps, Sfs *sfs) {
 }
 
 double logLik(PopSizes *ps, Sfs *sfs) {
-  double e, l = 0.;
+  double e, l = 0., s = 0.;
+  
   for(int r = 0; r <= sfs->a; r++) {
+    s += gsl_sf_lnfact(sfs->G[r]);
     if(sfs->G[r] < 0)
       continue;
     if(sfs->f) {
@@ -124,6 +127,7 @@ double logLik(PopSizes *ps, Sfs *sfs) {
     }
     l += (double)sfs->G[r] * log(e) - e;
   }
+  l -= s;
 
   return l;
 }
