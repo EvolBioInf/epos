@@ -73,8 +73,8 @@ double hi(int i, int n, int r, int *k){
 }
 
 void printSfsStats(Sfs *sfs){
-  printf("#Polymorphic sites surveyed:\t%d\n", sfs->p);
-  printf("#Monomorphic sites surveyed:\t%ld\n", sfs->G[0]);
+  printf("#Polymorphic sites surveyed: %10d\n", sfs->p);
+  printf("#Monomorphic sites surveyed: %10ld\n", sfs->G[0]);
 }
 
 void printTimes(PopSizes *ps, Sfs *sfs){

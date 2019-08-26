@@ -31,7 +31,7 @@ PopSizes *presetLevels(Sfs *sfs, Args *args) {
 void analysis(Sfs *sfs, Args *args, char *fileName) {
   PopSizes *ps;
 
-  printf("#InputFile:\t");
+  printf("#InputFile: ");
   printf("%s\n", fileName);
   printSfsStats(sfs);
   if(args->L)
