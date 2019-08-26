@@ -68,6 +68,7 @@ Sfs *newSfs(int n, Args *args) {
   sfs->e = 0.;
   sfs->o = 0.;
   sfs->d = 0.;
+  sfs->c = 0.;
   sfs->l = 0;
   sfs->a = 0;
   if(args != NULL) {

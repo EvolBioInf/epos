@@ -16,6 +16,7 @@ typedef struct sfs {
   double  e; /* sites in exp. freq. spec.   */
   double  o; /* sites in obs. freq. spec.   */
   double  d; /* d^2 goodness-of-fit         */
+  double  c; /* constant in logLik comp.    */
   int     a; /* maximum index in G          */
   long    l; /* sequence length             */
   int     n; /* number of haplotypes        */

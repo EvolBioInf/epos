@@ -62,6 +62,14 @@ Ints *newInts() {
   return in;
 }
 
+/* cmpInt compares integers */
+int cmpInt (const void *a, const void *b) {
+  const int *i1 = (const int *)a;
+  const int *i2 = (const int *)b;
+  return *i1 - *i2;
+}
+
+
 Ints *extractInts(char *s) {
   Ints *in =  newInts();
   char *c = strtok(s, ",");
@@ -71,7 +79,7 @@ Ints *extractInts(char *s) {
     in->a = (int *)erealloc(in->a, (in->n + 1) * sizeof(int));
     in->a[in->n++] = atoi(c);
   }
-
+  qsort(in->a, in->n, sizeof(int), cmpInt);
   return in;
 }
 
@@ -91,8 +99,10 @@ void extractLevels(Args *args) {
   args->al = (int *)malloc((in->n + 1) * sizeof(int));
   args->nl = in->n;
   
-  for(int i = 0; i < in->n; i++)
+  for(int i = 0; i < in->n; i++) {
     args->al[i + 1] = in->a[i];
+    printf("al[%d]: %d\n", i + 1, args->al[i + 1]);
+  }
 
   freeInts(in);
 }
