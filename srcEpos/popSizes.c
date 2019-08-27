@@ -116,9 +116,11 @@ void dSquared(PopSizes *ps, Sfs *sfs) {
 double logLik(PopSizes *ps, Sfs *sfs) {
   double e, l = 0.;
 
-  if (sfs->c == 0)
+  if (sfs->c == 0) {
     for (int i = 0; i <= sfs->a; i++)
-      sfs->c += gsl_sf_lnfact(sfs->G[i]);
+      if (sfs->G[i] != -1)
+	sfs->c += gsl_sf_lnfact(sfs->G[i]);
+  }
   for(int r = 0; r <= sfs->a; r++) {
     if(sfs->G[r] < 0)
       continue;

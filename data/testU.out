@@ -1,10 +1,10 @@
 #InputFile: ../data/testU.dat
 #Polymorphic sites surveyed:      16390
 #Monomorphic sites surveyed:    9983610
-#m = 1; maximum Log(Likelihood):    -268.68 {2}
-#m = 2; maximum Log(Likelihood):    -149.82 {2,30}
-#m = 3; maximum Log(Likelihood):    -148.48 {2,3,30}
-#Final Log(Likelihood):             -149.82
+#m = 1; maximum Log(Likelihood):    -268.680098 {2}
+#m = 2; maximum Log(Likelihood):    -149.822729 {2,30}
+#m = 3; maximum Log(Likelihood):    -148.476349 {2,3,30}
+#Final Log(Likelihood):             -149.822729
 #d^2: 0.00369782
 #Level	T[Level]	N[Level]
 30	3.62e+02	7.88e+04

@@ -32,7 +32,7 @@ int *nextConfig(int m, int n, int *start, Args *args, short setup) {
 }
 
 void printConfig(int *k, int m, double ll) {
-  printf("#m = %d; maximum Log(Likelihood): %10.2f ", m, ll);
+  printf("#m = %d; maximum Log(Likelihood): %14f ", m, ll);
   printf("{%d", k[1]);
   for(int i = 2; i <= m; i++)
     printf(",%d", k[i]);

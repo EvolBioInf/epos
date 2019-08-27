@@ -237,14 +237,14 @@ $\mu=1.2\times 10^{-8}$ is the mutation rate per site per generation. The result
 #InputFile: data/testF.dat
 #Polymorphic sites surveyed:      24384
 #Monomorphic sites surveyed:    9975616
-#m = 1; maximum Log(Likelihood):   -1719.15 {2}
-#m = 2; maximum Log(Likelihood):    -106.14 {2,11}
-#m = 3; maximum Log(Likelihood):    -104.75 {2,4,11}
-#Final Log(Likelihood):             -106.14
+#m = 1; maximum Log(Likelihood):   -1719.151896 {2}
+#m = 2; maximum Log(Likelihood):    -106.137405 {2,11}
+#m = 3; maximum Log(Likelihood):    -104.753557 {2,4,11}
+#Final Log(Likelihood):             -106.137405
 #d^2: 0.00262777
-#Level	T[Level]	N[Level]
-11	6.69e+03	2.51e+04
-2	3.45e+04	7.73e+03
+#Level  T[Level]        N[Level]
+11      6.69e+03        2.51e+04
+2       3.45e+04        7.73e+03
 \end{verbatim}
 \ty{Epos} prints intermediate configurations of $m$ breakpoints: As
 already described in Algorithm~\ref{alg:epo}, it starts with a single
@@ -271,12 +271,12 @@ epos -l 1e7 -u 1.2e-8 -L 2,4,11 data/testF.dat
 #InputFile: data/testF.dat
 #Polymorphic sites surveyed:      24384
 #Monomorphic sites surveyed:    9975616
-#Final Log(Likelihood):             -104.75
+#Final Log(Likelihood):             -104.753557
 #d^2: 0.00249224
-#Level	T[Level]	N[Level]
-11	6.80e+03	2.55e+04
-4	1.32e+04	6.84e+03
-2	3.51e+04	8.23e+03
+#Level  T[Level]        N[Level]
+11      6.80e+03        2.55e+04
+4       1.32e+04        6.84e+03
+2       3.51e+04        8.23e+03
 \end{verbatim}
 \item In addition to the population size at each level added to the model, \ty{epos}
   prints the time of the levels in generations, \ty{T[Level]}. If we call $T_k$ the
@@ -322,18 +322,18 @@ epos -l 1e7 -u 1.2e-8 -E 30 data/testF.dat
 #InputFile: data/testF.dat
 #Polymorphic sites surveyed:      24384
 #Monomorphic sites surveyed:    9975616
-#m = 1; maximum Log(Likelihood):   -1719.15 {2}
-#m = 2; maximum Log(Likelihood):    -106.14 {2,11}
-#m = 3; maximum Log(Likelihood):     -99.51 {2,4,9}
-#m = 4; maximum Log(Likelihood):     -97.14 {2,5,12,13}
-#m = 5; maximum Log(Likelihood):     -96.36 {2,6,14,15,24}
-#Final Log(Likelihood):              -97.14
+#m = 1; maximum Log(Likelihood):   -1719.151896 {2}
+#m = 2; maximum Log(Likelihood):    -106.137405 {2,11}
+#m = 3; maximum Log(Likelihood):     -99.505349 {2,4,9}
+#m = 4; maximum Log(Likelihood):     -97.138964 {2,5,12,13}
+#m = 5; maximum Log(Likelihood):     -96.360180 {2,6,14,15,24}
+#Final Log(Likelihood):              -97.138964
 #d^2: 0.00185004
-#Level	T[Level]	N[Level]
-13	4.51e+03	2.26e+04
-12	8.35e+03	1.27e+05
-5	8.80e+03	7.01e+02
-2	3.62e+04	9.15e+03
+#Level  T[Level]        N[Level]
+13      4.51e+03        2.26e+04
+12      8.35e+03        1.27e+05
+5       8.80e+03        7.01e+02
+2       3.62e+04        9.15e+03
 \end{verbatim}
 The option \ty{-E 30} indicates that up to 30 levels, that is all
 possible levels in the coalescent, can be added by exhaustive
@@ -372,16 +372,16 @@ sizes from it:
 \begin{verbatim}
 ms 30 1 -t 10 | ms2sfs | epos -U -l 1000
 #InputFile: stdin
-#Polymorphic sites surveyed:         34
-#Monomorphic sites surveyed:        966
-#m = 1; maximum Log(Likelihood):     -37.47 {2}
-#m = 2; maximum Log(Likelihood):     -34.89 {2,8}
-#m = 3; maximum Log(Likelihood):     -33.73 {2,3,8}
-#Final Log(Likelihood):              -34.89
-#d^2: 2.11021
-#Level	T[Level]	N[Level]
-8	3.33e+05	7.60e+05
-2	1.11e+06	2.25e+05
+#Polymorphic sites surveyed:         55
+#Monomorphic sites surveyed:        945
+#m = 1; maximum Log(Likelihood):     -52.219407 {2}
+#m = 2; maximum Log(Likelihood):     -43.733126 {2,9}
+#m = 3; maximum Log(Likelihood):     -42.565671 {2,3,9}
+#Final Log(Likelihood):              -43.733126
+#d^2: 2.15424
+#Level  T[Level]        N[Level]
+9       5.66e+05        1.54e+06
+2       1.43e+06        2.47e+05
 \end{verbatim}
 where \ty{-U} indicates an unfolded site frequency spectrum. Since
 this is a simulation, your results from now on are bound to differ
@@ -538,7 +538,7 @@ in the recent past.
 
 \subsubsection*{Real Data}
 I analyze the two site frequency spectra distributed with
-\ty{epos}. One from a population of water flea, \textit{Daphnia
+\ty{epos}. One is from a population of water flea, \textit{Daphnia
   pulex}, the other from a human population, the Yoruba, who live in
 south-western Nigeria. The \textit{Daphnia} data is provided by Mike
 Lynch (Arizona State University), the Yoruba spectrum was computed by
@@ -572,18 +572,18 @@ epos data/kap144i.dat
 #InputFile: data/kap144i.dat
 #Polymorphic sites surveyed:      18098
 #Monomorphic sites surveyed:     185297
-#m = 1; maximum Log(Likelihood):    -973.30 {2}
-#m = 2; maximum Log(Likelihood):    -307.00 {2,24}
-#m = 3; maximum Log(Likelihood):    -304.11 {2,3,24}
-#m = 4; maximum Log(Likelihood):    -297.26 {2,3,8,24}
-#m = 5; maximum Log(Likelihood):    -297.16 {2,3,8,24,55}
-#Final Log(Likelihood):             -297.26
+#m = 1; maximum Log(Likelihood):    -973.298394 {2}
+#m = 2; maximum Log(Likelihood):    -306.995057 {2,24}
+#m = 3; maximum Log(Likelihood):    -304.105038 {2,3,24}
+#m = 4; maximum Log(Likelihood):    -297.264486 {2,3,8,24}
+#m = 5; maximum Log(Likelihood):    -297.158028 {2,3,8,24,55}
+#Final Log(Likelihood):             -297.264486
 #d^2: 0.0039003
-#Level	T[Level]	N[Level]
-24	5.75e+04	3.93e+05
-8	3.73e+05	7.94e+05
-3	2.98e+06	1.82e+06
-2	3.13e+06	7.89e+04                              
+#Level  T[Level]        N[Level]
+24      5.75e+04        3.93e+05
+8       3.73e+05        7.94e+05
+3       2.98e+06        1.82e+06
+2       3.13e+06        7.89e+04                              
 \end{verbatim}
 \item A classical problem when estimating model parameters is
   ``over-fitting''. This refers to the fact that random quirks of a
@@ -612,7 +612,7 @@ which is very similar to the result with the log-likelihood threshold.
 \begin{verbatim}
 epos -x 1 data/kap144i.dat 
 ...
-#Final Log(Likelihood):          -90970456101.23
+#Final Log(Likelihood):             -309.175057
 #d^2: 0.00546917
 #Level  T[Level]        N[Level]
 29      3.37e+04        2.93e+05
@@ -624,14 +624,14 @@ epos -x 1,2 data/kap144i.dat
 #InputFile: data/kap144i.dat
 #Polymorphic sites surveyed:      14973
 #Monomorphic sites surveyed:     185297
-#m = 1; maximum Log(Likelihood): -181940912127.92 {2}
-#m = 2; maximum Log(Likelihood): -181940911894.62 {2,39}
+#m = 1; maximum Log(Likelihood):    -543.807666 {2}
+#m = 2; maximum Log(Likelihood):    -310.507644 {2,39}
 #m = 3; no improvement
-#Final Log(Likelihood):          -181940911894.62
+#Final Log(Likelihood):             -310.507644
 #d^2: 0.00634133
-#Level	T[Level]	N[Level]
-39	7.75e-02	1.00e+00
-2	3.92e+06	1.01e+06
+#Level  T[Level]        N[Level]
+39      7.75e-02        1.00e+00
+2       3.92e+06        1.01e+06
 \end{verbatim}
 which does not look like a very convincing result.
 \item A run of \ty{epos} only gives a single point estimate,
@@ -689,7 +689,7 @@ epos -x 1 -u 1.2e-8 -l 2.9e9 data/FoldSFS_YRI.txt
 #Polymorphic sites surveyed:   15937781
 #Monomorphic sites surveyed: 2879559922
 ...
-#Final Log(Likelihood):          -90970458924.22
+#Final Log(Likelihood):            -3132.160271
 #d^2: 8.04994e-05
 #Level  T[Level]        N[Level]
 181     3.70e-03        1.00e+00
@@ -765,27 +765,28 @@ the allele, which again agrees with the previous \ty{epos} result.
 \begin{verbatim}
 ms 30 1 -t 1000 | ms2sfs | tee test.sfs | epos -U -l 1e7
 #InputFile: stdin
-#Polymorphic sites surveyed:       3417
-#Monomorphic sites surveyed:    9996583
-#m = 1; maximum Log(Likelihood):   -2122.57 {2}
-#m = 2; maximum Log(Likelihood):   -1911.15 {2,6}
-#m = 3; maximum Log(Likelihood):   -1821.29 {2,6,18}
+#Polymorphic sites surveyed:       3055
+#Monomorphic sites surveyed:    9996945
+#m = 1; maximum Log(Likelihood):   -1520.427498 {2}
+#m = 2; maximum Log(Likelihood):   -1162.883232 {2,4}
+#m = 3; maximum Log(Likelihood):   -1156.803456 {2,4,16}
 #m = 4; no improvement
-#Final Log(Likelihood):            -1821.29
-#d^2: 2.26505
-#Level	T[Level]	N[Level]
-18	1.02e-01	1.00e+00
-6	6.19e+03	1.10e+04
-2	1.17e+04	1.73e+03
+#Final Log(Likelihood):            -1156.803456
+#d^2: 1.13251
+#Level  T[Level]        N[Level]
+16      6.08e+02        4.56e+03
+4       8.24e+03        7.15e+03
+2       8.24e+03        1.00e+00
 \end{verbatim}
 and the corresponding allele sizes
 \begin{verbatim}
-#r  A[r]     V(A[r])      P[r]
-1   2480.73  6.66727e+06  10586.3
-2   2911.02  7.78837e+06  10488.3
-3   3375.96  8.8827e+06   10374.3
+epos -U -l 1e7 test.sfs | epos2ages -n 30
+#r      A[r]    V(A[r])         P[r]
+1       1713.61 5.28278e+06     6467.4
+2       2602.4  7.05225e+06     6596.96
+3       3236.13 8.04631e+06     6678.69
 ...
-29  11747.9  1.87453e+07  6631.56
+29      8237.33	9.83744e+06	6956.52
 \end{verbatim}
 \item Finally, we can estimate the average age of alleles for the Kap
   population:
