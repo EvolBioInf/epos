@@ -99,10 +99,8 @@ void extractLevels(Args *args) {
   args->al = (int *)malloc((in->n + 1) * sizeof(int));
   args->nl = in->n;
   
-  for(int i = 0; i < in->n; i++) {
+  for(int i = 0; i < in->n; i++)
     args->al[i + 1] = in->a[i];
-    printf("al[%d]: %d\n", i + 1, args->al[i + 1]);
-  }
 
   freeInts(in);
 }

@@ -10,15 +10,15 @@
   \STATE{$\mathrm{k}[m]\leftarrow 2$} \COMMENT{...which starts at the root}
   \STATE{$\mathrm{N}\leftarrow \ty{popSizes}(m, \mathrm{k}, \mathrm{f})$}
   \COMMENT{Size of constant population}
-  \STATE{$l\leftarrow\ty{likelihood}(\mathrm{N}, m, \mathrm{k},
-    \mathrm{f})$} \COMMENT{Likelihood of population size given the SFS}
-  \STATE{$l_{\rm a}\leftarrow l$} \COMMENT{The initial likelihood is
+  \STATE{$l\leftarrow\ty{logLik}(\mathrm{N}, m, \mathrm{k},
+    \mathrm{f})$} \COMMENT{Log-likelihood of population size given the SFS}
+  \STATE{$l_{\rm a}\leftarrow l$} \COMMENT{The initial log-likelihood is
     also the maximum}
   \FOR{$m\leftarrow 2$ to $n$} 
      \WHILE{$(\mathrm{k}'\leftarrow\ty{nextConfig}(m, n))\ne\mathrm{null}$} 
         \STATE{$\mathrm{N}'\leftarrow\ty{popSizes}(m, \mathrm{k}',
           \mathrm{f})$}
-        \STATE{$l'\leftarrow\ty{likelihood}(\mathrm{N}', m, \mathrm{k}',
+        \STATE{$l'\leftarrow\ty{logLik}(\mathrm{N}', m, \mathrm{k}',
           \mathrm{f})$}
         \IF{$l'>l_{\rm a}$}
            \STATE{$\mathrm{k}_{\rm a}\leftarrow\mathrm{k}'$}

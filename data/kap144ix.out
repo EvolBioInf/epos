@@ -1,6 +1,6 @@
-#InputFile:	../data/kap144i.dat
-#Polymorphic sites surveyed:	18098
-#Monomorphic sites surveyed:	185297
+#InputFile: ../data/kap144i.dat
+#Polymorphic sites surveyed:      18098
+#Monomorphic sites surveyed:     185297
 #m = 1; maximum Log(Likelihood):    -371.75 {2}
 #m = 2; maximum Log(Likelihood):    -238.90 {2,24}
 #m = 3; maximum Log(Likelihood):    -238.54 {2,3,24}

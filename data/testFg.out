@@ -1,6 +1,6 @@
-#InputFile:	../data/testF.dat
-#Polymorphic sites surveyed:	24384
-#Monomorphic sites surveyed:	9975616
+#InputFile: ../data/testF.dat
+#Polymorphic sites surveyed:      24384
+#Monomorphic sites surveyed:    9975616
 #m = 1; maximum Log(Likelihood):   -1719.15 {2}
 #m = 2; maximum Log(Likelihood):    -106.14 {2,11}
 #m = 3; maximum Log(Likelihood):    -104.75 {2,4,11}
