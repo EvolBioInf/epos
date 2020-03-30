@@ -11,7 +11,6 @@ epos2plot
 *.blg
 *.a
 *.org
-doc/*.pdf
 doc/*.sh
 doc/version.tex
 .gitignore
