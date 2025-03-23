@@ -1,5 +1,5 @@
 \documentclass[a4paper, english]{article}
-\usepackage{graphics,eurosym,latexsym}
+\usepackage{graphicx,color,eurosym,latexsym}
 \usepackage{listings}
 \usepackage{pst-all}
 \usepackage{algorithmic,algorithm}
@@ -208,23 +208,23 @@ sizes.
 \item First, take a look at one of the simulated data sets supplied
   with \ty{epos}:
 \begin{verbatim}
-cat data/testF.dat 
-#r	f(r)
-1	5166
-2	2030
-3	1383
-4	1116
-5	981
-6	874
-7	702
-8	654
-9	593
-10	573
-11	532
-12	494
-13	463
-14	593
-15	236
+cat data/testF.dat
+#r      f[r]
+1       9526
+2       3998
+3       2315
+4       1487
+5       1075
+6       873
+7       689
+8       570
+9       567
+10      627
+11      547
+12      605
+13      460
+14      573
+15      236
 \end{verbatim}
 It is a folded data set, so the sample size $n=30$.
 \item Let's analyze it using the command

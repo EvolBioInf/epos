@@ -79,6 +79,7 @@
     \fi%
     \setlength{\fboxrule}{0.5pt}%
     \setlength{\fboxsep}{1pt}%
+    \definecolor{tbcol}{rgb}{1,1,1}%
 \begin{picture}(7200.00,6720.00)%
     \gplgaddtomacro\gplbacktext{%
       \csname LTb\endcsname%%
@@ -92,9 +93,6 @@
     }%
     \gplgaddtomacro\gplfronttext{%
       \csname LTb\endcsname%%
-      \put(198,3601){\rotatebox{-270}{\makebox(0,0){\strut{}\large $N_{\rm e}$}}}%
-      \put(4006,154){\makebox(0,0){\strut{}\large Time (Generations)}}%
-      \csname LTb\endcsname%%
       \put(5816,6326){\makebox(0,0)[r]{\strut{}\large 5\% quantile}}%
       \csname LTb\endcsname%%
       \put(5816,6106){\makebox(0,0)[r]{\strut{}\large median}}%
@@ -102,9 +100,12 @@
       \put(5816,5886){\makebox(0,0)[r]{\strut{}\large expected}}%
       \csname LTb\endcsname%%
       \put(5816,5666){\makebox(0,0)[r]{\strut{}\large 95\% quantile}}%
+      \csname LTb\endcsname%%
+      \put(209,3601){\rotatebox{-270.00}{\makebox(0,0){\strut{}\large $N_{\rm e}$}}}%
+      \put(4006,154){\makebox(0,0){\strut{}\large Time (Generations)}}%
     }%
     \gplbacktext
-    \put(0,0){\includegraphics{fig2b}}%
+    \put(0,0){\includegraphics[width={360.00bp},height={336.00bp}]{fig2b}}%
     \gplfronttext
   \end{picture}%
 \endgroup

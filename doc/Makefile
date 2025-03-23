@@ -14,6 +14,6 @@ all:
 	latex epos
 	latex epos
 	latex epos
-	dvipdf epos
+	dvipdf -dALLOWPSTRANSPARENCY epos
 clean:	
-	rm -f epos.pdf *.log *.bbl *.blg *.dvi
+	rm -f epos.pdf *.log *.bbl *.blg *.dvi *.toc

@@ -79,6 +79,7 @@
     \fi%
     \setlength{\fboxrule}{0.5pt}%
     \setlength{\fboxsep}{1pt}%
+    \definecolor{tbcol}{rgb}{1,1,1}%
 \begin{picture}(7200.00,6720.00)%
     \gplgaddtomacro\gplbacktext{%
       \csname LTb\endcsname%%
@@ -86,13 +87,11 @@
       \put(1078,3602){\makebox(0,0)[r]{\strut{}\large $10^{4}$}}%
       \put(1078,6499){\makebox(0,0)[r]{\strut{}\large $10^{5}$}}%
       \put(1210,484){\makebox(0,0){\strut{}\large $10^{2}$}}%
-      \put(3345,484){\makebox(0,0){\strut{}\large $10^{3}$}}%
-      \put(5479,484){\makebox(0,0){\strut{}\large $10^{4}$}}%
+      \put(3074,484){\makebox(0,0){\strut{}\large $10^{3}$}}%
+      \put(4939,484){\makebox(0,0){\strut{}\large $10^{4}$}}%
+      \put(6803,484){\makebox(0,0){\strut{}\large $10^{5}$}}%
     }%
     \gplgaddtomacro\gplfronttext{%
-      \csname LTb\endcsname%%
-      \put(198,3601){\rotatebox{-270}{\makebox(0,0){\strut{}\large $N_{\rm e}$}}}%
-      \put(4006,154){\makebox(0,0){\strut{}\large Time (Generations)}}%
       \csname LTb\endcsname%%
       \put(5816,6326){\makebox(0,0)[r]{\strut{}\large 5\% quantile}}%
       \csname LTb\endcsname%%
@@ -101,9 +100,12 @@
       \put(5816,5886){\makebox(0,0)[r]{\strut{}\large expected}}%
       \csname LTb\endcsname%%
       \put(5816,5666){\makebox(0,0)[r]{\strut{}\large 95\% quantile}}%
+      \csname LTb\endcsname%%
+      \put(209,3601){\rotatebox{-270.00}{\makebox(0,0){\strut{}\large $N_{\rm e}$}}}%
+      \put(4006,154){\makebox(0,0){\strut{}\large Time (Generations)}}%
     }%
     \gplbacktext
-    \put(0,0){\includegraphics{con}}%
+    \put(0,0){\includegraphics[width={360.00bp},height={336.00bp}]{con}}%
     \gplfronttext
   \end{picture}%
 \endgroup
